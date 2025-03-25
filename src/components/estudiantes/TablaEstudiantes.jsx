@@ -17,12 +17,15 @@ const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
         {estudiantes.map((estudiante) => (
           <tr key={estudiante.id}>
             <td>
-              {estudiante.imagen && (
+              {estudiante.imagen ? (
                 <Image src={estudiante.imagen} width="50" height="50" rounded />
+              ) : (
+                "Sin imagen"
               )}
             </td>
             <td>{estudiante.nombre}</td>
-            <td>{estudiante.asignatura}</td>
+            {/* Aquí mostramos el nombre de la asignatura en lugar del ID */}
+            <td>{estudiante.asignaturaNombre || "Sin asignatura"}</td>
             <td>
               <Button
                 variant="outline-warning"
