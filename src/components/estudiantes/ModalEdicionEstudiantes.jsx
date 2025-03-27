@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, Form, Button, Image } from "react-bootstrap";
+import { Modal, Button, Form } from "react-bootstrap";
 
 const ModalEdicionEstudiante = ({
   showEditModal,
@@ -7,56 +7,78 @@ const ModalEdicionEstudiante = ({
   estudianteEditado,
   handleEditInputChange,
   handleEditImageChange,
-  handleEditEstudiante,
+  handleEditEstudiante
 }) => {
   if (!estudianteEditado) return null;
 
   return (
-    <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+    <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
       <Modal.Header closeButton>
         <Modal.Title>Editar Estudiante</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group className="mb-3">
+          {/* Nombre */}
+          <Form.Group controlId="nombre">
             <Form.Label>Nombre</Form.Label>
             <Form.Control
-  type="text"
-  name="nombre"
-  value={estudianteEditado.nombre}
-  onChange={handleEditInputChange}
-/>
-
+              type="text"
+              placeholder="Nombre del estudiante"
+              name="nombre"
+              value={estudianteEditado.nombre || ""}
+              onChange={handleEditInputChange}
+            />
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Asignatura</Form.Label>
+
+          {/* Grado */}
+          <Form.Group controlId="grado">
+            <Form.Label>Grado</Form.Label>
             <Form.Control
-  type="text"
-  name="asignatura"
-  value={estudianteEditado.asignatura}
-  onChange={handleEditInputChange}
-/>
-
+              type="text"
+              placeholder="Grado"
+              name="grado"
+              value={estudianteEditado.grado || ""}
+              onChange={handleEditInputChange}
+            />
           </Form.Group>
-          <Form.Group className="mb-3">
-            <Form.Label>Imagen Actual</Form.Label>
-            {estudianteEditado.imagen && (
-              <Image src={estudianteEditado.imagen} width="100" className="mb-2" />
-            )}
+
+          {/* Grupo */}
+          <Form.Group controlId="grupo">
+            <Form.Label>Grupo</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Grupo"
+              name="grupo"
+              value={estudianteEditado.grupo || ""}
+              onChange={handleEditInputChange}
+            />
+          </Form.Group>
+
+          {/* Imagen */}
+          <Form.Group controlId="imagen">
+            <Form.Label>Imagen</Form.Label>
             <Form.Control
               type="file"
-              accept="image/*"
-              onChange={handleEditImageChange}
+              onChange={handleEditImageChange} // Manejar la subida de la imagen
             />
+            {estudianteEditado.imagen && (
+              <div className="mt-3">
+                <img
+                  src={estudianteEditado.imagen}
+                  alt="Imagen Estudiante"
+                  style={{ maxWidth: "100%", borderRadius: "8px" }}
+                />
+              </div>
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-          Cancelar
+          Cerrar
         </Button>
         <Button variant="primary" onClick={handleEditEstudiante}>
-          Actualizar
+          Guardar Cambios
         </Button>
       </Modal.Footer>
     </Modal>

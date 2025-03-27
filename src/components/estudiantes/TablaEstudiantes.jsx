@@ -9,7 +9,10 @@ const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
         <tr>
           <th>Imagen</th>
           <th>Nombre</th>
-          <th>Asignatura</th>
+          <th>Grado</th>
+          <th>Grupo</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -24,8 +27,10 @@ const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
               )}
             </td>
             <td>{estudiante.nombre}</td>
-            {/* Aquí mostramos el nombre de la asignatura en lugar del ID */}
-            <td>{estudiante.asignaturaNombre || "Sin asignatura"}</td>
+            <td>{estudiante.grado}</td>
+            <td>{estudiante.grupo}</td>
+            <td>{estudiante.direccion}</td>
+            <td>{estudiante.telefono}</td>
             <td>
               <Button
                 variant="outline-warning"

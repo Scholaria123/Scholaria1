@@ -1,46 +1,28 @@
 import React from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+import { Modal, Button } from "react-bootstrap";
 
 const ModalEliminacionEstudiante = ({
   showDeleteModal,
   setShowDeleteModal,
-  asignaturas, // Recibimos las asignaturas como prop
-  estudianteAEliminar, // El estudiante a eliminar
   handleDeleteEstudiante,
-  handleInputChange, // Función para manejar cambios en el ComboBox
+  estudianteAEliminar, // Estudiante que se eliminará
 }) => {
   return (
     <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Confirmar Eliminación</Modal.Title>
+        <Modal.Title>Eliminar Estudiante</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        {/* Confirmación de eliminación */}
-        <p>¿Estás seguro de que deseas eliminar al estudiante {estudianteAEliminar?.nombre}?</p>
-
-        {/* ComboBox para seleccionar la asignatura antes de eliminar */}
-        <Form.Group className="mb-3">
-          <Form.Label>Asignatura</Form.Label>
-          <Form.Control
-            as="select"
-            name="asignatura"
-            value={estudianteAEliminar?.asignatura || ""}
-            onChange={handleInputChange}
-          >
-            <option value="">Selecciona una asignatura</option>
-            {asignaturas?.map((asignatura) => (
-              <option key={asignatura.id} value={asignatura.nombre}>
-                {asignatura.nombre}
-              </option>
-            ))}
-          </Form.Control>
-        </Form.Group>
+        <p>
+          ¿Estás seguro de que quieres eliminar al estudiante{" "}
+          <strong>{estudianteAEliminar?.nombre}</strong>?
+        </p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
           Cancelar
         </Button>
-        <Button variant="danger" onClick={() => handleDeleteEstudiante(estudianteAEliminar)}>
+        <Button variant="danger" onClick={handleDeleteEstudiante}>
           Eliminar
         </Button>
       </Modal.Footer>

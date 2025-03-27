@@ -8,13 +8,7 @@ const ModalRegistroEstudiante = ({
   handleInputChange,
   handleImageChange,
   handleAddEstudiante,
-  asignaturas,
 }) => {
-  // Verifica que las asignaturas estén disponibles
-  if (!asignaturas || asignaturas.length === 0) {
-    return <div>No hay asignaturas disponibles</div>;
-  }
-
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
@@ -32,25 +26,50 @@ const ModalRegistroEstudiante = ({
               onChange={handleInputChange}
             />
           </Form.Group>
-          
-          <Form.Group controlId="formAsignatura">
-  <Form.Label>Asignatura</Form.Label>
-  <Form.Control
-    as="select"
-    name="asignatura"
-    value={nuevoEstudiante.asignatura}
-    onChange={handleInputChange}
-  >
-    <option value="">Selecciona una asignatura</option>
-    {asignaturas.map((asignatura) => (
-      <option key={asignatura.id} value={asignatura.id}>
-        {asignatura.nombre}
-      </option>
-    ))}
-  </Form.Control>
-</Form.Group>
- 
 
+          <Form.Group controlId="formGrado">
+            <Form.Label>Grado</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ej: 2do"
+              name="grado"
+              value={nuevoEstudiante.grado}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formGrupo">
+            <Form.Label>Grupo</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ej: A"
+              name="grupo"
+              value={nuevoEstudiante.grupo}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formDireccion">
+            <Form.Label>Dirección</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ej: Calle 2"
+              name="direccion"
+              value={nuevoEstudiante.direccion}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formTelefono">
+            <Form.Label>Teléfono</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Ej: 56892341"
+              name="telefono"
+              value={nuevoEstudiante.telefono}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
 
           <Form.Group controlId="formImagen">
             <Form.Label>Imagen</Form.Label>
