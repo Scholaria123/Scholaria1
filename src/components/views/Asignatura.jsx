@@ -22,15 +22,19 @@ const Asignatura = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [nuevaAsignatura, setNuevaAsignatura] = useState({
-    nombre: "",
-    docente: "",
-    grado: "",
-    nota: "",
+    nombre: '',
+    docente: '',
+    grado: '',
+    grupo: '',
+    estudiante: '',
+    nota: '',
   });
   const [asignaturaEditada, setAsignaturaEditada] = useState({
     nombre: "",
     docente: "",
     grado: "",
+    grupo: "",
+    estudiante: "",
     nota: "",
   });
   const [asignaturaAEliminar, setAsignaturaAEliminar] = useState(null);
@@ -58,42 +62,44 @@ const Asignatura = () => {
   // Manejador de cambios en los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setNuevaAsignatura((prev) => ({
-      ...prev,
-      [name]: value, // Actualiza el estado de nuevaAsignatura con el valor cambiado
+    setAsignaturaEditada((prevState) => ({
+      ...prevState,
+      [name]: value,
     }));
-  }
-  
+  };
 
   // Agregar nueva asignatura (CREATE)
   const handleAddAsignatura = async () => {
-    if (!nuevaAsignatura.nombre.trim() || !nuevaAsignatura.docente.trim() || !nuevaAsignatura.grado.trim() || !nuevaAsignatura.nota.trim()) {
-      alert("Por favor, completa todos los campos antes de guardar.");
-      return;
-    }
-  
     try {
-      console.log("Datos que se agregarán:", nuevaAsignatura);  // Verificar los datos antes de enviarlos a Firestore
-      await addDoc(asignaturasCollection, nuevaAsignatura);
-      setShowModal(false);
-      setNuevaAsignatura({ nombre: "", docente: "", grado: "", nota: "" });
-      await fetchAsignaturas();
+      await addDoc(collection(db, "asignaturas"), nuevaAsignatura);
+      console.log("Asignatura agregada correctamente");
+      setShowModal(false); // Cierra el modal después de agregar
     } catch (error) {
-      console.error("Error al agregar la asignatura:", error);
+      console.error("Error al agregar asignatura:", error);
     }
   };
 
   // Actualizar asignatura (UPDATE)
   const handleEditAsignatura = async () => {
-    if (!asignaturaEditada.nombre || !asignaturaEditada.docente || !asignaturaEditada.grado || !asignaturaEditada.nota) {
-      alert("Por favor, completa todos los campos antes de actualizar.");
+    if (!asignaturaEditada.id) {
+      console.error("Error: La asignatura no tiene un ID");
       return;
     }
+
+    const asignaturaRef = doc(db, "asignaturas", asignaturaEditada.id);
+
     try {
-      const asignaturaRef = doc(db, "asignaturas", asignaturaEditada.id);
       await updateDoc(asignaturaRef, asignaturaEditada);
+      console.log("Asignatura actualizada correctamente");
+
+      // ACTUALIZAR LISTA SIN RECARGAR PÁGINA
+      setAsignaturas((prevAsignaturas) =>
+        prevAsignaturas.map((asig) =>
+          asig.id === asignaturaEditada.id ? asignaturaEditada : asig
+        )
+      );
+
       setShowEditModal(false);
-      await fetchAsignaturas();
     } catch (error) {
       console.error("Error al actualizar la asignatura:", error);
     }
@@ -114,7 +120,7 @@ const Asignatura = () => {
   };
 
   const openEditModal = (asignatura) => {
-    setAsignaturaEditada({ ...asignatura });
+    setAsignaturaEditada(asignatura);
     setShowEditModal(true);
   };
 
@@ -126,27 +132,31 @@ const Asignatura = () => {
   return (
     <Container className="mt-5">
       <h4>Gestión de Asignaturas</h4>
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Agregar asignatura
-      </Button>
+      <div>
+        <button onClick={() => setShowModal(true)}>Agregar Asignatura</button>
+        
+        {/* Modal de Registro */}
+        <ModalRegistroAsignatura
+          showModal={showModal}
+          setShowModal={setShowModal}
+          nuevaAsignatura={nuevaAsignatura}
+          handleInputChange={handleInputChange}
+          handleAddAsignatura={handleAddAsignatura}
+        />
+      </div>
+
       <TablaAsignaturas
         asignaturas={asignaturas}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
       />
-      <ModalRegistroAsignatura
-        showModal={showModal}
-        setShowModal={setShowModal}
-        nuevaAsignatura={nuevaAsignatura}
-        handleInputChange={handleInputChange}
-        handleAddAsignatura={handleAddAsignatura}
-      />
+
       <ModalEdicionAsignatura
         showEditModal={showEditModal}
         setShowEditModal={setShowEditModal}
         asignaturaEditada={asignaturaEditada}
-        handleInputChange={handleInputChange}
-        handleEditAsignatura={handleEditAsignatura}
+        setAsignaturaEditada={setAsignaturaEditada}
+        setAsignaturas={setAsignaturas} // Pasar la función setAsignaturas
       />
       <ModalEliminacionAsignatura
         showDeleteModal={showDeleteModal}

@@ -5,6 +5,7 @@ const ModalEliminacionAsignatura = ({
   showDeleteModal,
   setShowDeleteModal,
   handleDeleteAsignatura,
+  asignaturaAEliminar, // Asignatura que se eliminará
 }) => {
   return (
     <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
@@ -12,7 +13,10 @@ const ModalEliminacionAsignatura = ({
         <Modal.Title>Eliminar Asignatura</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>¿Estás seguro de que quieres eliminar esta asignatura?</p>
+        <p>
+          ¿Estás seguro de que quieres eliminar la asignatura{" "}
+          <strong>{asignaturaAEliminar?.nombre}</strong>?
+        </p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>

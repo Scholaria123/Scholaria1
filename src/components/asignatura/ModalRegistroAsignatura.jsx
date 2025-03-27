@@ -4,7 +4,7 @@ import { Modal, Button, Form } from "react-bootstrap";
 const ModalRegistroAsignatura = ({
   showModal,
   setShowModal,
-  nuevaAsignatura,
+  nuevaAsignatura = {}, // 👈 Evita 'undefined'
   handleInputChange,
   handleAddAsignatura,
 }) => {
@@ -21,8 +21,8 @@ const ModalRegistroAsignatura = ({
               type="text"
               placeholder="Nombre de la asignatura"
               name="nombre"
-              value={nuevaAsignatura.nombre}
-              onChange={handleInputChange} // Maneja el cambio en el input
+              value={nuevaAsignatura?.nombre || ''} // 👈 Usa ? para evitar errores
+              onChange={handleInputChange}
             />
           </Form.Group>
           <Form.Group controlId="docente">
@@ -31,7 +31,7 @@ const ModalRegistroAsignatura = ({
               type="text"
               placeholder="Nombre del docente"
               name="docente"
-              value={nuevaAsignatura.docente}
+              value={nuevaAsignatura?.docente || ''}
               onChange={handleInputChange}
             />
           </Form.Group>
@@ -41,7 +41,27 @@ const ModalRegistroAsignatura = ({
               type="text"
               placeholder="Grado de la asignatura"
               name="grado"
-              value={nuevaAsignatura.grado}
+              value={nuevaAsignatura?.grado || ''}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+          <Form.Group controlId="grupo">
+            <Form.Label>Grupo</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Grupo de la asignatura"
+              name="grupo"
+              value={nuevaAsignatura?.grupo || ''}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+          <Form.Group controlId="estudiante">
+            <Form.Label>Estudiante</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Nombre del estudiante"
+              name="estudiante"
+              value={nuevaAsignatura?.estudiante || ''}
               onChange={handleInputChange}
             />
           </Form.Group>
@@ -51,7 +71,7 @@ const ModalRegistroAsignatura = ({
               type="text"
               placeholder="Nota de la asignatura"
               name="nota"
-              value={nuevaAsignatura.nota}
+              value={nuevaAsignatura?.nota || ''}
               onChange={handleInputChange}
             />
           </Form.Group>

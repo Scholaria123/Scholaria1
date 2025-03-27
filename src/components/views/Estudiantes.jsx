@@ -16,19 +16,17 @@ import ModalEliminacionEstudiante from "../estudiantes/ModalEliminacionEstudiant
 
 const Estudiantes = () => {
   const [estudiantes, setEstudiantes] = useState([]);
+  const [asignaturas, setAsignaturas] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [nuevoEstudiante, setNuevoEstudiante] = useState({
     nombre: "",
-    asignatura: "",  // Este debe ser el id de la asignatura
+    asignatura: "", 
     imagen: null,
   });
-  
-  
   const [estudianteEditado, setEstudianteEditado] = useState(null);
   const [estudianteAEliminar, setEstudianteAEliminar] = useState(null);
-  const [asignaturas, setAsignaturas] = useState([]);
 
   const estudiantesCollection = collection(db, "estudiantes");
   const asignaturasCollection = collection(db, "asignaturas");
@@ -66,127 +64,108 @@ const Estudiantes = () => {
     fetchAsignaturas();
   }, []);
 
-  useEffect(() => {
-    // Simulación de carga de datos
-    setAsignaturas([
-      { id: '1', nombre: 'Matemáticas' },
-      { id: '2', nombre: 'Ciencias' },
-      { id: '3', nombre: 'Geografía' },
-    ]);
-  }, []);
-
-  // Funciones de manejo de formularios
+  // Función para manejar los cambios en los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNuevoEstudiante((prev) => ({
       ...prev,
-      [name]: value,  // Actualiza el estado con el nuevo valor
+      [name]: value,
     }));
   };
-  
 
+  // Manejo de cambios en la imagen (Base64)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
-  
-    // Crear un FileReader para leer el archivo
     const reader = new FileReader();
-  
     reader.onloadend = () => {
-      const base64Image = reader.result; // Aquí obtenemos la imagen en Base64
-  
-      // Actualizamos el estado con la imagen en Base64
       setNuevoEstudiante((prev) => ({
         ...prev,
-        imagen: base64Image, // Guardamos la imagen en Base64
+        imagen: reader.result,
       }));
     };
-  
-    if (file) {
-      reader.readAsDataURL(file); // Esto convierte el archivo en Base64
-    }
+    if (file) reader.readAsDataURL(file);
   };
-  
 
+  // Modal de edición
   const openEditModal = (estudiante) => {
     setEstudianteEditado({ ...estudiante });
     setShowEditModal(true);
   };
 
+  // Modal de eliminación
   const openDeleteModal = (estudiante) => {
     setEstudianteAEliminar(estudiante);
     setShowDeleteModal(true);
   };
-  
+
+  // Agregar estudiante
   const handleAddEstudiante = async () => {
     if (!nuevoEstudiante.nombre || !nuevoEstudiante.asignatura) {
       alert("Por favor, completa todos los campos.");
       return;
     }
-  
-    // Buscar la asignatura seleccionada por su ID
     const asignaturaSeleccionada = asignaturas.find(
       (asignatura) => asignatura.id === nuevoEstudiante.asignatura
     );
-  
     if (asignaturaSeleccionada) {
-      // Crear el objeto del estudiante con el nombre de la asignatura
       const estudianteConAsignatura = {
-        nombre: nuevoEstudiante.nombre,
-        asignatura: nuevoEstudiante.asignatura, // ID de la asignatura
-        asignaturaNombre: asignaturaSeleccionada.nombre, // Nombre de la asignatura
-        imagen: nuevoEstudiante.imagen || null,
+        ...nuevoEstudiante,
+        asignaturaNombre: asignaturaSeleccionada.nombre,
       };
-  
       try {
         await addDoc(estudiantesCollection, estudianteConAsignatura);
         alert("Estudiante agregado correctamente.");
         setShowModal(false);
-        fetchEstudiantes(); // Refrescar la lista
+        setNuevoEstudiante({ nombre: "", asignatura: "", imagen: null });
+        fetchEstudiantes();
       } catch (error) {
         console.error("Error al agregar estudiante:", error);
         alert("Error al agregar estudiante.");
       }
     }
-  };  
-  
+  };
+
+  // Editar estudiante
+  const handleEditInputChange = (e) => {
+    const { name, value } = e.target;
+    setEstudianteEditado((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
   const handleEditEstudiante = async () => {
     if (!estudianteEditado.nombre || !estudianteEditado.asignatura) {
       alert("Por favor, completa todos los campos.");
       return;
     }
-  
-    // Encontrar el nombre de la asignatura por el id
     const asignaturaSeleccionada = asignaturas.find(
       (asignatura) => asignatura.id === estudianteEditado.asignatura
     );
-  
     if (asignaturaSeleccionada) {
-      // Ahora puedes actualizar el estudiante con el nombre de la asignatura
       const estudianteConAsignatura = {
         ...estudianteEditado,
-        asignaturaNombre: asignaturaSeleccionada.nombre, // Agregar el nombre de la asignatura
+        asignaturaNombre: asignaturaSeleccionada.nombre,
       };
-  
-      // Llamar a la función que actualizará el estudiante en la base de datos
       try {
         const estudianteRef = doc(db, "estudiantes", estudianteEditado.id);
         await updateDoc(estudianteRef, estudianteConAsignatura);
         setShowEditModal(false);
-        await fetchEstudiantes(); // Recargar la lista de estudiantes
+        fetchEstudiantes();
       } catch (error) {
         console.error("Error al editar el estudiante:", error);
       }
     }
   };
-  
 
+  // Eliminar estudiante
   const handleDeleteEstudiante = async () => {
     if (estudianteAEliminar) {
       try {
         const estudianteRef = doc(db, "estudiantes", estudianteAEliminar.id);
         await deleteDoc(estudianteRef);
         setShowDeleteModal(false);
-        await fetchEstudiantes();
+        fetchEstudiantes();
       } catch (error) {
         console.error("Error al eliminar el estudiante:", error);
       }
@@ -214,15 +193,14 @@ const Estudiantes = () => {
         handleAddEstudiante={handleAddEstudiante}
         asignaturas={asignaturas}
       />
-    <ModalEdicionEstudiante
+      <ModalEdicionEstudiante
   showEditModal={showEditModal}
   setShowEditModal={setShowEditModal}
   estudianteEditado={estudianteEditado}
-  handleInputChange={handleInputChange}
-  handleImageChange={handleImageChange}
+  handleEditInputChange={(e) => setEstudianteEditado({...estudianteEditado, [e.target.name]: e.target.value})} // ✅ Actualiza correctamente
+  handleEditImageChange={handleImageChange}
   handleEditEstudiante={handleEditEstudiante}
 />
-
       <ModalEliminacionEstudiante
         showDeleteModal={showDeleteModal}
         setShowDeleteModal={setShowDeleteModal}
@@ -233,4 +211,3 @@ const Estudiantes = () => {
 };
 
 export default Estudiantes;
-  

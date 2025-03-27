@@ -21,20 +21,22 @@ const ModalEdicionEstudiante = ({
           <Form.Group className="mb-3">
             <Form.Label>Nombre</Form.Label>
             <Form.Control
-              type="text"
-              name="nombre"
-              value={estudianteEditado.nombre}
-              onChange={handleEditInputChange}
-            />
+  type="text"
+  name="nombre"
+  value={estudianteEditado.nombre}
+  onChange={handleEditInputChange}
+/>
+
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Asignatura</Form.Label>
             <Form.Control
-              type="text"
-              name="asignatura"
-              value={estudianteEditado.asignatura}
-              onChange={handleEditInputChange}
-            />
+  type="text"
+  name="asignatura"
+  value={estudianteEditado.asignatura}
+  onChange={handleEditInputChange}
+/>
+
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Imagen Actual</Form.Label>
