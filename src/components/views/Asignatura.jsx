@@ -59,10 +59,10 @@ const Asignatura = () => {
     fetchAsignaturas();
   }, []);
 
-  // Manejador de cambios en los inputs
+  // Manejador de cambios en los inputs para la nueva asignatura
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setAsignaturaEditada((prevState) => ({
+    setNuevaAsignatura((prevState) => ({
       ...prevState,
       [name]: value,
     }));
@@ -74,6 +74,14 @@ const Asignatura = () => {
       await addDoc(collection(db, "asignaturas"), nuevaAsignatura);
       console.log("Asignatura agregada correctamente");
       setShowModal(false); // Cierra el modal después de agregar
+      setNuevaAsignatura({
+        nombre: '',
+        docente: '',
+        grado: '',
+        grupo: '',
+        estudiante: '',
+        nota: '',
+      }); // Limpiar los campos
     } catch (error) {
       console.error("Error al agregar asignatura:", error);
     }
@@ -133,7 +141,7 @@ const Asignatura = () => {
     <Container className="mt-5">
       <h4>Gestión de Asignaturas</h4>
       <div>
-        <button onClick={() => setShowModal(true)}>Agregar Asignatura</button>
+        <Button onClick={() => setShowModal(true)}>Agregar Asignatura</Button>
         
         {/* Modal de Registro */}
         <ModalRegistroAsignatura
