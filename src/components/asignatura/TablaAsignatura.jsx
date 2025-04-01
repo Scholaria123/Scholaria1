@@ -9,8 +9,6 @@ const TablaAsignaturas = ({ asignaturas, openEditModal, openDeleteModal }) => {
           <th>Docente</th>
           <th>Grado</th>
           <th>Grupo</th>
-          <th>Estudiante</th>
-          <th>Nota</th>
           <th>Acciones</th>
         </tr>
       </thead>
@@ -22,8 +20,6 @@ const TablaAsignaturas = ({ asignaturas, openEditModal, openDeleteModal }) => {
               <td>{asignatura.docente}</td>
               <td>{asignatura.grado}</td>
               <td>{asignatura.grupo}</td>
-              <td>{asignatura.estudiante}</td>
-              <td>{parseFloat(asignatura.nota).toFixed(2)}</td>
               <td>
                 <button
                   className="btn btn-warning btn-sm me-2"
@@ -42,7 +38,7 @@ const TablaAsignaturas = ({ asignaturas, openEditModal, openDeleteModal }) => {
           ))
         ) : (
           <tr>
-            <td colSpan="7" className="text-center">
+            <td colSpan="5" className="text-center">
               No hay asignaturas registradas.
             </td>
           </tr>

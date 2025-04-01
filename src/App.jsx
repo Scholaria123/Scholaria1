@@ -7,6 +7,7 @@ import Inicio from "./views/Inicio";
 import Estudiantes from "./components/views/Estudiantes"  // Asegúrate de que esté en la carpeta correcta
 import Asignaturas from "./components/views/Asignatura";  // Se corrigió la importación
 import CatalogoEstudiantes from "./components/views/CatalogoEstudiantes";
+import CatalogoCalificaciones from "./components/views/CatalogoCalificacion";
 
 import './App.css';
 
@@ -33,6 +34,8 @@ function App() {
               <Route path="/Asignatura" element={<ProtectedRoute><Asignaturas /></ProtectedRoute>} />
 
               <Route path="/CatalogoEstudiantes" element={<ProtectedRoute><CatalogoEstudiantes /></ProtectedRoute>} />
+
+              <Route path="/CatalogoCalificaciones" element={<ProtectedRoute><CatalogoCalificaciones /></ProtectedRoute>} />
 
               {/* Ruta de error 404 */}
               <Route path="*" element={<h1>Página no encontrada</h1>} />

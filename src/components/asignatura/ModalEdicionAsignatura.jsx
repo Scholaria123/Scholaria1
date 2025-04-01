@@ -15,43 +15,17 @@ const ModalEdicionAsignatura = ({
   setShowEditModal,
   asignaturaEditada,
   setAsignaturaEditada,
-  setAsignaturas, // Para actualizar la tabla sin recargar
+  handleEditAsignatura,  // ✅ Se usa la función pasada como prop
 }) => {
+
   if (!asignaturaEditada) return null;
 
-  // Manejador de cambio de los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setAsignaturaEditada((prevState) => ({
       ...prevState,
       [name]: value,
     }));
-  };
-
-  // Manejar la edición de la asignatura
-  const handleEditAsignatura = async () => {
-    if (!asignaturaEditada.id) {
-      console.error("Error: La asignatura no tiene un ID");
-      return;
-    }
-
-    const asignaturaRef = doc(db, "asignaturas", asignaturaEditada.id);
-
-    try {
-      await updateDoc(asignaturaRef, asignaturaEditada);
-      console.log("Asignatura actualizada correctamente");
-
-      // ACTUALIZAR LISTA SIN RECARGAR PÁGINA
-      setAsignaturas((prevAsignaturas) =>
-        prevAsignaturas.map((asig) =>
-          asig.id === asignaturaEditada.id ? asignaturaEditada : asig
-        )
-      );
-
-      setShowEditModal(false);
-    } catch (error) {
-      console.error("Error al actualizar la asignatura:", error);
-    }
   };
 
   return (
@@ -104,35 +78,13 @@ const ModalEdicionAsignatura = ({
               onChange={handleInputChange}
             />
           </Form.Group>
-
-          <Form.Group controlId="estudiante">
-            <Form.Label>Estudiante</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Estudiante"
-              name="estudiante"
-              value={asignaturaEditada.estudiante || ""}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="nota">
-            <Form.Label>Nota</Form.Label>
-            <Form.Control
-              type="number"
-              placeholder="Nota"
-              name="nota"
-              value={asignaturaEditada.nota || ""}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowEditModal(false)}>
           Cerrar
         </Button>
-        <Button variant="primary" onClick={handleEditAsignatura}>
+        <Button variant="primary" onClick={() => handleEditAsignatura()}>
           Guardar Cambios
         </Button>
       </Modal.Footer>

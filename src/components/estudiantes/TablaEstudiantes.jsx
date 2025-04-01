@@ -9,8 +9,6 @@ const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
         <tr>
           <th>Imagen</th>
           <th>Nombre</th>
-          <th>Grado</th>
-          <th>Grupo</th>
           <th>Dirección</th>
           <th>Teléfono</th>
           <th>Acciones</th>
@@ -27,8 +25,6 @@ const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
               )}
             </td>
             <td>{estudiante.nombre}</td>
-            <td>{estudiante.grado}</td>
-            <td>{estudiante.grupo}</td>
             <td>{estudiante.direccion}</td>
             <td>{estudiante.telefono}</td>
             <td>

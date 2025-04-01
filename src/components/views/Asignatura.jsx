@@ -16,6 +16,7 @@ import ModalRegistroAsignatura from "../asignatura/ModalRegistroAsignatura";
 import ModalEdicionAsignatura from "../asignatura/ModalEdicionAsignatura";
 import ModalEliminacionAsignatura from "../asignatura/ModalEliminacionAsignatura";
 
+
 const Asignatura = () => {
   const [asignaturas, setAsignaturas] = useState([]);
   const [showModal, setShowModal] = useState(false);
@@ -24,18 +25,10 @@ const Asignatura = () => {
   const [nuevaAsignatura, setNuevaAsignatura] = useState({
     nombre: '',
     docente: '',
-    grado: '',
-    grupo: '',
-    estudiante: '',
-    nota: '',
   });
   const [asignaturaEditada, setAsignaturaEditada] = useState({
     nombre: "",
     docente: "",
-    grado: "",
-    grupo: "",
-    estudiante: "",
-    nota: "",
   });
   const [asignaturaAEliminar, setAsignaturaAEliminar] = useState(null);
 
@@ -43,19 +36,20 @@ const Asignatura = () => {
 
   // Obtener asignaturas de Firestore
   const fetchAsignaturas = async () => {
-    try {
-      const data = await getDocs(asignaturasCollection);
-      const fetchedAsignaturas = data.docs.map((doc) => ({
-        ...doc.data(),
-        id: doc.id,
-      }));
-      setAsignaturas(fetchedAsignaturas);
-    } catch (error) {
-      console.error("Error al obtener las asignaturas:", error);
-    }
+    const querySnapshot = await getDocs(collection(db, "asignaturas"));
+    const asignaturasArray = querySnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    setAsignaturas(asignaturasArray);
   };
 
   useEffect(() => {
+    const fetchAsignaturas = async () => {
+      const querySnapshot = await getDocs(collection(db, "asignaturas"));
+      setAsignaturas(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+    };
+  
     fetchAsignaturas();
   }, []);
 
@@ -71,21 +65,26 @@ const Asignatura = () => {
   // Agregar nueva asignatura (CREATE)
   const handleAddAsignatura = async () => {
     try {
-      await addDoc(collection(db, "asignaturas"), nuevaAsignatura);
+      const docRef = await addDoc(collection(db, "asignaturas"), nuevaAsignatura);
       console.log("Asignatura agregada correctamente");
-      setShowModal(false); // Cierra el modal después de agregar
+  
+      // Después de agregar, actualiza el estado para incluir la nueva asignatura
+      setAsignaturas((prevState) => [
+        ...prevState,
+        { ...nuevaAsignatura, id: docRef.id },  // Incluye el ID generado en Firestore
+      ]);
+  
+      // Cierra el modal y limpia los campos
+      setShowModal(false);
       setNuevaAsignatura({
-        nombre: '',
-        docente: '',
-        grado: '',
-        grupo: '',
-        estudiante: '',
-        nota: '',
-      }); // Limpiar los campos
+        nombre: "",
+        docente: "",
+      });
     } catch (error) {
       console.error("Error al agregar asignatura:", error);
     }
   };
+  
 
   // Actualizar asignatura (UPDATE)
   const handleEditAsignatura = async () => {
@@ -93,20 +92,22 @@ const Asignatura = () => {
       console.error("Error: La asignatura no tiene un ID");
       return;
     }
-
+  
     const asignaturaRef = doc(db, "asignaturas", asignaturaEditada.id);
-
+  
     try {
-      await updateDoc(asignaturaRef, asignaturaEditada);
+      await updateDoc(asignaturaRef, { ...asignaturaEditada });
       console.log("Asignatura actualizada correctamente");
-
-      // ACTUALIZAR LISTA SIN RECARGAR PÁGINA
-      setAsignaturas((prevAsignaturas) =>
-        prevAsignaturas.map((asig) =>
-          asig.id === asignaturaEditada.id ? asignaturaEditada : asig
-        )
-      );
-
+  
+      // 🚀 Vuelve a obtener todas las asignaturas después de actualizar
+      const querySnapshot = await getDocs(collection(db, "asignaturas"));
+      const asignaturasActualizadas = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      setAsignaturas(asignaturasActualizadas); // 🔥 Actualiza el estado global de asignaturas
+  
       setShowEditModal(false);
     } catch (error) {
       console.error("Error al actualizar la asignatura:", error);
@@ -159,13 +160,14 @@ const Asignatura = () => {
         openDeleteModal={openDeleteModal}
       />
 
-      <ModalEdicionAsignatura
-        showEditModal={showEditModal}
-        setShowEditModal={setShowEditModal}
-        asignaturaEditada={asignaturaEditada}
-        setAsignaturaEditada={setAsignaturaEditada}
-        setAsignaturas={setAsignaturas} // Pasar la función setAsignaturas
-      />
+<ModalEdicionAsignatura
+  showEditModal={showEditModal}
+  setShowEditModal={setShowEditModal}
+  asignaturaEditada={asignaturaEditada}
+  setAsignaturaEditada={setAsignaturaEditada}
+  handleEditAsignatura={handleEditAsignatura}  // 🚀 PASAR LA FUNCIÓN AQUÍ
+/>
+
       <ModalEliminacionAsignatura
         showDeleteModal={showDeleteModal}
         setShowDeleteModal={setShowDeleteModal}

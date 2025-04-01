@@ -6,6 +6,9 @@ const ModalEliminacionAsignatura = ({
   handleDeleteAsignatura,
   asignaturaAEliminar, // Asignatura que se eliminará
 }) => {
+
+
+  
   return (
     <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
       <Modal.Header closeButton>

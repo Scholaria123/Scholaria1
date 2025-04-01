@@ -66,6 +66,12 @@ const Encabezado = () => {
                 <strong>Estudiantes</strong>
               </Nav.Link>
 
+               {/* Nuevo enlace a la vista de estudiantes */}
+               <Nav.Link onClick={() => handleNavigate("/CatalogoCalificaciones")} className={isCollapsed ? "color-texto-marca" : "text-white"}>
+                {isCollapsed ? <i className="bi-people-fill me-2"></i> : null}
+                <strong>Asignatura</strong>
+              </Nav.Link>
+
               {isLoggedIn ? (
                 <Nav.Link onClick={handleLogout} className={isCollapsed ? "text-black" : "text-white"}>
                   Cerrar Sesión

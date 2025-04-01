@@ -21,8 +21,6 @@ const Estudiantes = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [nuevoEstudiante, setNuevoEstudiante] = useState({
     nombre: "",
-    grado: "",
-    grupo: "",
     direccion: "",
     telefono: "",
     imagen: "",
@@ -40,7 +38,7 @@ const Estudiantes = () => {
         ...doc.data(),
         id: doc.id,
       }));
-      console.log("Estudiantes obtenidos:", fetchedEstudiantes); // Para revisar los datos
+      console.log("Estudiantes obtenidos:", fetchedEstudiantes);
       setEstudiantes(fetchedEstudiantes);
     } catch (error) {
       console.error("Error al obtener los estudiantes:", error);
@@ -63,16 +61,15 @@ const Estudiantes = () => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      console.log("Imagen editada (base64):", reader.result); // Imprime la imagen base64 para depuración
+      console.log("Imagen editada (base64):", reader.result);
       setEstudianteEditado((prev) => ({
         ...prev,
-        imagen: reader.result,  // Asegúrate que la imagen se guarde en base64
+        imagen: reader.result,
       }));
     };
     if (file) reader.readAsDataURL(file);
   };
   
-
   // Manejo de cambios en la imagen (Base64)
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -80,7 +77,7 @@ const Estudiantes = () => {
     reader.onloadend = () => {
       setNuevoEstudiante((prev) => ({
         ...prev,
-        imagen: reader.result, // Se guarda la imagen como Base64
+        imagen: reader.result,
       }));
     };
     if (file) reader.readAsDataURL(file);
@@ -88,7 +85,6 @@ const Estudiantes = () => {
 
   // Modal de edición
   const openEditModal = (estudiante) => {
-    // Verifica que `estudiante` tenga los datos correctos
     if (!estudiante) {
       console.error("No se ha encontrado el estudiante.");
       return;
@@ -97,14 +93,13 @@ const Estudiantes = () => {
     setEstudianteEditado({
       id: estudiante.id,
       nombre: estudiante.nombre || "",
-      grado: estudiante.grado || "",
-      grupo: estudiante.grupo || "",
       direccion: estudiante.direccion || "",
       telefono: estudiante.telefono || "",
-      imagen: estudiante.imagen || "", // Puede estar vacío o null
+      imagen: estudiante.imagen || "",
     });
     setShowEditModal(true);
   };
+
   // Modal de eliminación
   const openDeleteModal = (estudiante) => {
     setEstudianteAEliminar(estudiante);
@@ -113,28 +108,24 @@ const Estudiantes = () => {
 
   // Agregar estudiante
   const handleAddEstudiante = async () => {
-    // Verifica los datos antes de intentar agregarlos
     console.log("Datos del nuevo estudiante:", JSON.stringify(nuevoEstudiante, null, 2));
   
-    if (!nuevoEstudiante.nombre?.trim() || !nuevoEstudiante.grado?.trim() || !nuevoEstudiante.grupo?.trim()) {
-      alert("Por favor, completa todos los campos obligatorios.");
+    if (!nuevoEstudiante.nombre?.trim()) {
+      alert("Por favor, completa el campo de nombre.");
       return;
     }
     try {
       await addDoc(estudiantesCollection, nuevoEstudiante);
       alert("Estudiante agregado correctamente.");
       setShowModal(false);
-      setNuevoEstudiante({ nombre: "", grado: "", grupo: "", direccion: "", telefono: "", imagen: "" });
+      setNuevoEstudiante({ nombre: "", direccion: "", telefono: "", imagen: "" });
       fetchEstudiantes();
     } catch (error) {
-      // Muestra el error completo en la consola para poder depurarlo
       console.error("Error al agregar estudiante:", error);
       alert("Error al agregar estudiante.");
     }
   };
   
-  
-
   // Manejo de cambios en los inputs de edición
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
@@ -143,11 +134,10 @@ const Estudiantes = () => {
       [name]: value,
     }));
   };
-
  
   const handleEditEstudiante = async () => {
-    if (!estudianteEditado || !estudianteEditado.nombre?.trim() || !estudianteEditado.grado?.trim() || !estudianteEditado.grupo?.trim()) {
-      alert("Por favor, completa todos los campos obligatorios.");
+    if (!estudianteEditado || !estudianteEditado.nombre?.trim()) {
+      alert("Por favor, completa el campo de nombre.");
       return;
     }
   
@@ -156,13 +146,10 @@ const Estudiantes = () => {
       
       const updateData = {
         nombre: estudianteEditado.nombre,
-        grado: estudianteEditado.grado,
-        grupo: estudianteEditado.grupo,
         direccion: estudianteEditado.direccion,
         telefono: estudianteEditado.telefono,
       };
   
-      // Solo actualiza la imagen si se ha cambiado
       if (estudianteEditado.imagen !== estudianteEditado.imagenOriginal) {
         updateData.imagen = estudianteEditado.imagen;
       }
@@ -177,8 +164,6 @@ const Estudiantes = () => {
     }
   };
   
-  
-
   // Eliminar estudiante
   const handleDeleteEstudiante = async () => {
     if (estudianteAEliminar) {
@@ -192,9 +177,6 @@ const Estudiantes = () => {
       }
     }
   };
-
-  
-  
 
   return (
     <Container className="mt-5">
@@ -216,15 +198,13 @@ const Estudiantes = () => {
         handleImageChange={handleImageChange}
         handleAddEstudiante={handleAddEstudiante}
       />
-    <ModalEdicionEstudiante
+      <ModalEdicionEstudiante
   showEditModal={showEditModal}
   setShowEditModal={setShowEditModal}
   estudianteEditado={estudianteEditado}
-  handleEditInputChange={handleEditInputChange}
-  handleEditImageChange={handleEditImageChange} // Asegúrate de pasar la función
-  handleEditEstudiante={handleEditEstudiante}
+  setEstudianteEditado={setEstudianteEditado} // <-- Asegúrate de que esto esté presente
+  fetchData={fetchEstudiantes} // <-- Para recargar los datos después de editar
 />
-
       <ModalEliminacionEstudiante
         showDeleteModal={showDeleteModal}
         setShowDeleteModal={setShowDeleteModal}

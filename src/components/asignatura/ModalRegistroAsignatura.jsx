@@ -4,9 +4,9 @@ import { Modal, Button, Form } from "react-bootstrap";
 const ModalRegistroAsignatura = ({
   showModal,
   setShowModal,
-  nuevaAsignatura = {}, // 👈 Evita 'undefined'
+  nuevaAsignatura = {},
   handleInputChange,
-  handleAddAsignatura,
+  handleAddAsignatura, // Esta viene de las props, no la redeclares
 }) => {
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -21,7 +21,7 @@ const ModalRegistroAsignatura = ({
               type="text"
               placeholder="Nombre de la asignatura"
               name="nombre"
-              value={nuevaAsignatura?.nombre || ''} // 👈 Usa ? para evitar errores
+              value={nuevaAsignatura?.nombre || ""}
               onChange={handleInputChange}
             />
           </Form.Group>
@@ -31,7 +31,7 @@ const ModalRegistroAsignatura = ({
               type="text"
               placeholder="Nombre del docente"
               name="docente"
-              value={nuevaAsignatura?.docente || ''}
+              value={nuevaAsignatura?.docente || ""}
               onChange={handleInputChange}
             />
           </Form.Group>
@@ -39,9 +39,9 @@ const ModalRegistroAsignatura = ({
             <Form.Label>Grado</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Grado de la asignatura"
+              placeholder="Grado"
               name="grado"
-              value={nuevaAsignatura?.grado || ''}
+              value={nuevaAsignatura?.grado || ""}
               onChange={handleInputChange}
             />
           </Form.Group>
@@ -49,29 +49,9 @@ const ModalRegistroAsignatura = ({
             <Form.Label>Grupo</Form.Label>
             <Form.Control
               type="text"
-              placeholder="Grupo de la asignatura"
+              placeholder="Grupo"
               name="grupo"
-              value={nuevaAsignatura?.grupo || ''}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="estudiante">
-            <Form.Label>Estudiante</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Nombre del estudiante"
-              name="estudiante"
-              value={nuevaAsignatura?.estudiante || ''}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
-          <Form.Group controlId="nota">
-            <Form.Label>Nota</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Nota de la asignatura"
-              name="nota"
-              value={nuevaAsignatura?.nota || ''}
+              value={nuevaAsignatura?.grupo || ""}
               onChange={handleInputChange}
             />
           </Form.Group>
