@@ -18,8 +18,8 @@ const TablaAsignaturas = ({ asignaturas, openEditModal, openDeleteModal }) => {
             <tr key={asignatura.id}>
               <td>{asignatura.nombre}</td>
               <td>{asignatura.docente}</td>
-              <td>{asignatura.grado}</td>
-              <td>{asignatura.grupo}</td>
+              <td>{Array.isArray(asignatura.grado) ? asignatura.grado.join(", ") : asignatura.grado}</td> 
+              <td>{Array.isArray(asignatura.grupo) ? asignatura.grupo.join(", ") : asignatura.grupo}</td>
               <td>
                 <button
                   className="btn btn-warning btn-sm me-2"

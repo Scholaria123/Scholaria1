@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig";
 import {
@@ -15,8 +15,30 @@ const ModalEdicionAsignatura = ({
   setShowEditModal,
   asignaturaEditada,
   setAsignaturaEditada,
-  handleEditAsignatura,  // ✅ Se usa la función pasada como prop
+  handleEditAsignatura,
 }) => {
+  const [grados, setGrados] = useState([]);
+  const [grupos, setGrupos] = useState([]);
+
+  useEffect(() => {
+    const fetchGradosYGrupos = async () => {
+      try {
+        const asignaturasCollection = collection(db, "asignaturas");
+        const asignaturasSnapshot = await getDocs(asignaturasCollection);
+        const asignaturasList = asignaturasSnapshot.docs.map((doc) => doc.data());
+
+        const gradosUnicos = [...new Set(asignaturasList.flatMap((a) => a.grado))];
+        const gruposUnicos = [...new Set(asignaturasList.flatMap((a) => a.grupo))];
+
+        setGrados(gradosUnicos);
+        setGrupos(gruposUnicos);
+      } catch (error) {
+        console.error("❌ Error al obtener grados y grupos:", error);
+      }
+    };
+
+    fetchGradosYGrupos();
+  }, []);
 
   if (!asignaturaEditada) return null;
 
@@ -59,24 +81,22 @@ const ModalEdicionAsignatura = ({
 
           <Form.Group controlId="grado">
             <Form.Label>Grado</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Grado"
-              name="grado"
-              value={asignaturaEditada.grado || ""}
-              onChange={handleInputChange}
-            />
+            <Form.Select name="grado" value={asignaturaEditada.grado || ""} onChange={handleInputChange}>
+              <option value="">Seleccione un grado</option>
+              {grados.map((grado, index) => (
+                <option key={index} value={grado}>{grado}</option>
+              ))}
+            </Form.Select>
           </Form.Group>
 
           <Form.Group controlId="grupo">
             <Form.Label>Grupo</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Grupo"
-              name="grupo"
-              value={asignaturaEditada.grupo || ""}
-              onChange={handleInputChange}
-            />
+            <Form.Select name="grupo" value={asignaturaEditada.grupo || ""} onChange={handleInputChange}>
+              <option value="">Seleccione un grupo</option>
+              {grupos.map((grupo, index) => (
+                <option key={index} value={grupo}>{grupo}</option>
+              ))}
+            </Form.Select>
           </Form.Group>
         </Form>
       </Modal.Body>

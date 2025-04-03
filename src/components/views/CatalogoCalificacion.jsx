@@ -56,7 +56,7 @@ const CatalogoCalificaciones = () => {
 
   return (
     <Container className="mt-5">
-      <h4>Catálogo de Asignatura</h4>
+      <h4>Catálogo de Estudiantes</h4>
       <Row>
         <Col lg={3} md={3} sm={6}>
           <Form.Group className="mb-3">

@@ -40,8 +40,9 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
         }));
 
         setAsignaturas(asignaturasList);
-        setGrados([...new Set(asignaturasList.map((a) => a.grado))]);
-        setGrupos([...new Set(asignaturasList.map((a) => a.grupo))]);
+        setGrados([...new Set(asignaturasList.flatMap((a) => a.grado))]);
+        setGrupos([...new Set(asignaturasList.flatMap((a) => a.grupo))]);
+        
       } catch (error) {
         console.error("❌ Error al obtener asignaturas:", error);
       }

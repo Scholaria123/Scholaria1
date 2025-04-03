@@ -6,8 +6,22 @@ const ModalRegistroAsignatura = ({
   setShowModal,
   nuevaAsignatura = {},
   handleInputChange,
-  handleAddAsignatura, // Esta viene de las props, no la redeclares
+  handleAddAsignatura,
 }) => {
+  // Opciones de grados y grupos predefinidas (puedes cambiarlas si quieres)
+  const opcionesGrados = ["1ro", "2do", "3ro", "4to", "5to", "6to"];
+  const opcionesGrupos = ["a", "b"];
+
+  // Función para manejar cambios en los selectores múltiples
+  const handleMultiSelectChange = (event) => {
+    const { name, options } = event.target;
+    const selectedValues = Array.from(options)
+      .filter((option) => option.selected)
+      .map((option) => option.value);
+
+    handleInputChange({ target: { name, value: selectedValues } });
+  };
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
@@ -35,25 +49,39 @@ const ModalRegistroAsignatura = ({
               onChange={handleInputChange}
             />
           </Form.Group>
+          {/* Selector múltiple de Grados */}
           <Form.Group controlId="grado">
-            <Form.Label>Grado</Form.Label>
+            <Form.Label>Grado(s)</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Grado"
+              as="select"
+              multiple
               name="grado"
-              value={nuevaAsignatura?.grado || ""}
-              onChange={handleInputChange}
-            />
+              value={nuevaAsignatura?.grado || []}
+              onChange={handleMultiSelectChange}
+            >
+              {opcionesGrados.map((grado) => (
+                <option key={grado} value={grado}>
+                  {grado}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
+          {/* Selector múltiple de Grupos */}
           <Form.Group controlId="grupo">
-            <Form.Label>Grupo</Form.Label>
+            <Form.Label>Grupo(s)</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Grupo"
+              as="select"
+              multiple
               name="grupo"
-              value={nuevaAsignatura?.grupo || ""}
-              onChange={handleInputChange}
-            />
+              value={nuevaAsignatura?.grupo || []}
+              onChange={handleMultiSelectChange}
+            >
+              {opcionesGrupos.map((grupo) => (
+                <option key={grupo} value={grupo}>
+                  {grupo}
+                </option>
+              ))}
+            </Form.Control>
           </Form.Group>
         </Form>
       </Modal.Body>

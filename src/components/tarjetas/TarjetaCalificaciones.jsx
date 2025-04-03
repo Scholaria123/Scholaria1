@@ -10,8 +10,8 @@ const TarjetaCalificaciones = ({ estudiante }) => {
         <Card.Body>
           <Card.Title>{estudiante.nombre}</Card.Title>
           <Card.Text>
-  Grado: {estudiante.grado} <br />
-  Grupo: {estudiante.grupo} <br />
+           Grado: {estudiante.grado} <br />
+           Grupo: {estudiante.grupo} <br />
 </Card.Text>
 
         </Card.Body>
