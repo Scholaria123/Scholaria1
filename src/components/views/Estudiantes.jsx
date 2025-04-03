@@ -38,13 +38,12 @@ const Estudiantes = () => {
         ...doc.data(),
         id: doc.id,
       }));
-      console.log("Estudiantes obtenidos:", fetchedEstudiantes);
       setEstudiantes(fetchedEstudiantes);
     } catch (error) {
       console.error("Error al obtener los estudiantes:", error);
     }
   };
-  
+
   useEffect(() => {
     fetchEstudiantes();
   }, []);
@@ -107,9 +106,8 @@ const Estudiantes = () => {
   };
 
   // Agregar estudiante
-  const handleAddEstudiante = async () => {
-    console.log("Datos del nuevo estudiante:", JSON.stringify(nuevoEstudiante, null, 2));
-  
+   // Agregar estudiante y actualizar la lista automáticamente
+   const handleAddEstudiante = async () => {
     if (!nuevoEstudiante.nombre?.trim()) {
       alert("Por favor, completa el campo de nombre.");
       return;
@@ -119,12 +117,13 @@ const Estudiantes = () => {
       alert("Estudiante agregado correctamente.");
       setShowModal(false);
       setNuevoEstudiante({ nombre: "", direccion: "", telefono: "", imagen: "" });
-      fetchEstudiantes();
+      fetchEstudiantes(); // Recarga automática de la lista
     } catch (error) {
       console.error("Error al agregar estudiante:", error);
       alert("Error al agregar estudiante.");
     }
   };
+
   
   // Manejo de cambios en los inputs de edición
   const handleEditInputChange = (e) => {
@@ -193,6 +192,7 @@ const Estudiantes = () => {
       <ModalRegistroEstudiante
         showModal={showModal}
         setShowModal={setShowModal}
+        fetchEstudiantes={fetchEstudiantes}
         nuevoEstudiante={nuevoEstudiante}
         handleInputChange={handleInputChange}
         handleImageChange={handleImageChange}

@@ -7,12 +7,13 @@ const ModalEdicionEstudiante = ({
   showEditModal,
   setShowEditModal,
   estudianteEditado,
-  setEstudianteEditado, // ✅ Verificamos que esta función exista
-  fetchData, // ✅ Función para actualizar la lista después de editar
+  setEstudianteEditado,
+  fetchData,
 }) => {
   const [asignaturas, setAsignaturas] = useState([]);
   const [grados, setGrados] = useState([]);
   const [grupos, setGrupos] = useState([]);
+  const [imagenBase64, setImagenBase64] = useState("");
 
   useEffect(() => {
     const fetchAsignaturas = async () => {
@@ -39,11 +40,27 @@ const ModalEdicionEstudiante = ({
     fetchAsignaturas();
   }, []);
 
-  if (!estudianteEditado) return null; // ✅ Previene errores si `estudianteEditado` es `null`
+  if (!estudianteEditado) return null;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setEstudianteEditado((prev) => ({ ...prev, [name]: value })); // ✅ Ahora sí se ejecuta correctamente
+    setEstudianteEditado((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleAsignaturaChange = (e) => {
+    const selectedAsignaturas = Array.from(e.target.selectedOptions, (option) => option.value);
+    setEstudianteEditado((prev) => ({ ...prev, asignaturaId: selectedAsignaturas }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagenBase64(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSaveChanges = async () => {
@@ -51,25 +68,21 @@ const ModalEdicionEstudiante = ({
       console.error("❌ No hay ID del estudiante para actualizar.");
       return;
     }
-  
+
     try {
       const estudianteRef = doc(db, "estudiantes", estudianteEditado.id);
-  
-      // Crear objeto de actualización solo con los valores definidos
-      const updateData = Object.fromEntries(
-        Object.entries(estudianteEditado).filter(([_, value]) => value !== undefined && value !== "")
-      );
-  
+      const updateData = {
+        ...estudianteEditado,
+        imagen: imagenBase64 || estudianteEditado.imagen,
+      };
       await updateDoc(estudianteRef, updateData);
-  
       console.log("✅ Estudiante actualizado correctamente");
-      fetchData(); // Recargar lista después de editar
+      fetchData();
       setShowEditModal(false);
     } catch (error) {
       console.error("❌ Error al actualizar estudiante:", error);
     }
   };
-  
 
   return (
     <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
@@ -109,15 +122,22 @@ const ModalEdicionEstudiante = ({
           </Form.Group>
 
           <Form.Group controlId="asignatura">
-            <Form.Label>Asignatura</Form.Label>
-            <Form.Select name="asignaturaId" value={estudianteEditado.asignaturaId || ""} onChange={handleInputChange}>
-              <option value="">Seleccione una asignatura</option>
+            <Form.Label>Asignaturas</Form.Label>
+            <Form.Select name="asignaturaId" multiple value={estudianteEditado.asignaturaId || []} onChange={handleAsignaturaChange}>
               {asignaturas.map((asignatura) => (
                 <option key={asignatura.id} value={asignatura.id}>
                   {asignatura.nombre}
                 </option>
               ))}
             </Form.Select>
+            <Form.Text className="text-muted">
+              Mantén presionada la tecla Ctrl (Windows) o Cmd (Mac) para seleccionar varias asignaturas.
+            </Form.Text>
+          </Form.Group>
+
+          <Form.Group controlId="imagen">
+            <Form.Label>Imagen</Form.Label>
+            <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
           </Form.Group>
         </Form>
       </Modal.Body>
@@ -133,4 +153,4 @@ const ModalEdicionEstudiante = ({
   );
 };
 
-export default ModalEdicionEstudiante;
+export default ModalEdicionEstudiante;  
