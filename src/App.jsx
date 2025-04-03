@@ -8,6 +8,7 @@ import Estudiantes from "./components/views/Estudiantes"  // Asegúrate de que e
 import Asignaturas from "./components/views/Asignatura";  // Se corrigió la importación
 import CatalogoEstudiantes from "./components/views/CatalogoEstudiantes";
 import CatalogoCalificaciones from "./components/views/CatalogoCalificacion";
+import Asistencia from "./components/views/Asistencia";
 
 import './App.css';
 
@@ -32,6 +33,8 @@ function App() {
 
               {/* Ruta de Asignaturas protegida */}
               <Route path="/Asignatura" element={<ProtectedRoute><Asignaturas /></ProtectedRoute>} />
+
+              <Route path="/Asistencia" element={<ProtectedRoute><Asistencia /></ProtectedRoute>} />
 
               <Route path="/CatalogoEstudiantes" element={<ProtectedRoute><CatalogoEstudiantes /></ProtectedRoute>} />
 
