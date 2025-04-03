@@ -2,6 +2,17 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig"; // Importa la configuración de Firebase
 import { collection, getDocs } from "firebase/firestore";
+import ReactGA from "react-ga4";
+
+// Inicialización de ReactGA con el ID de seguimiento
+ReactGA.initialize([
+  {
+    trackingId: "G-T4JNY83CWB", // Reemplaza con tu ID de seguimiento
+    gaOptions: {
+      siteSpeedSampleRate: 100,
+    },
+  },
+]);
 
 const ModalRegistroEstudiante = ({
   showModal,
@@ -26,7 +37,7 @@ const ModalRegistroEstudiante = ({
 
         const uniqueGrados = [...new Set(asignaturasList.map((a) => a.grado))];
         const uniqueGrupos = [...new Set(asignaturasList.map((a) => a.grupo))];
-        
+
         setGrados(uniqueGrados);
         setGrupos(uniqueGrupos);
       } catch (error) {
@@ -36,6 +47,22 @@ const ModalRegistroEstudiante = ({
 
     fetchAsignaturas();
   }, []);
+
+  // Función para rastrear el registro de estudiantes en Google Analytics
+  const trackStudentRegistration = () => {
+    ReactGA.event({
+      category: "Estudiantes",
+      action: "Registro de Estudiante",
+      label: nuevoEstudiante.nombre,
+      value: nuevoEstudiante.grado ? parseInt(nuevoEstudiante.grado, 10) : 0,
+    });
+  };
+
+  // Modificar handleAddEstudiante para incluir el tracking
+  const handleAddEstudianteWithTracking = () => {
+    handleAddEstudiante();
+    trackStudentRegistration();
+  };
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -135,7 +162,7 @@ const ModalRegistroEstudiante = ({
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           Cerrar
         </Button>
-        <Button variant="primary" onClick={handleAddEstudiante}>
+        <Button variant="primary" onClick={handleAddEstudianteWithTracking}>
           Guardar
         </Button>
       </Modal.Footer>
@@ -144,4 +171,3 @@ const ModalRegistroEstudiante = ({
 };
 
 export default ModalRegistroEstudiante;
-
