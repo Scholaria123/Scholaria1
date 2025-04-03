@@ -9,6 +9,8 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import ReactGA from "react-ga4"; // Importa Google Analytics
+
 import TablaEstudiantes from "../estudiantes/TablaEstudiantes";
 import ModalRegistroEstudiante from "../estudiantes/ModalRegistroEstudiantes";
 import ModalEdicionEstudiante from "../estudiantes/ModalEdicionEstudiantes";
@@ -55,6 +57,9 @@ const Estudiantes = () => {
       [name]: value,
     }));
   };
+
+  // Inicialización de Google Analytics
+  ReactGA.initialize("G-T4JNY83CWB"); // Reemplaza con tu ID de seguimiento
 
   const handleFilterChange = (e) => {
     setFiltro(e.target.value);
@@ -112,6 +117,15 @@ const Estudiantes = () => {
     }
     try {
       await addDoc(estudiantesCollection, nuevoEstudiante);
+
+      // Enviar evento a Google Analytics
+      ReactGA.event({
+        category: "Estudiantes",
+        action: "Registro de Estudiante",
+        label: nuevoEstudiante.nombre,
+        value: 1, // Puedes ajustar esto según sea necesario
+      });
+
       alert("Estudiante agregado correctamente.");
       setShowModal(false);
       setNuevoEstudiante({ nombre: "", direccion: "", telefono: "", imagen: "" });
@@ -150,6 +164,15 @@ const Estudiantes = () => {
       }
 
       await updateDoc(estudianteRef, updateData);
+
+      // Enviar evento de edición a Google Analytics
+      ReactGA.event({
+        category: "Estudiantes",
+        action: "Edición de Estudiante",
+        label: estudianteEditado.nombre,
+        value: 1,
+      });
+
       setShowEditModal(false);
       fetchEstudiantes();
       alert("Estudiante actualizado correctamente.");
@@ -164,6 +187,15 @@ const Estudiantes = () => {
       try {
         const estudianteRef = doc(db, "estudiantes", estudianteAEliminar.id);
         await deleteDoc(estudianteRef);
+
+        // Enviar evento de eliminación a Google Analytics
+        ReactGA.event({
+          category: "Estudiantes",
+          action: "Eliminación de Estudiante",
+          label: estudianteAEliminar.nombre,
+          value: 1,
+        });
+
         setShowDeleteModal(false);
         fetchEstudiantes();
       } catch (error) {

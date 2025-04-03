@@ -9,6 +9,7 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
+import ReactGA from "react-ga4";
 
 // Importaciones de componentes personalizados
 import TablaAsignaturas from "../asignatura/TablaAsignatura";
@@ -37,6 +38,9 @@ const Asignatura = () => {
   const [asignaturaAEliminar, setAsignaturaAEliminar] = useState(null);
 
   const asignaturasCollection = collection(db, "asignaturas");
+
+  // Inicialización de Google Analytics
+  ReactGA.initialize("G-T4JNY83CWB"); // Reemplaza con tu ID de seguimiento
 
   // Obtener asignaturas de Firestore
   const fetchAsignaturas = async () => {
@@ -82,6 +86,14 @@ const Asignatura = () => {
       ]);
       setShowModal(false);
       setNuevaAsignatura({ nombre: "", docente: "", grado: "", grupo: "" });
+      
+      // Evento de Google Analytics para agregar asignatura
+      ReactGA.event({
+        category: "Asignaturas",
+        action: "Agregar Asignatura",
+        label: nuevaAsignatura.nombre,
+      });
+
     } catch (error) {
       console.error("Error al agregar asignatura:", error);
     }
@@ -96,6 +108,14 @@ const Asignatura = () => {
       await updateDoc(asignaturaRef, { ...asignaturaEditada });
       fetchAsignaturas();
       setShowEditModal(false);
+      
+      // Evento de Google Analytics para editar asignatura
+      ReactGA.event({
+        category: "Asignaturas",
+        action: "Editar Asignatura",
+        label: asignaturaEditada.nombre,
+      });
+
     } catch (error) {
       console.error("Error al actualizar la asignatura:", error);
     }
@@ -109,6 +129,14 @@ const Asignatura = () => {
         await deleteDoc(asignaturaRef);
         fetchAsignaturas();
         setShowDeleteModal(false);
+        
+        // Evento de Google Analytics para eliminar asignatura
+        ReactGA.event({
+          category: "Asignaturas",
+          action: "Eliminar Asignatura",
+          label: asignaturaAEliminar.nombre,
+        });
+
       } catch (error) {
         console.error("Error al eliminar la asignatura:", error);
       }
