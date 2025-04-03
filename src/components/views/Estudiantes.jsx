@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Form } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig";
 import {
   collection,
@@ -16,6 +16,7 @@ import ModalEliminacionEstudiante from "../estudiantes/ModalEliminacionEstudiant
 
 const Estudiantes = () => {
   const [estudiantes, setEstudiantes] = useState([]);
+  const [filtro, setFiltro] = useState(""); // Estado para el término de búsqueda
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -30,7 +31,6 @@ const Estudiantes = () => {
 
   const estudiantesCollection = collection(db, "estudiantes");
 
-  // Obtener estudiantes
   const fetchEstudiantes = async () => {
     try {
       const data = await getDocs(estudiantesCollection);
@@ -48,7 +48,6 @@ const Estudiantes = () => {
     fetchEstudiantes();
   }, []);
 
-  // Manejo de cambios en los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNuevoEstudiante((prev) => ({
@@ -56,11 +55,15 @@ const Estudiantes = () => {
       [name]: value,
     }));
   };
+
+  const handleFilterChange = (e) => {
+    setFiltro(e.target.value);
+  };
+
   const handleEditImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
     reader.onloadend = () => {
-      console.log("Imagen editada (base64):", reader.result);
       setEstudianteEditado((prev) => ({
         ...prev,
         imagen: reader.result,
@@ -68,8 +71,7 @@ const Estudiantes = () => {
     };
     if (file) reader.readAsDataURL(file);
   };
-  
-  // Manejo de cambios en la imagen (Base64)
+
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     const reader = new FileReader();
@@ -82,13 +84,12 @@ const Estudiantes = () => {
     if (file) reader.readAsDataURL(file);
   };
 
-  // Modal de edición
   const openEditModal = (estudiante) => {
     if (!estudiante) {
       console.error("No se ha encontrado el estudiante.");
       return;
     }
-  
+
     setEstudianteEditado({
       id: estudiante.id,
       nombre: estudiante.nombre || "",
@@ -99,15 +100,12 @@ const Estudiantes = () => {
     setShowEditModal(true);
   };
 
-  // Modal de eliminación
   const openDeleteModal = (estudiante) => {
     setEstudianteAEliminar(estudiante);
     setShowDeleteModal(true);
   };
 
-  // Agregar estudiante
-   // Agregar estudiante y actualizar la lista automáticamente
-   const handleAddEstudiante = async () => {
+  const handleAddEstudiante = async () => {
     if (!nuevoEstudiante.nombre?.trim()) {
       alert("Por favor, completa el campo de nombre.");
       return;
@@ -117,15 +115,13 @@ const Estudiantes = () => {
       alert("Estudiante agregado correctamente.");
       setShowModal(false);
       setNuevoEstudiante({ nombre: "", direccion: "", telefono: "", imagen: "" });
-      fetchEstudiantes(); // Recarga automática de la lista
+      fetchEstudiantes();
     } catch (error) {
       console.error("Error al agregar estudiante:", error);
       alert("Error al agregar estudiante.");
     }
   };
 
-  
-  // Manejo de cambios en los inputs de edición
   const handleEditInputChange = (e) => {
     const { name, value } = e.target;
     setEstudianteEditado((prev) => ({
@@ -133,13 +129,13 @@ const Estudiantes = () => {
       [name]: value,
     }));
   };
- 
+
   const handleEditEstudiante = async () => {
     if (!estudianteEditado || !estudianteEditado.nombre?.trim()) {
       alert("Por favor, completa el campo de nombre.");
       return;
     }
-  
+
     try {
       const estudianteRef = doc(db, "estudiantes", estudianteEditado.id);
       
@@ -148,11 +144,11 @@ const Estudiantes = () => {
         direccion: estudianteEditado.direccion,
         telefono: estudianteEditado.telefono,
       };
-  
+
       if (estudianteEditado.imagen !== estudianteEditado.imagenOriginal) {
         updateData.imagen = estudianteEditado.imagen;
       }
-  
+
       await updateDoc(estudianteRef, updateData);
       setShowEditModal(false);
       fetchEstudiantes();
@@ -162,8 +158,7 @@ const Estudiantes = () => {
       alert("Error al actualizar el estudiante.");
     }
   };
-  
-  // Eliminar estudiante
+
   const handleDeleteEstudiante = async () => {
     if (estudianteAEliminar) {
       try {
@@ -177,15 +172,29 @@ const Estudiantes = () => {
     }
   };
 
+  // Filtrar estudiantes según el término de búsqueda
+  const estudiantesFiltrados = estudiantes.filter((estudiante) =>
+    ["nombre", "direccion", "telefono"].some((campo) =>
+      estudiante[campo]?.toLowerCase().includes(filtro.toLowerCase())
+    )
+  );
+
   return (
     <Container className="mt-5">
       <br />
       <h4>Gestión de Estudiantes</h4>
+      <Form.Control
+        type="text"
+        placeholder="Buscar"
+        value={filtro}
+        onChange={handleFilterChange}
+        className="mb-3"
+      />
       <Button className="mb-3" onClick={() => setShowModal(true)}>
         Agregar estudiante
       </Button>
       <TablaEstudiantes
-        estudiantes={estudiantes}
+        estudiantes={estudiantesFiltrados}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
       />
@@ -199,12 +208,12 @@ const Estudiantes = () => {
         handleAddEstudiante={handleAddEstudiante}
       />
       <ModalEdicionEstudiante
-  showEditModal={showEditModal}
-  setShowEditModal={setShowEditModal}
-  estudianteEditado={estudianteEditado}
-  setEstudianteEditado={setEstudianteEditado} // <-- Asegúrate de que esto esté presente
-  fetchData={fetchEstudiantes} // <-- Para recargar los datos después de editar
-/>
+        showEditModal={showEditModal}
+        setShowEditModal={setShowEditModal}
+        estudianteEditado={estudianteEditado}
+        setEstudianteEditado={setEstudianteEditado}
+        fetchData={fetchEstudiantes}
+      />
       <ModalEliminacionEstudiante
         showDeleteModal={showDeleteModal}
         setShowDeleteModal={setShowDeleteModal}

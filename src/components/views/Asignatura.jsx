@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Button } from "react-bootstrap";
+import { Container, Button, Form } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig";
 import {
   collection,
@@ -16,19 +16,23 @@ import ModalRegistroAsignatura from "../asignatura/ModalRegistroAsignatura";
 import ModalEdicionAsignatura from "../asignatura/ModalEdicionAsignatura";
 import ModalEliminacionAsignatura from "../asignatura/ModalEliminacionAsignatura";
 
-
 const Asignatura = () => {
   const [asignaturas, setAsignaturas] = useState([]);
+  const [filtro, setFiltro] = useState(""); // Estado para la búsqueda
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [nuevaAsignatura, setNuevaAsignatura] = useState({
     nombre: '',
     docente: '',
+    grado: '',
+    grupo: '',
   });
   const [asignaturaEditada, setAsignaturaEditada] = useState({
     nombre: "",
     docente: "",
+    grado: "",
+    grupo: "",
   });
   const [asignaturaAEliminar, setAsignaturaAEliminar] = useState(null);
 
@@ -36,7 +40,7 @@ const Asignatura = () => {
 
   // Obtener asignaturas de Firestore
   const fetchAsignaturas = async () => {
-    const querySnapshot = await getDocs(collection(db, "asignaturas"));
+    const querySnapshot = await getDocs(asignaturasCollection);
     const asignaturasArray = querySnapshot.docs.map((doc) => ({
       id: doc.id,
       ...doc.data(),
@@ -45,15 +49,10 @@ const Asignatura = () => {
   };
 
   useEffect(() => {
-    const fetchAsignaturas = async () => {
-      const querySnapshot = await getDocs(collection(db, "asignaturas"));
-      setAsignaturas(querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
-    };
-  
     fetchAsignaturas();
   }, []);
 
-  // Manejador de cambios en los inputs para la nueva asignatura
+  // Manejador de cambios en los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNuevaAsignatura((prevState) => ({
@@ -62,111 +61,102 @@ const Asignatura = () => {
     }));
   };
 
-  // Agregar nueva asignatura (CREATE)
+  // Manejador de la búsqueda
+  const handleFiltroChange = (e) => {
+    setFiltro(e.target.value);
+  };
+
+  // Filtrar asignaturas por nombre y docente
+  const asignaturasFiltradas = asignaturas.filter((asignatura) =>
+    (asignatura.nombre && asignatura.nombre.toLowerCase().includes(filtro.toLowerCase())) ||
+    (asignatura.docente && asignatura.docente.toLowerCase().includes(filtro.toLowerCase()))
+  );
+
+  // Agregar nueva asignatura
   const handleAddAsignatura = async () => {
     try {
-      const docRef = await addDoc(collection(db, "asignaturas"), nuevaAsignatura);
-      console.log("Asignatura agregada correctamente");
-  
-      // Después de agregar, actualiza el estado para incluir la nueva asignatura
+      const docRef = await addDoc(asignaturasCollection, nuevaAsignatura);
       setAsignaturas((prevState) => [
         ...prevState,
-        { ...nuevaAsignatura, id: docRef.id },  // Incluye el ID generado en Firestore
+        { ...nuevaAsignatura, id: docRef.id },
       ]);
-  
-      // Cierra el modal y limpia los campos
       setShowModal(false);
-      setNuevaAsignatura({
-        nombre: "",
-        docente: "",
-      });
+      setNuevaAsignatura({ nombre: "", docente: "", grado: "", grupo: "" });
     } catch (error) {
       console.error("Error al agregar asignatura:", error);
     }
   };
-  
 
-  // Actualizar asignatura (UPDATE)
+  // Actualizar asignatura
   const handleEditAsignatura = async () => {
-    if (!asignaturaEditada.id) {
-      console.error("Error: La asignatura no tiene un ID");
-      return;
-    }
-  
-    const asignaturaRef = doc(db, "asignaturas", asignaturaEditada.id);
-  
+    if (!asignaturaEditada.id) return;
+
     try {
+      const asignaturaRef = doc(db, "asignaturas", asignaturaEditada.id);
       await updateDoc(asignaturaRef, { ...asignaturaEditada });
-      console.log("Asignatura actualizada correctamente");
-  
-      // 🚀 Vuelve a obtener todas las asignaturas después de actualizar
-      const querySnapshot = await getDocs(collection(db, "asignaturas"));
-      const asignaturasActualizadas = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-  
-      setAsignaturas(asignaturasActualizadas); // 🔥 Actualiza el estado global de asignaturas
-  
+      fetchAsignaturas();
       setShowEditModal(false);
     } catch (error) {
       console.error("Error al actualizar la asignatura:", error);
     }
   };
 
-  // Eliminar asignatura (DELETE)
+  // Eliminar asignatura
   const handleDeleteAsignatura = async () => {
     if (asignaturaAEliminar) {
       try {
         const asignaturaRef = doc(db, "asignaturas", asignaturaAEliminar.id);
         await deleteDoc(asignaturaRef);
+        fetchAsignaturas();
         setShowDeleteModal(false);
-        await fetchAsignaturas();
       } catch (error) {
         console.error("Error al eliminar la asignatura:", error);
       }
     }
   };
 
-  const openEditModal = (asignatura) => {
-    setAsignaturaEditada(asignatura);
-    setShowEditModal(true);
-  };
-
-  const openDeleteModal = (asignatura) => {
-    setAsignaturaAEliminar(asignatura);
-    setShowDeleteModal(true);
-  };
-
   return (
     <Container className="mt-5">
       <h4>Gestión de Asignaturas</h4>
-      <div>
-        <Button onClick={() => setShowModal(true)}>Agregar Asignatura</Button>
-        
-        {/* Modal de Registro */}
-        <ModalRegistroAsignatura
-          showModal={showModal}
-          setShowModal={setShowModal}
-          nuevaAsignatura={nuevaAsignatura}
-          handleInputChange={handleInputChange}
-          handleAddAsignatura={handleAddAsignatura}
-        />
-      </div>
-
-      <TablaAsignaturas
-        asignaturas={asignaturas}
-        openEditModal={openEditModal}
-        openDeleteModal={openDeleteModal}
+      
+      {/* Campo de búsqueda */}
+      <Form.Control
+        type="text"
+        placeholder="Buscar"
+        value={filtro}
+        onChange={handleFiltroChange}
+        className="mb-3"
       />
 
-<ModalEdicionAsignatura
-  showEditModal={showEditModal}
-  setShowEditModal={setShowEditModal}
-  asignaturaEditada={asignaturaEditada}
-  setAsignaturaEditada={setAsignaturaEditada}
-  handleEditAsignatura={handleEditAsignatura}  // 🚀 PASAR LA FUNCIÓN AQUÍ
-/>
+      <Button onClick={() => setShowModal(true)}>Agregar Asignatura</Button>
+
+      <TablaAsignaturas
+        asignaturas={asignaturasFiltradas}
+        openEditModal={(asignatura) => {
+          setAsignaturaEditada(asignatura);
+          setShowEditModal(true);
+        }}
+        openDeleteModal={(asignatura) => {
+          setAsignaturaAEliminar(asignatura);
+          setShowDeleteModal(true);
+        }}
+      />
+
+      <ModalRegistroAsignatura
+        showModal={showModal}
+        setShowModal={setShowModal}
+        nuevaAsignatura={nuevaAsignatura}
+        handleInputChange={handleInputChange}
+        handleAddAsignatura={handleAddAsignatura}
+      />
+
+      <ModalEdicionAsignatura
+        showEditModal={showEditModal}
+        setShowEditModal={setShowEditModal}
+        asignaturaEditada={asignaturaEditada}
+        setAsignaturaEditada={setAsignaturaEditada}
+        handleEditAsignatura={handleEditAsignatura}
+      />
 
       <ModalEliminacionAsignatura
         showDeleteModal={showDeleteModal}
