@@ -27,8 +27,8 @@ const ModalEdicionAsignatura = ({
         const asignaturasSnapshot = await getDocs(asignaturasCollection);
         const asignaturasList = asignaturasSnapshot.docs.map((doc) => doc.data());
 
-        const gradosUnicos = [...new Set(asignaturasList.flatMap((a) => a.grado))];
-        const gruposUnicos = [...new Set(asignaturasList.flatMap((a) => a.grupo))];
+        const gradosUnicos = [...new Set(asignaturasList.flatMap((a) => a.grado || []))];
+        const gruposUnicos = [...new Set(asignaturasList.flatMap((a) => a.grupo || []))];
 
         setGrados(gradosUnicos);
         setGrupos(gruposUnicos);
@@ -42,11 +42,15 @@ const ModalEdicionAsignatura = ({
 
   if (!asignaturaEditada) return null;
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
+  const handleMultiSelectChange = (e) => {
+    const { name, options } = e.target;
+    const selectedValues = Array.from(options)
+      .filter((option) => option.selected)
+      .map((option) => option.value);
+
     setAsignaturaEditada((prevState) => ({
       ...prevState,
-      [name]: value,
+      [name]: selectedValues,
     }));
   };
 
@@ -64,7 +68,7 @@ const ModalEdicionAsignatura = ({
               placeholder="Nombre de la asignatura"
               name="nombre"
               value={asignaturaEditada.nombre || ""}
-              onChange={handleInputChange}
+              onChange={(e) => setAsignaturaEditada({ ...asignaturaEditada, nombre: e.target.value })}
             />
           </Form.Group>
 
@@ -75,28 +79,38 @@ const ModalEdicionAsignatura = ({
               placeholder="Nombre del docente"
               name="docente"
               value={asignaturaEditada.docente || ""}
-              onChange={handleInputChange}
+              onChange={(e) => setAsignaturaEditada({ ...asignaturaEditada, docente: e.target.value })}
             />
           </Form.Group>
 
           <Form.Group controlId="grado">
             <Form.Label>Grado</Form.Label>
-            <Form.Select name="grado" value={asignaturaEditada.grado || ""} onChange={handleInputChange}>
-              <option value="">Seleccione un grado</option>
+            <Form.Control
+              as="select"
+              multiple
+              name="grado"
+              value={asignaturaEditada.grado || []}
+              onChange={handleMultiSelectChange}
+            >
               {grados.map((grado, index) => (
                 <option key={index} value={grado}>{grado}</option>
               ))}
-            </Form.Select>
+            </Form.Control>
           </Form.Group>
 
           <Form.Group controlId="grupo">
             <Form.Label>Grupo</Form.Label>
-            <Form.Select name="grupo" value={asignaturaEditada.grupo || ""} onChange={handleInputChange}>
-              <option value="">Seleccione un grupo</option>
+            <Form.Control
+              as="select"
+              multiple
+              name="grupo"
+              value={asignaturaEditada.grupo || []}
+              onChange={handleMultiSelectChange}
+            >
               {grupos.map((grupo, index) => (
                 <option key={index} value={grupo}>{grupo}</option>
               ))}
-            </Form.Select>
+            </Form.Control>
           </Form.Group>
         </Form>
       </Modal.Body>
