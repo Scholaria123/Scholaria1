@@ -8,6 +8,7 @@ import Estudiantes from "./components/views/Estudiantes"  // Asegúrate de que e
 import Asignaturas from "./components/views/Asignatura";  // Se corrigió la importación
 import CatalogoCalificaciones from "./components/views/CatalogoCalificacion";
 import Asistencia from "./components/views/Asistencia";
+import CalendarioEventos from "./components/views/CalendarioEventos";
 
 import './App.css';
 
@@ -36,6 +37,8 @@ function App() {
               <Route path="/Asistencia" element={<ProtectedRoute><Asistencia /></ProtectedRoute>} />
 
               <Route path="/CatalogoCalificaciones" element={<ProtectedRoute><CatalogoCalificaciones /></ProtectedRoute>} />
+
+              <Route path="/Calendario" element={<ProtectedRoute><CalendarioEventos /></ProtectedRoute>} />
 
               {/* Ruta de error 404 */}
               <Route path="*" element={<h1>Página no encontrada</h1>} />

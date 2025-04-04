@@ -1,0 +1,118 @@
+.calendario-container {
+    max-width: 450px;
+    margin: auto;
+    text-align: center;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.react-calendar {
+    width: 100%;
+    max-width: 100%;
+    background: skyblue;
+    border: none;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.react-calendar__tile {
+    padding: 10px;
+    text-align: center;
+    font-size: 1rem;
+}
+
+.react-calendar__tile:disabled {
+    background: #f0f0f0;
+    color: #d0d0d0;
+}
+
+.react-calendar__tile--active {
+    background: #007bff !important;
+    color: white;
+    border-radius: 50%;
+}
+
+.react-calendar__tile--now {
+    background: #ffcc00 !important;
+    border-radius: 50%;
+}
+
+/* Colores para eventos */
+.evento-examen {
+    background-color: #ffcc00 !important;
+    color: black !important;
+    font-weight: bold;
+    border-radius: 1%;
+}
+
+.evento-reunion {
+    background-color: #2489f5 !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 1%;
+}
+
+.evento-festividad {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 1%;
+}
+
+/* Botones */
+button {
+    padding: 8px 12px;
+    margin: 5px;
+    border: none;
+    border-radius: 5px;
+    background: #007bff;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #0056b3;
+}
+
+/* Estilos para los tipos de eventos */
+.tipo-evento-container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 10px 0;
+}
+
+.btn-examen {
+    background: #f9ed05;
+    color: black;
+}
+
+.btn-reunion {
+    background: #6c60b5;
+}
+
+.btn-festividad {
+    background: #28a745;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+li {
+    background: #fff;
+    margin: 5px 0;
+    padding: 8px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li button {
+    background: #70dbff;
+}
