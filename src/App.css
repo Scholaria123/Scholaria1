@@ -1,8 +1,72 @@
+/* NAVBAR principal */
 .color-navbar {
-    background-color: #0093E9 !important;
-    background-image: linear-gradient(90deg, #0093E9 0%, #80D0C7 100%);
-  }
-  
-  .color-texto-marca {
-    color: #1e3d87 !important;
-  }
+  background-color: #0c0453 !important;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  z-index: 1050;
+}
+
+/* Texto destacado de marca */
+.color-texto-marca {
+  color: #1e3d87 !important;
+}
+
+/* Ajuste global: espacio para que el navbar fijo no tape el contenido */
+body {
+  padding-top: 70px; /* Ajusta según la altura de tu navbar */
+}
+
+/* Estilo general del navbar */
+.navbar .nav-link {
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar .nav-link:hover {
+  color: #1e3d87 !important;
+}
+
+.navbar-toggler {
+  border: none;
+}
+.navbar-toggler:focus {
+  box-shadow: none;
+}
+
+/* Estilo del menú lateral (Offcanvas) */
+.offcanvas-header {
+  background-color: #0c0453; /* mismo color que el navbar */
+  border-bottom: 1px solid #1e3d87;
+}
+
+.offcanvas-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: white;
+}
+
+.offcanvas-body {
+  background-color: #0c0453; /* unifica el fondo con el navbar */
+}
+
+.offcanvas .nav-link {
+  color: white !important;
+}
+
+.offcanvas .nav-link:hover {
+  color: #1e3d87 !important;
+}
+
+/* Íconos y texto alineados */
+.offcanvas .nav-link i {
+  font-size: 1.1rem;
+  vertical-align: middle;
+}
+
+/* Estilo del logo y marca */
+.navbar-brand {
+  font-size: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
