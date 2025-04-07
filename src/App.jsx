@@ -11,7 +11,10 @@ import Asistencia from "./components/views/Asistencia";
 import CalendarioEventos from "./components/views/CalendarioEventos";
 import Calificaciones from "./components/views/Calificaciones";
 
+
 import './App.css';
+import Docentes from "./components/views/Docente";
+
 
 function App() {
   return (
@@ -31,6 +34,9 @@ function App() {
 
               {/* Ruta de Estudiantes protegida */}
               <Route path="/estudiantes" element={<ProtectedRoute><Estudiantes /></ProtectedRoute>} />
+
+              {/* Ruta de Estudiantes protegida */}
+              <Route path="/Docentes" element={<ProtectedRoute><Docentes /></ProtectedRoute>} />
 
               {/* Ruta de Asignaturas protegida */}
               <Route path="/Asignatura" element={<ProtectedRoute><Asignaturas /></ProtectedRoute>} />
