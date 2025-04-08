@@ -1,15 +1,30 @@
 import React, { useState } from 'react';
 import TablaCalificaciones from '../calificaciones/TablaCalificaciones';
 import ModalRegistroCalificaciones from '../calificaciones/ModalRegistroCalificaciones';
+import ModalEdicionCalificaciones from '../calificaciones/ModalEdicionCalificaciones';
 
 const Calificaciones = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
+  const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
+  const [calificacionEditada, setCalificacionEditada] = useState(null);
   const [actualizarTabla, setActualizarTabla] = useState(false);
 
   const handleRegistroExitoso = () => {
-    setActualizarTabla(prev => !prev); // fuerza actualización de la tabla
-    setMostrarModal(false); // cierra el modal
+    setActualizarTabla(prev => !prev);
+    setMostrarModal(false);
   };
+
+  const handleEdicionCalificacion = (calificacion) => {
+    setCalificacionEditada(calificacion);
+    setMostrarModalEdicion(true);
+  };
+  
+
+  const handleActualizacionExitosa = () => {
+    setActualizarTabla(prev => !prev); // Esto fuerza el reload de datos
+    setMostrarModalEdicion(false);
+  };
+  
 
   return (
     <div>
@@ -23,8 +38,17 @@ const Calificaciones = () => {
           onSuccess={handleRegistroExitoso}
         />
       )}
+        <ModalEdicionCalificaciones
+        show={mostrarModalEdicion}
+        setShow={setMostrarModalEdicion}
+        calificacionEditada={calificacionEditada}
+        setCalificacionEditada={setCalificacionEditada}
+        onCalificacionActualizada={handleActualizacionExitosa}
+      />
+      
 
-      <TablaCalificaciones actualizar={actualizarTabla} />
+<TablaCalificaciones actualizar={actualizarTabla} onEditar={handleEdicionCalificacion} />
+
     </div>
   );
 };

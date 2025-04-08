@@ -1,11 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { db } from '../../database/firebaseconfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import ModalEdicionCalificaciones from './ModalEdicionCalificaciones';
+import ModalEliminarCalificaciones from './ModalEliminarCalificaciones';
 
 const TablaCalificaciones = ({ actualizar }) => {
   const [calificaciones, setCalificaciones] = useState([]);
   const [asignaturas, setAsignaturas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
+
+  const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
+  const [calificacionSeleccionada, setCalificacionSeleccionada] = useState(null);
+
+  const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
+  const [calificacionAEliminar, setCalificacionAEliminar] = useState(null);
 
   const cargarDatos = async () => {
     const calificacionesSnap = await getDocs(collection(db, 'calificaciones'));
@@ -19,10 +27,21 @@ const TablaCalificaciones = ({ actualizar }) => {
 
   useEffect(() => {
     cargarDatos();
-  }, [actualizar]); // Se recarga al cambiar la prop
+  }, [actualizar]);
 
   const obtenerNombreAsignatura = id => asignaturas.find(a => a.id === id)?.nombre || 'Sin asignatura';
   const obtenerNombreEstudiante = id => estudiantes.find(e => e.id === id)?.nombre || 'Sin estudiante';
+
+  const handleDeleteCalificacion = async () => {
+    try {
+      await deleteDoc(doc(db, 'calificaciones', calificacionAEliminar.id));
+      setMostrarModalEliminar(false);
+      setCalificacionAEliminar(null);
+      cargarDatos(); // Recargar datos
+    } catch (error) {
+      console.error("Error eliminando calificación:", error);
+    }
+  };
 
   return (
     <div>
@@ -37,6 +56,7 @@ const TablaCalificaciones = ({ actualizar }) => {
             <th>Parcial 3</th>
             <th>Final</th>
             <th>Observaciones</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -49,10 +69,50 @@ const TablaCalificaciones = ({ actualizar }) => {
               <td>{c.parcial3}</td>
               <td>{c.final}</td>
               <td>{c.observaciones}</td>
+              <td>
+                <button
+                  onClick={() => {
+                    setCalificacionSeleccionada(c);
+                    setMostrarModalEdicion(true);
+                  }}
+                >
+                  Editar
+                </button>
+                <button
+                  onClick={() => {
+                    setCalificacionAEliminar(c);
+                    setMostrarModalEliminar(true);
+                  }}
+                  style={{ marginLeft: "10px", color: "red" }}
+                >
+                  Eliminar
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      {mostrarModalEdicion && calificacionSeleccionada && (
+        <ModalEdicionCalificaciones
+          show={mostrarModalEdicion}
+          setShow={setMostrarModalEdicion}
+          calificacionEditada={calificacionSeleccionada}
+          setCalificacionEditada={setCalificacionSeleccionada}
+          onCalificacionActualizada={cargarDatos}
+        />
+      )}
+
+      {mostrarModalEliminar && calificacionAEliminar && (
+        <ModalEliminarCalificaciones
+          showDeleteModal={mostrarModalEliminar}
+          setShowDeleteModal={setMostrarModalEliminar}
+          handleDeleteCalificacion={handleDeleteCalificacion}
+          calificacionAEliminar={calificacionAEliminar}
+          obtenerNombreAsignatura={obtenerNombreAsignatura}
+          obtenerNombreEstudiante={obtenerNombreEstudiante}
+        />
+      )}
     </div>
   );
 };
