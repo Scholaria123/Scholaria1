@@ -1,28 +1,14 @@
-import { useNavigate } from "react-router-dom";
 
 const Inicio = () => {
+  return (
+    <div>
+      <br />
+      <br />
+      <h1>Bienvenido a Scholaria</h1>
+      <p>Tu espacio para gestionar grados, estudiantes, docentes y mucho más.</p>
+    </div>
+  );
+};
 
+export default Inicio;
 
-  const navigate = useNavigate();
-
-    // Función de navegación
-    const handleNavigate = (path) => {
-      navigate(path);
-    };
-
-
-    return (
-      <div>
-        <br />
-        <br />
-        <h1>Inicio</h1>
-        <button onClick={() => handleNavigate("/Estudiantes")} >Ir a Estudiantes</button>
-        <button onClick={() => handleNavigate("/Asignatura")} >Ir a Asignatura</button>
-        <button onClick={() => handleNavigate("/Asistencia")} >Ir a Asistencia</button>
-        <button onClick={() => handleNavigate("/Calendario")} >Ir a Calendario</button>
-        <button onClick={() => handleNavigate("/Calificaciones")} >Ir a Calificaciones</button>
-      </div>
-    )
-  }
-  
-  export default Inicio;
