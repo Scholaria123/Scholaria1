@@ -1,6 +1,12 @@
 import { useState, useEffect } from "react";
 import { db } from "../../database/firebaseconfig";
-import { collection, getDocs, query, where } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  addDoc,
+} from "firebase/firestore";
 import jsPDF from "jspdf";
 
 const Asistencia = () => {
@@ -12,72 +18,114 @@ const Asistencia = () => {
   const [asistencia, setAsistencia] = useState({});
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
 
+  // Cargar asignaturas y grados únicos
   useEffect(() => {
     const obtenerDatos = async () => {
       try {
-        const querySnapshot = await getDocs(collection(db, "asignaturas"));
-        const listaAsignaturas = querySnapshot.docs.map((doc) => ({
+        const snapshot = await getDocs(collection(db, "asignaturas"));
+        const lista = snapshot.docs.map((doc) => ({
           id: doc.id,
-          nombre: doc.data().nombre,
-          grado: doc.data().grado,
+          ...doc.data(),
         }));
 
-        setAsignaturas(listaAsignaturas);
-        const gradosUnicos = [...new Set(listaAsignaturas.map((a) => a.grado))];
+        console.log("Asignaturas:", lista); // Depuración
+        setAsignaturas(lista);
+
+        const gradosUnicos = [
+          ...new Set(lista.map((a) => String(a.grado))),
+        ];
         setGrados(gradosUnicos);
       } catch (error) {
-        console.error("Error obteniendo datos:", error);
+        console.error("Error cargando asignaturas:", error);
       }
     };
 
     obtenerDatos();
   }, []);
 
+  // Cargar estudiantes según el grado seleccionado
   useEffect(() => {
-    if (!gradoSeleccionado || !asignaturaSeleccionada) {
+    if (!gradoSeleccionado) {
       setEstudiantes([]);
       return;
     }
 
     const obtenerEstudiantes = async () => {
       try {
-        setEstudiantes([]);
-        const estudiantesRef = collection(db, "estudiantes");
-        const q = query(estudiantesRef, where("grado", "==", gradoSeleccionado));
-
-        const querySnapshot = await getDocs(q);
-        const listaEstudiantes = querySnapshot.docs.map((doc) => ({
+        const q = query(
+          collection(db, "estudiantes"),
+          where("grado", "==", gradoSeleccionado)
+        );
+        const snapshot = await getDocs(q);
+        const lista = snapshot.docs.map((doc) => ({
           id: doc.id,
           nombre: doc.data().nombre,
         }));
-
-        setEstudiantes(listaEstudiantes);
+        setEstudiantes(lista);
       } catch (error) {
-        console.error("Error obteniendo estudiantes:", error);
+        console.error("Error cargando estudiantes:", error);
       }
     };
 
     obtenerEstudiantes();
-  }, [gradoSeleccionado, asignaturaSeleccionada]);
+  }, [gradoSeleccionado]);
 
-  const marcarAsistencia = (nombre, estado) => {
+  const marcarAsistencia = (estudianteId, estado) => {
     setAsistencia((prev) => ({
       ...prev,
-      [nombre]: estado,
+      [estudianteId]: estado,
     }));
   };
 
-  const generarPDF = () => {
-    if (!fecha) {
-      alert("Selecciona una fecha antes de generar el PDF.");
+  const guardarAsistencia = async () => {
+    if (!asignaturaSeleccionada || !fecha) {
+      alert("Completa todos los campos.");
       return;
     }
 
-    const doc = new jsPDF();
-    doc.text(`Asistencia - ${fecha}`, 10, 10);
+    try {
+      const registros = Object.entries(asistencia);
 
-    let y = 20;
-    Object.entries(asistencia).forEach(([nombre, estado]) => {
+      for (const [estudianteId, estado] of registros) {
+        const q = query(
+          collection(db, "asistencia"),
+          where("fecha", "==", fecha),
+          where("asignaturaId", "==", asignaturaSeleccionada),
+          where("estudianteId", "==", estudianteId)
+        );
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+          await addDoc(collection(db, "asistencia"), {
+            fecha,
+            asignaturaId: asignaturaSeleccionada,
+            estudianteId,
+            estado,
+          });
+        } else {
+          console.log(
+            `Asistencia ya registrada para estudiante ${estudianteId} el ${fecha}`
+          );
+        }
+      }
+
+      alert("Asistencia guardada correctamente.");
+    } catch (error) {
+      console.error("Error guardando asistencia:", error);
+    }
+  };
+
+  const generarPDF = () => {
+    const doc = new jsPDF();
+    const asignatura = asignaturas.find((a) => a.id === asignaturaSeleccionada);
+    const nombreAsignatura = asignatura ? asignatura.nombre : "Asignatura";
+
+    doc.text(`Asistencia - ${fecha}`, 10, 10);
+    doc.text(`Asignatura: ${nombreAsignatura}`, 10, 20);
+
+    let y = 30;
+    estudiantes.forEach(({ id, nombre }) => {
+      const estado = asistencia[id] || "No marcado";
       doc.text(`${nombre}: ${estado}`, 10, y);
       y += 10;
     });
@@ -89,29 +137,45 @@ const Asistencia = () => {
     <div style={styles.container}>
       <h2 style={styles.title}>Registro de Asistencia</h2>
 
-      <label style={styles.label}>Selecciona una fecha:</label>
-      <input type="date" value={fecha} onChange={(e) => setFecha(e.target.value)} style={styles.input} />
+      <label style={styles.label}>Fecha:</label>
+      <input
+        type="date"
+        value={fecha}
+        onChange={(e) => setFecha(e.target.value)}
+        style={styles.input}
+      />
 
-      <label style={styles.label}>Selecciona un grado:</label>
-      <select onChange={(e) => setGradoSeleccionado(e.target.value)} value={gradoSeleccionado} style={styles.select}>
+      <label style={styles.label}>Grado:</label>
+      <select
+        value={gradoSeleccionado}
+        onChange={(e) => {
+          setGradoSeleccionado(e.target.value);
+          setAsignaturaSeleccionada("");
+        }}
+        style={styles.select}
+      >
         <option value="">-- Selecciona un grado --</option>
-        {grados.map((grado, index) => (
-          <option key={index} value={grado}>
-            {grado}
+        {grados.map((g, i) => (
+          <option key={i} value={g}>
+            {g}
           </option>
         ))}
       </select>
 
       {gradoSeleccionado && (
         <>
-          <label style={styles.label}>Selecciona una asignatura:</label>
-          <select onChange={(e) => setAsignaturaSeleccionada(e.target.value)} value={asignaturaSeleccionada} style={styles.select}>
+          <label style={styles.label}>Asignatura:</label>
+          <select
+            value={asignaturaSeleccionada}
+            onChange={(e) => setAsignaturaSeleccionada(e.target.value)}
+            style={styles.select}
+          >
             <option value="">-- Selecciona una asignatura --</option>
             {asignaturas
-              .filter((a) => a.grado === gradoSeleccionado)
-              .map(({ id, nombre }) => (
-                <option key={id} value={nombre}>
-                  {nombre}
+              .filter((a) => String(a.grado) === String(gradoSeleccionado))
+              .map((a) => (
+                <option key={a.id} value={a.id}>
+                  {a.nombre}
                 </option>
               ))}
           </select>
@@ -119,54 +183,71 @@ const Asistencia = () => {
       )}
 
       {asignaturaSeleccionada && estudiantes.length === 0 && (
-        <p style={styles.message}>No hay estudiantes en este grado y asignatura.</p>
+        <p style={styles.message}>No hay estudiantes en este grado.</p>
       )}
 
       <div style={styles.studentsContainer}>
         {estudiantes.map(({ id, nombre }) => (
           <div key={id} style={styles.studentRow}>
             <span style={styles.studentName}>{nombre}</span>
-            <button style={styles.buttonPresente} onClick={() => marcarAsistencia(nombre, "Presente")}>Presente</button>
-            <button style={styles.buttonAusente} onClick={() => marcarAsistencia(nombre, "Ausente")}>Ausente</button>
-            <button style={styles.buttonJustificado} onClick={() => marcarAsistencia(nombre, "Justificado")}>Justificado</button>
+            <button
+              style={styles.buttonPresente}
+              onClick={() => marcarAsistencia(id, "Presente")}
+            >
+              Presente
+            </button>
+            <button
+              style={styles.buttonAusente}
+              onClick={() => marcarAsistencia(id, "Ausente")}
+            >
+              Ausente
+            </button>
+            <button
+              style={styles.buttonJustificado}
+              onClick={() => marcarAsistencia(id, "Justificado")}
+            >
+              Justificado
+            </button>
           </div>
         ))}
       </div>
 
-      <h3 style={styles.subtitle}>Asistencia:</h3>
+      <h3 style={styles.subtitle}>Resumen:</h3>
       <ul style={styles.list}>
-        {Object.entries(asistencia).map(([nombre, estado]) => (
-          <li key={nombre} style={styles.listItem}>
-            {nombre}: <b>{estado}</b>
-          </li>
-        ))}
+        {Object.entries(asistencia).map(([id, estado]) => {
+          const nombre = estudiantes.find((e) => e.id === id)?.nombre || "Desconocido";
+          return (
+            <li key={id} style={styles.listItem}>
+              {nombre}: <b>{estado}</b>
+            </li>
+          );
+        })}
       </ul>
 
-      <button onClick={generarPDF} style={styles.buttonPDF}>Generar PDF</button>
+      <button onClick={guardarAsistencia} style={styles.buttonSave}>
+        Guardar Asistencia
+      </button>
+      <button onClick={generarPDF} style={styles.buttonPDF}>
+        Generar PDF
+      </button>
     </div>
   );
 };
 
-// Estilos CSS en línea
+// Estilos
 const styles = {
   container: {
-    maxWidth: "500px",
+    maxWidth: "600px",
     margin: "auto",
-    marginTop: "50px",
+    marginTop: "30px",
     padding: "20px",
-    borderRadius: "30px",
-    boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+    borderRadius: "15px",
+    backgroundColor: "#f2f2f2",
+    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
     textAlign: "center",
-    backgroundColor: "#f9f9f9",
   },
-  title: {
-    color: "#333",
-  },
-  label: {
-    fontWeight: "bold",
-    display: "block",
-    marginTop: "15px",
-  },
+  title: { marginBottom: "15px" },
+  label: { fontWeight: "bold", display: "block", marginTop: "10px" },
   input: {
     width: "100%",
     padding: "8px",
@@ -179,64 +260,59 @@ const styles = {
     padding: "8px",
     borderRadius: "5px",
     border: "1px solid #ccc",
-    marginBottom: "12px",
-  },
-  message: {
-    color: "#d9534f",
-    fontWeight: "bold",
-  },
-  studentsContainer: {
-    marginTop: "10px",
-  },
-  studentRow: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
     marginBottom: "10px",
   },
-  studentName: {
-    flexGrow: 1,
+  message: { color: "red" },
+  studentsContainer: { marginTop: "10px" },
+  studentRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "8px",
   },
+  studentName: { flex: 1 },
   buttonPresente: {
-    backgroundColor: "#5cb85c",
+    backgroundColor: "#28a745",
     color: "white",
-    padding: "5px 10px",
-    borderRadius: "10px",
     border: "none",
-    margin: "0 5px",
+    padding: "5px 8px",
+    margin: "0 2px",
+    borderRadius: "5px",
   },
   buttonAusente: {
-    backgroundColor: "#d9534f",
+    backgroundColor: "#dc3545",
     color: "white",
-    padding: "5px 10px",
-    borderRadius: "10px",
     border: "none",
-    margin: "0 5px",
+    padding: "5px 8px",
+    margin: "0 2px",
+    borderRadius: "5px",
   },
   buttonJustificado: {
-    backgroundColor: "#f0ad4e",
-    color: "white",
-    padding: "5px 10px",
-    borderRadius: "10px",
+    backgroundColor: "#ffc107",
+    color: "black",
     border: "none",
-    margin: "0 5px",
+    padding: "5px 8px",
+    margin: "0 2px",
+    borderRadius: "5px",
   },
-  subtitle: {
-    marginTop: "20px",
-  },
-  list: {
-    textAlign: "left",
-    padding: "0",
-  },
-  listItem: {
-    listStyle: "none",
+  subtitle: { marginTop: "20px" },
+  list: { padding: "0", textAlign: "left" },
+  listItem: { listStyle: "none", marginBottom: "5px" },
+  buttonSave: {
+    marginTop: "15px",
+    marginRight: "10px",
+    backgroundColor: "#007bff",
+    color: "white",
+    border: "none",
+    padding: "10px",
+    borderRadius: "5px",
   },
   buttonPDF: {
     marginTop: "15px",
-    padding: "10px",
-    backgroundColor: "#0275d8",
+    backgroundColor: "#17a2b8",
     color: "white",
     border: "none",
+    padding: "10px",
     borderRadius: "5px",
   },
 };
