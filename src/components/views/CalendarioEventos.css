@@ -67,6 +67,13 @@
     border-radius: 1%;
 }
 
+.react-calendar__tile.evento-examen {
+    background-color: #ffcc00  !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 1%;
+}
+
 
 .evento-festividad {
     background-color: #28a745 !important;
@@ -130,3 +137,18 @@ li {
 li button {
     background: #70dbff;
 }
+
+.btn-eliminar {
+    margin-left: 10px;
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    padding: 3px 8px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn-eliminar:hover {
+    background-color: #c0392b;
+  }
+  

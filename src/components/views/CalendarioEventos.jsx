@@ -3,7 +3,13 @@ import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
 import { db } from "../../database/firebaseconfig";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+} from "firebase/firestore";
 import "./CalendarioEventos.css";
 
 const CalendarioEventos = () => {
@@ -33,8 +39,8 @@ const CalendarioEventos = () => {
     };
 
     try {
-      await addDoc(collection(db, "eventos"), nuevoEvento);
-      setEventos((prev) => [...prev, nuevoEvento]);
+      const docRef = await addDoc(collection(db, "eventos"), nuevoEvento);
+      setEventos((prev) => [...prev, { id: docRef.id, ...nuevoEvento }]);
       setEvento("");
     } catch (error) {
       console.error("Error al guardar el evento:", error);
@@ -42,12 +48,24 @@ const CalendarioEventos = () => {
     }
   };
 
-  // ✅ Cargar eventos al iniciar
+  const eliminarEvento = async (id) => {
+    try {
+      await deleteDoc(doc(db, "eventos", id));
+      setEventos((prev) => prev.filter((e) => e.id !== id));
+    } catch (error) {
+      console.error("Error al eliminar el evento:", error);
+      alert("No se pudo eliminar el evento.");
+    }
+  };
+
   useEffect(() => {
     const cargarEventos = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "eventos"));
-        const eventosData = querySnapshot.docs.map((doc) => doc.data());
+        const eventosData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
         setEventos(eventosData);
       } catch (error) {
         console.error("Error cargando los eventos:", error);
@@ -100,9 +118,15 @@ const CalendarioEventos = () => {
 
       <h3>Eventos agregados</h3>
       <ul>
-        {eventos.map((e, index) => (
-          <li key={index} className={`evento-${e.tipo}`}>
-            {tiposEventos[e.tipo]?.icono || "🗓️"} {e.fecha}: {e.titulo}
+        {eventos.map((e) => (
+          <li key={e.id} className={`evento-${e.tipo}`}>
+            {tiposEventos[e.tipo]?.icono || "🗓️"} {e.fecha}: {e.titulo}{" "}
+            <button
+              onClick={() => eliminarEvento(e.id)}
+              className="btn-eliminar"
+            >
+              ❌ Eliminar
+            </button>
           </li>
         ))}
       </ul>
