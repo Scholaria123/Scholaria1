@@ -35,24 +35,38 @@
 }
 
 .react-calendar__tile--now {
-    background: #ffcc00 !important;
+    background: #ff5e00 !important;
     border-radius: 50%;
 }
 
-/* Colores para eventos */
-.evento-examen {
+.react-calendar__tile.evento-examen {
     background-color: #ffcc00 !important;
     color: black !important;
     font-weight: bold;
-    border-radius: 1%;
-}
-
+    border-radius: 50% !important;
+  }
+  
+  .react-calendar__tile.evento-reunion {
+    background-color: #6c60b5!important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 50% !important;
+  }
+  
+  .react-calendar__tile.evento-festividad {
+    background-color: #28a745 !important;
+    color: white !important;
+    font-weight: bold;
+    border-radius: 50% !important;
+  }
+  
 .evento-reunion {
-    background-color: #2489f5 !important;
+    background-color: #6c60b5 !important;
     color: white !important;
     font-weight: bold;
     border-radius: 1%;
 }
+
 
 .evento-festividad {
     background-color: #28a745 !important;

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { format } from "date-fns";
-import "./CalendarioEventos.css"; // Archivo de estilos
+import { db } from "../../database/firebaseconfig";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import "./CalendarioEventos.css";
 
 const CalendarioEventos = () => {
   const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
@@ -20,54 +22,87 @@ const CalendarioEventos = () => {
     setFechaSeleccionada(date);
   };
 
-  const agregarEvento = () => {
+  const agregarEvento = async () => {
     if (!evento.trim()) return alert("Escribe un evento válido");
+
     const nuevoEvento = {
-      fecha: format(fechaSeleccionada, "yyyy-MM-dd"),
+      fecha: format(fechaSeleccionada, "dd/MM/yyyy"),
       titulo: evento,
       tipo: tipoEvento,
+      descripcion: evento,
     };
-    setEventos([...eventos, nuevoEvento]);
-    setEvento("");
+
+    try {
+      await addDoc(collection(db, "eventos"), nuevoEvento);
+      setEventos((prev) => [...prev, nuevoEvento]);
+      setEvento("");
+    } catch (error) {
+      console.error("Error al guardar el evento:", error);
+      alert("Hubo un error al guardar el evento.");
+    }
   };
 
-  const eliminarEvento = (index) => {
-    setEventos(eventos.filter((_, i) => i !== index));
-  };
+  // ✅ Cargar eventos al iniciar
+  useEffect(() => {
+    const cargarEventos = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "eventos"));
+        const eventosData = querySnapshot.docs.map((doc) => doc.data());
+        setEventos(eventosData);
+      } catch (error) {
+        console.error("Error cargando los eventos:", error);
+      }
+    };
+
+    cargarEventos();
+  }, []);
 
   const marcarDiasEnCalendario = ({ date }) => {
-    const fechaStr = format(date, "yyyy-MM-dd");
+    const fechaStr = format(date, "dd/MM/yyyy");
     const eventosDelDia = eventos.filter((e) => e.fecha === fechaStr);
-    return eventosDelDia.length > 0 ? eventosDelDia.map(e => `evento-${e.tipo}`).join(" ") : null;
+    return eventosDelDia.length > 0
+      ? eventosDelDia.map((e) => `evento-${e.tipo}`).join(" ")
+      : null;
   };
 
   return (
     <div className="calendario-container">
       <h2>Calendario de Eventos</h2>
-      <Calendar onChange={handleDateChange} value={fechaSeleccionada} tileClassName={marcarDiasEnCalendario} />
-      <p>Fecha seleccionada: {format(fechaSeleccionada, "yyyy-MM-dd")}</p>
-      
+
+      <Calendar
+        onChange={handleDateChange}
+        value={fechaSeleccionada}
+        tileClassName={marcarDiasEnCalendario}
+      />
+
+      <p>Fecha seleccionada: {format(fechaSeleccionada, "dd/MM/yyyy")}</p>
+
       <input
         type="text"
         placeholder="Agregar evento"
         value={evento}
         onChange={(e) => setEvento(e.target.value)}
       />
-      
+
       <div className="tipo-evento-container">
-        <button className="btn-examen" onClick={() => setTipoEvento("examen")}>📅 Examen</button>
-        <button className="btn-reunion" onClick={() => setTipoEvento("reunion")}>👨‍👩‍👧 Reunión</button>
-        <button className="btn-festividad" onClick={() => setTipoEvento("festividad")}>🎉 Festividad</button>
+        <button className="btn-examen" onClick={() => setTipoEvento("examen")}>
+          📅 Examen
+        </button>
+        <button className="btn-reunion" onClick={() => setTipoEvento("reunion")}>
+          👨‍👩‍👧 Reunión
+        </button>
+        <button className="btn-festividad" onClick={() => setTipoEvento("festividad")}>
+          🎉 Festividad
+        </button>
       </div>
-      
+
       <button onClick={agregarEvento}>Agregar Evento</button>
-      
-      <h3>Eventos</h3>
+
+      <h3>Eventos agregados</h3>
       <ul>
         {eventos.map((e, index) => (
           <li key={index} className={`evento-${e.tipo}`}>
-            {tiposEventos[e.tipo].icono} {e.fecha}: {e.titulo}
-            <button onClick={() => eliminarEvento(index)}>❌</button>
+            {tiposEventos[e.tipo]?.icono || "🗓️"} {e.fecha}: {e.titulo}
           </li>
         ))}
       </ul>
