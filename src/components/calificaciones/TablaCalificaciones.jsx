@@ -4,7 +4,7 @@ import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import ModalEdicionCalificaciones from './ModalEdicionCalificaciones';
 import ModalEliminarCalificaciones from './ModalEliminarCalificaciones';
 
-const TablaCalificaciones = ({ actualizar }) => {
+const TablaCalificaciones = ({ actualizar, onExportReady }) => {
   const [calificaciones, setCalificaciones] = useState([]);
   const [asignaturas, setAsignaturas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
@@ -15,17 +15,35 @@ const TablaCalificaciones = ({ actualizar }) => {
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [calificacionAEliminar, setCalificacionAEliminar] = useState(null);
 
-  const cargarDatos = async () => {
-    const calificacionesSnap = await getDocs(collection(db, 'calificaciones'));
-    const asignaturasSnap = await getDocs(collection(db, 'asignaturas'));
-    const estudiantesSnap = await getDocs(collection(db, 'estudiantes'));
-
-    setCalificaciones(calificacionesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    setAsignaturas(asignaturasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    setEstudiantes(estudiantesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  };
-
   useEffect(() => {
+    const cargarDatos = async () => {
+      const calificacionesSnap = await getDocs(collection(db, 'calificaciones'));
+      const asignaturasSnap = await getDocs(collection(db, 'asignaturas'));
+      const estudiantesSnap = await getDocs(collection(db, 'estudiantes'));
+
+      const calificacionesData = calificacionesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const asignaturasData = asignaturasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const estudiantesData = estudiantesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+      setCalificaciones(calificacionesData);
+      setAsignaturas(asignaturasData);
+      setEstudiantes(estudiantesData);
+
+      // Datos para exportar a PDF
+      if (onExportReady) {
+        const exportData = calificacionesData.map(c => ({
+          asignatura: asignaturasData.find(a => a.id === c.asignaturaId)?.nombre || 'Sin asignatura',
+          estudiante: estudiantesData.find(e => e.id === c.estudianteId)?.nombre || 'Sin estudiante',
+          parcial1: c.parcial1,
+          parcial2: c.parcial2,
+          parcial3: c.parcial3,
+          final: c.final,
+          observaciones: c.observaciones || '',
+        }));
+        onExportReady(exportData);
+      }
+    };
+
     cargarDatos();
   }, [actualizar]);
 
@@ -37,7 +55,12 @@ const TablaCalificaciones = ({ actualizar }) => {
       await deleteDoc(doc(db, 'calificaciones', calificacionAEliminar.id));
       setMostrarModalEliminar(false);
       setCalificacionAEliminar(null);
-      cargarDatos(); // Recargar datos
+      // Recargar datos
+      const actualizar = async () => {
+        const snap = await getDocs(collection(db, 'calificaciones'));
+        setCalificaciones(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      };
+      actualizar();
     } catch (error) {
       console.error("Error eliminando calificación:", error);
     }
@@ -99,7 +122,10 @@ const TablaCalificaciones = ({ actualizar }) => {
           setShow={setMostrarModalEdicion}
           calificacionEditada={calificacionSeleccionada}
           setCalificacionEditada={setCalificacionSeleccionada}
-          onCalificacionActualizada={cargarDatos}
+          onCalificacionActualizada={() => {
+            setMostrarModalEdicion(false);
+            // Forzar recarga desde el padre
+          }}
         />
       )}
 
