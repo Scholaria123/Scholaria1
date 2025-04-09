@@ -22,7 +22,7 @@ const Inicio = () => {
         </div>
 
         <div className="boton-imagen" onClick={() => handleNavigate("/Asignatura")}>
-          <img src="src/assets/imagenes/EventosBoton.png" alt="Asignaturas" />
+          <img src="src/assets/imagenes/AsignaturasBoton.png" alt="Asignaturas" />
         </div>
 
         <div className="boton-imagen" onClick={() => handleNavigate("/Asistencia")}>
@@ -30,7 +30,7 @@ const Inicio = () => {
         </div>
 
         <div className="boton-imagen" onClick={() => handleNavigate("/CatalogoCalificaciones")}>
-          <img src="src/assets/imagenes/CalificacionesBoton.png" alt="Catálogo de Calificaciones" />
+          <img src="src/assets/imagenes/CatalogoEstudiantes.png" alt="Catálogo de Calificaciones" />
         </div>
 
         <div className="boton-imagen" onClick={() => handleNavigate("/Calendario")}>
@@ -38,7 +38,7 @@ const Inicio = () => {
         </div>
 
         <div className="boton-imagen" onClick={() => handleNavigate("/Calificaciones")}>
-          <img src="src/assets/imagenes/EventosBoton.png" alt="Calificaciones" />
+          <img src="src/assets/imagenes/CalificacionesBoton.png" alt="Calificaciones" />
         </div>
       </div>
     </div>
