@@ -27,8 +27,13 @@ const ModalEdicionEstudiante = ({
 
         setAsignaturas(asignaturasList);
 
-        const uniqueGrados = [...new Set(asignaturasList.map((a) => a.grado))];
-        const uniqueGrupos = [...new Set(asignaturasList.map((a) => a.grupo))];
+        // 🔧 Aplanar los arrays de grado y grupo
+        const allGrados = asignaturasList.flatMap((a) => a.grado || []);
+        const allGrupos = asignaturasList.flatMap((a) => a.grupo || []);
+
+        // ✨ Eliminar duplicados
+        const uniqueGrados = [...new Set(allGrados)];
+        const uniqueGrupos = [...new Set(allGrupos)];
 
         setGrados(uniqueGrados);
         setGrupos(uniqueGrupos);
@@ -123,7 +128,12 @@ const ModalEdicionEstudiante = ({
 
           <Form.Group controlId="asignatura">
             <Form.Label>Asignaturas</Form.Label>
-            <Form.Select name="asignaturaId" multiple value={estudianteEditado.asignaturaId || []} onChange={handleAsignaturaChange}>
+            <Form.Select
+              name="asignaturaId"
+              multiple
+              value={estudianteEditado.asignaturaId || []}
+              onChange={handleAsignaturaChange}
+            >
               {asignaturas.map((asignatura) => (
                 <option key={asignatura.id} value={asignatura.id}>
                   {asignatura.nombre}
@@ -153,4 +163,4 @@ const ModalEdicionEstudiante = ({
   );
 };
 
-export default ModalEdicionEstudiante;  
+export default ModalEdicionEstudiante;
