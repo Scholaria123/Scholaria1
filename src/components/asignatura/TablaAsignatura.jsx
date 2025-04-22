@@ -18,8 +18,36 @@ const TablaAsignaturas = ({ asignaturas, openEditModal, openDeleteModal }) => {
             <tr key={asignatura.id}>
               <td>{asignatura.nombre}</td>
               <td>{asignatura.docente}</td>
-              <td>{Array.isArray(asignatura.grado) ? asignatura.grado.join(", ") : asignatura.grado}</td> 
-              <td>{Array.isArray(asignatura.grupo) ? asignatura.grupo.join(", ") : asignatura.grupo}</td>
+              <td>
+                {Array.isArray(asignatura.grado)
+                  ? asignatura.grado.map((g, index) => (
+                      <span key={index} className="badge bg-primary me-1">
+                        {g}
+                      </span>
+                    ))
+                  : asignatura.grado
+                      ?.match(/([0-9]+[a-zA-Z]+)/g)
+                      ?.map((g, index) => (
+                        <span key={index} className="badge bg-primary me-1">
+                          {g}
+                        </span>
+                      ))}
+              </td>
+              <td>
+                {Array.isArray(asignatura.grupo)
+                  ? asignatura.grupo.map((g, index) => (
+                      <span key={index} className="badge bg-secondary me-1">
+                        {g}
+                      </span>
+                    ))
+                  : asignatura.grupo
+                      ?.split("")
+                      .map((g, index) => (
+                        <span key={index} className="badge bg-secondary me-1">
+                          {g}
+                        </span>
+                      ))}
+              </td>
               <td>
                 <button
                   className="btn btn-warning btn-sm me-2"

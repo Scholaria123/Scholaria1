@@ -11,13 +11,14 @@ import jsPDF from "jspdf";
 
 const Asistencia = () => {
   const [grados, setGrados] = useState([]);
+  const [grupos, setGrupos] = useState(["a", "b"]);
   const [asignaturas, setAsignaturas] = useState([]);
   const [gradoSeleccionado, setGradoSeleccionado] = useState("");
+  const [grupoSeleccionado, setGrupoSeleccionado] = useState("");
   const [asignaturaSeleccionada, setAsignaturaSeleccionada] = useState("");
   const [estudiantes, setEstudiantes] = useState([]);
   const [asistencia, setAsistencia] = useState({});
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
-
   const [mostrarTablaResumen, setMostrarTablaResumen] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
   const estudiantesPorPagina = 5;
@@ -31,7 +32,13 @@ const Asistencia = () => {
           ...doc.data(),
         }));
         setAsignaturas(lista);
-        const gradosUnicos = [...new Set(lista.map((a) => String(a.grado)))];
+
+        const gradosUnicos = [
+          ...new Set(lista.flatMap((a) => a.grado.map((g) => g))),
+        ];
+        gradosUnicos.sort((a, b) =>
+          a.localeCompare(b, undefined, { numeric: true })
+        );
         setGrados(gradosUnicos);
       } catch (error) {
         console.error("Error cargando asignaturas:", error);
@@ -41,7 +48,7 @@ const Asistencia = () => {
   }, []);
 
   useEffect(() => {
-    if (!gradoSeleccionado) {
+    if (!gradoSeleccionado || !grupoSeleccionado) {
       setEstudiantes([]);
       return;
     }
@@ -50,7 +57,8 @@ const Asistencia = () => {
       try {
         const q = query(
           collection(db, "estudiantes"),
-          where("grado", "==", gradoSeleccionado)
+          where("grado", "==", gradoSeleccionado),
+          where("grupo", "==", grupoSeleccionado)
         );
         const snapshot = await getDocs(q);
         const lista = snapshot.docs
@@ -65,7 +73,7 @@ const Asistencia = () => {
       }
     };
     obtenerEstudiantes();
-  }, [gradoSeleccionado]);
+  }, [gradoSeleccionado, grupoSeleccionado]);
 
   const marcarAsistencia = (estudianteId, estado) => {
     setAsistencia((prev) => ({
@@ -174,6 +182,7 @@ const Asistencia = () => {
         value={gradoSeleccionado}
         onChange={(e) => {
           setGradoSeleccionado(e.target.value);
+          setGrupoSeleccionado("");
           setAsignaturaSeleccionada("");
         }}
         style={styles.select}
@@ -188,6 +197,27 @@ const Asistencia = () => {
 
       {gradoSeleccionado && (
         <>
+          <label style={styles.label}>Grupo:</label>
+          <select
+            value={grupoSeleccionado}
+            onChange={(e) => {
+              setGrupoSeleccionado(e.target.value);
+              setAsignaturaSeleccionada("");
+            }}
+            style={styles.select}
+          >
+            <option value="">-- Selecciona un grupo --</option>
+            {grupos.map((g, i) => (
+              <option key={i} value={g}>
+                {g.toUpperCase()}
+              </option>
+            ))}
+          </select>
+        </>
+      )}
+
+      {gradoSeleccionado && grupoSeleccionado && (
+        <>
           <label style={styles.label}>Asignatura:</label>
           <select
             value={asignaturaSeleccionada}
@@ -196,7 +226,11 @@ const Asistencia = () => {
           >
             <option value="">-- Selecciona una asignatura --</option>
             {asignaturas
-              .filter((a) => String(a.grado) === String(gradoSeleccionado))
+              .filter(
+                (a) =>
+                  a.grado.includes(gradoSeleccionado) &&
+                  a.grupo.includes(grupoSeleccionado)
+              )
               .map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.nombre}
@@ -209,7 +243,8 @@ const Asistencia = () => {
       {asignaturaSeleccionada && (
         <>
           <p>
-            <b>Grado:</b> {gradoSeleccionado} | <b>Asignatura:</b>{" "}
+            <b>Grado:</b> {gradoSeleccionado} | <b>Grupo:</b>{" "}
+            {grupoSeleccionado.toUpperCase()} | <b>Asignatura:</b>{" "}
             {nombreAsignatura}
           </p>
           <div style={{ fontSize: "12px", color: "#666" }}>
@@ -219,7 +254,7 @@ const Asistencia = () => {
       )}
 
       {asignaturaSeleccionada && estudiantes.length === 0 && (
-        <p style={styles.message}>No hay estudiantes en este grado.</p>
+        <p style={styles.message}>No hay estudiantes en este grado y grupo.</p>
       )}
 
       <div style={styles.studentsContainer}>
