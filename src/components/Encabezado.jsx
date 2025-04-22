@@ -133,6 +133,14 @@ const Encabezado = () => {
                 {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
                 <strong>Calificaciones</strong>
               </Nav.Link>
+
+              <Nav.Link
+                onClick={() => handleNavigate("/CatalogoCalificaciones")}
+                className={isCollapsed ? "color-texto-marca" : "text-white"}
+              >
+                {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
+                <strong>Busca tu estudiante</strong>
+              </Nav.Link>
   
               {isLoggedIn ? (
                 <Nav.Link
