@@ -18,7 +18,10 @@ const Asistencia = () => {
   const [asistencia, setAsistencia] = useState({});
   const [fecha, setFecha] = useState(new Date().toISOString().split("T")[0]);
 
-  // Cargar asignaturas y grados únicos
+  const [mostrarTablaResumen, setMostrarTablaResumen] = useState(false);
+  const [paginaActual, setPaginaActual] = useState(1);
+  const estudiantesPorPagina = 5;
+
   useEffect(() => {
     const obtenerDatos = async () => {
       try {
@@ -27,23 +30,16 @@ const Asistencia = () => {
           id: doc.id,
           ...doc.data(),
         }));
-
-        console.log("Asignaturas:", lista); // Depuración
         setAsignaturas(lista);
-
-        const gradosUnicos = [
-          ...new Set(lista.map((a) => String(a.grado))),
-        ];
+        const gradosUnicos = [...new Set(lista.map((a) => String(a.grado)))];
         setGrados(gradosUnicos);
       } catch (error) {
         console.error("Error cargando asignaturas:", error);
       }
     };
-
     obtenerDatos();
   }, []);
 
-  // Cargar estudiantes según el grado seleccionado
   useEffect(() => {
     if (!gradoSeleccionado) {
       setEstudiantes([]);
@@ -57,16 +53,17 @@ const Asistencia = () => {
           where("grado", "==", gradoSeleccionado)
         );
         const snapshot = await getDocs(q);
-        const lista = snapshot.docs.map((doc) => ({
-          id: doc.id,
-          nombre: doc.data().nombre,
-        }));
+        const lista = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            nombre: doc.data().nombre,
+          }))
+          .sort((a, b) => a.nombre.localeCompare(b.nombre));
         setEstudiantes(lista);
       } catch (error) {
         console.error("Error cargando estudiantes:", error);
       }
     };
-
     obtenerEstudiantes();
   }, [gradoSeleccionado]);
 
@@ -80,6 +77,12 @@ const Asistencia = () => {
   const guardarAsistencia = async () => {
     if (!asignaturaSeleccionada || !fecha) {
       alert("Completa todos los campos.");
+      return;
+    }
+
+    const faltantes = estudiantes.filter((e) => !asistencia[e.id]);
+    if (faltantes.length > 0) {
+      alert("Faltan estudiantes por marcar asistencia.");
       return;
     }
 
@@ -133,6 +136,27 @@ const Asistencia = () => {
     doc.save(`Asistencia_${fecha}.pdf`);
   };
 
+  const getButtonStyles = (id, estado) => ({
+    ...styles[`button${estado}`],
+    opacity: asistencia[id] === estado ? 1 : 0.5,
+  });
+
+  const nombreAsignatura =
+    asignaturas.find((a) => a.id === asignaturaSeleccionada)?.nombre || "";
+
+  const totalPaginas = Math.ceil(estudiantes.length / estudiantesPorPagina);
+  const indiceInicial = (paginaActual - 1) * estudiantesPorPagina;
+  const estudiantesPagina = estudiantes.slice(
+    indiceInicial,
+    indiceInicial + estudiantesPorPagina
+  );
+
+  const cambiarPagina = (nuevaPagina) => {
+    if (nuevaPagina >= 1 && nuevaPagina <= totalPaginas) {
+      setPaginaActual(nuevaPagina);
+    }
+  };
+
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Registro de Asistencia</h2>
@@ -182,6 +206,18 @@ const Asistencia = () => {
         </>
       )}
 
+      {asignaturaSeleccionada && (
+        <>
+          <p>
+            <b>Grado:</b> {gradoSeleccionado} | <b>Asignatura:</b>{" "}
+            {nombreAsignatura}
+          </p>
+          <div style={{ fontSize: "12px", color: "#666" }}>
+            Usa los botones para marcar asistencia
+          </div>
+        </>
+      )}
+
       {asignaturaSeleccionada && estudiantes.length === 0 && (
         <p style={styles.message}>No hay estudiantes en este grado.</p>
       )}
@@ -191,38 +227,28 @@ const Asistencia = () => {
           <div key={id} style={styles.studentRow}>
             <span style={styles.studentName}>{nombre}</span>
             <button
-              style={styles.buttonPresente}
+              style={getButtonStyles(id, "Presente")}
               onClick={() => marcarAsistencia(id, "Presente")}
             >
-              Presente
+              {asistencia[id] === "Presente" ? "✅ Presente" : "Presente"}
             </button>
             <button
-              style={styles.buttonAusente}
+              style={getButtonStyles(id, "Ausente")}
               onClick={() => marcarAsistencia(id, "Ausente")}
             >
-              Ausente
+              {asistencia[id] === "Ausente" ? "❌ Ausente" : "Ausente"}
             </button>
             <button
-              style={styles.buttonJustificado}
+              style={getButtonStyles(id, "Justificado")}
               onClick={() => marcarAsistencia(id, "Justificado")}
             >
-              Justificado
+              {asistencia[id] === "Justificado"
+                ? "🟡 Justificado"
+                : "Justificado"}
             </button>
           </div>
         ))}
       </div>
-
-      <h3 style={styles.subtitle}>Resumen:</h3>
-      <ul style={styles.list}>
-        {Object.entries(asistencia).map(([id, estado]) => {
-          const nombre = estudiantes.find((e) => e.id === id)?.nombre || "Desconocido";
-          return (
-            <li key={id} style={styles.listItem}>
-              {nombre}: <b>{estado}</b>
-            </li>
-          );
-        })}
-      </ul>
 
       <button onClick={guardarAsistencia} style={styles.buttonSave}>
         Guardar Asistencia
@@ -230,19 +256,65 @@ const Asistencia = () => {
       <button onClick={generarPDF} style={styles.buttonPDF}>
         Generar PDF
       </button>
+      <button
+        onClick={() => setMostrarTablaResumen((prev) => !prev)}
+        style={styles.buttonResumen}
+      >
+        {mostrarTablaResumen ? "Ocultar resumen" : "Ver resumen en tabla"}
+      </button>
+
+      {mostrarTablaResumen && (
+        <>
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Estudiante</th>
+                <th style={styles.th}>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {estudiantesPagina.map(({ id, nombre }) => (
+                <tr key={id}>
+                  <td style={styles.td}>{nombre}</td>
+                  <td style={styles.td}>{asistencia[id] || "No marcado"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div style={styles.paginacion}>
+            <button
+              onClick={() => cambiarPagina(paginaActual - 1)}
+              disabled={paginaActual === 1}
+              style={styles.pageButton}
+            >
+              ⬅️ Anterior
+            </button>
+            <span>
+              Página {paginaActual} de {totalPaginas}
+            </span>
+            <button
+              onClick={() => cambiarPagina(paginaActual + 1)}
+              disabled={paginaActual === totalPaginas}
+              style={styles.pageButton}
+            >
+              Siguiente ➡️
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
-// Estilos
 const styles = {
   container: {
-    maxWidth: "600px",
+    maxWidth: "650px",
     margin: "auto",
     marginTop: "30px",
     padding: "20px",
     borderRadius: "15px",
-    backgroundColor: "#f2f2f2",
+    backgroundColor: "#f9f9f9",
     boxShadow: "0 0 10px rgba(0,0,0,0.1)",
     textAlign: "center",
   },
@@ -269,8 +341,10 @@ const styles = {
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "8px",
+    padding: "10px",
+    borderBottom: "1px solid #ddd",
   },
-  studentName: { flex: 1 },
+  studentName: { flex: 1, textAlign: "left" },
   buttonPresente: {
     backgroundColor: "#28a745",
     color: "white",
@@ -278,6 +352,7 @@ const styles = {
     padding: "5px 8px",
     margin: "0 2px",
     borderRadius: "5px",
+    cursor: "pointer",
   },
   buttonAusente: {
     backgroundColor: "#dc3545",
@@ -286,6 +361,7 @@ const styles = {
     padding: "5px 8px",
     margin: "0 2px",
     borderRadius: "5px",
+    cursor: "pointer",
   },
   buttonJustificado: {
     backgroundColor: "#ffc107",
@@ -294,10 +370,8 @@ const styles = {
     padding: "5px 8px",
     margin: "0 2px",
     borderRadius: "5px",
+    cursor: "pointer",
   },
-  subtitle: { marginTop: "20px" },
-  list: { padding: "0", textAlign: "left" },
-  listItem: { listStyle: "none", marginBottom: "5px" },
   buttonSave: {
     marginTop: "15px",
     marginRight: "10px",
@@ -306,6 +380,7 @@ const styles = {
     border: "none",
     padding: "10px",
     borderRadius: "5px",
+    cursor: "pointer",
   },
   buttonPDF: {
     marginTop: "15px",
@@ -314,6 +389,45 @@ const styles = {
     border: "none",
     padding: "10px",
     borderRadius: "5px",
+    cursor: "pointer",
+  },
+  buttonResumen: {
+    marginTop: "15px",
+    backgroundColor: "#6c757d",
+    color: "white",
+    border: "none",
+    padding: "10px",
+    borderRadius: "5px",
+    cursor: "pointer",
+  },
+  table: {
+    width: "100%",
+    marginTop: "20px",
+    borderCollapse: "collapse",
+  },
+  th: {
+    border: "1px solid #ccc",
+    padding: "8px",
+    backgroundColor: "#f2f2f2",
+    textAlign: "left",
+  },
+  td: {
+    border: "1px solid #ccc",
+    padding: "8px",
+  },
+  paginacion: {
+    marginTop: "10px",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    gap: "10px",
+  },
+  pageButton: {
+    padding: "5px 10px",
+    borderRadius: "5px",
+    border: "1px solid #ccc",
+    cursor: "pointer",
+    backgroundColor: "#eee",
   },
 };
 
