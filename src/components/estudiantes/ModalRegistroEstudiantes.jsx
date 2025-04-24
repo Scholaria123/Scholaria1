@@ -8,7 +8,7 @@ import ReactGA from "react-ga4";
 // Inicialización de ReactGA con el ID de seguimiento
 ReactGA.initialize([
   {
-    trackingId: "G-T4JNY83CWB", // Reemplaza con tu ID de seguimiento
+    trackingId: "G-T4JNY83CWB",
     gaOptions: {
       siteSpeedSampleRate: 100,
     },
@@ -73,7 +73,6 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
   };
 
   const handleAddEstudiante = async () => {
-    // Validación de campos
     if (!nuevoEstudiante.nombre.trim()) {
       alert("El nombre es obligatorio.");
       return;
@@ -104,16 +103,8 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
       return;
     }
 
-    if (nuevoEstudiante.imagen) {
-      const imageFile = nuevoEstudiante.imagen;
-      const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
-      if (!validImageTypes.includes(imageFile.type)) {
-        alert("Por favor, suba una imagen válida (JPEG, PNG, GIF).");
-        return;
-      }
-    }
+    // Validación de imagen eliminada
 
-    // Si todo es válido, agregar el estudiante a la base de datos
     try {
       await addDoc(collection(db, "estudiantes"), {
         ...nuevoEstudiante,
@@ -124,7 +115,7 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
       });
 
       console.log("✅ Estudiante registrado correctamente");
-      fetchEstudiantes(); // Actualiza la lista de estudiantes en el componente padre
+      fetchEstudiantes();
       setShowModal(false);
     } catch (error) {
       console.error("❌ Error al registrar estudiante:", error);
@@ -148,7 +139,7 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
               required 
             />
           </Form.Group>
-          
+
           <Form.Group controlId="formDireccion">
             <Form.Label>Dirección</Form.Label>
             <Form.Control 
@@ -159,7 +150,7 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
               required 
             />
           </Form.Group>
-          
+
           <Form.Group controlId="formTelefono">
             <Form.Label>Teléfono</Form.Label>
             <Form.Control 
@@ -170,30 +161,38 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
               required 
             />
           </Form.Group>
-          
+
           <Form.Group controlId="formGrado">
             <Form.Label>Grado</Form.Label>
             <Form.Select name="grado" value={nuevoEstudiante.grado} onChange={handleInputChange} required>
               <option value="">Seleccione un grado</option>
-              {grados.map((grado, index) => (<option key={index} value={grado}>{grado}</option>))}
+              {grados.map((grado, index) => (
+                <option key={index} value={grado}>{grado}</option>
+              ))}
             </Form.Select>
           </Form.Group>
-          
+
           <Form.Group controlId="formGrupo">
             <Form.Label>Grupo</Form.Label>
             <Form.Select name="grupo" value={nuevoEstudiante.grupo} onChange={handleInputChange} required>
               <option value="">Seleccione un grupo</option>
-              {grupos.map((grupo, index) => (<option key={index} value={grupo}>{grupo}</option>))}
+              {grupos.map((grupo, index) => (
+                <option key={index} value={grupo}>{grupo}</option>
+              ))}
             </Form.Select>
           </Form.Group>
-          
+
           <Form.Group controlId="formAsignatura">
             <Form.Label>Asignaturas</Form.Label>
             <Form.Select name="asignaturaId" multiple value={nuevoEstudiante.asignaturaId} onChange={handleInputChange} required>
-              {asignaturas.map((asignatura) => (<option key={asignatura.id} value={asignatura.id}>{asignatura.nombre}</option>))}
+              {asignaturas.map((asignatura) => (
+                <option key={asignatura.id} value={asignatura.id}>
+                  {asignatura.nombre}
+                </option>
+              ))}
             </Form.Select>
           </Form.Group>
-          
+
           <Form.Group controlId="formImagen">
             <Form.Label>Imagen</Form.Label>
             <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
