@@ -1,0 +1,80 @@
+.tabla-container {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  .tabla-title {
+    margin-bottom: 15px;
+    font-size: 22px;
+    color: #333;
+  }
+  
+  .tabla-estilizada {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: sans-serif;
+  }
+  
+  .tabla-estilizada th,
+  .tabla-estilizada td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  
+  .tabla-estilizada th {
+    background-color: #f0f0f0;
+    color: #222;
+  }
+  
+  .tabla-estilizada tbody tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  .tabla-estilizada tbody tr:hover {
+    background-color: #f5f5f5;
+  }
+  
+  .acciones {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  
+  button {
+    background-color: #4CAF50; /* Color principal */
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  button:hover {
+    background-color: #45a049; 
+    transform: scale(1.05);
+  }
+  
+  button:active {
+    transform: scale(0.98); 
+  }
+  
+  button.editar {
+    background-color: #0d6efd; 
+  }
+  
+  button.editar:hover {
+    background-color: #0b5ed7;
+  }
+  
+  button.eliminar {
+    background-color: #dc3545; 
+  }
+  
+  button.eliminar:hover {
+    background-color: #c82333;
+  }
+  

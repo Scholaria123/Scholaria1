@@ -167,9 +167,9 @@ const Asistencia = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>Registro de Asistencia</h2>
+      <h2 style={styles.title}>📋 Registro de Asistencia</h2>
 
-      <label style={styles.label}>Fecha:</label>
+      <label style={styles.label}>📅 Fecha:</label>
       <input
         type="date"
         value={fecha}
@@ -177,7 +177,7 @@ const Asistencia = () => {
         style={styles.input}
       />
 
-      <label style={styles.label}>Grado:</label>
+      <label style={styles.label}>🏫 Grado:</label>
       <select
         value={gradoSeleccionado}
         onChange={(e) => {
@@ -197,7 +197,7 @@ const Asistencia = () => {
 
       {gradoSeleccionado && (
         <>
-          <label style={styles.label}>Grupo:</label>
+          <label style={styles.label}>👥 Grupo:</label>
           <select
             value={grupoSeleccionado}
             onChange={(e) => {
@@ -218,7 +218,7 @@ const Asistencia = () => {
 
       {gradoSeleccionado && grupoSeleccionado && (
         <>
-          <label style={styles.label}>Asignatura:</label>
+          <label style={styles.label}>📘 Asignatura:</label>
           <select
             value={asignaturaSeleccionada}
             onChange={(e) => setAsignaturaSeleccionada(e.target.value)}
@@ -265,37 +265,35 @@ const Asistencia = () => {
               style={getButtonStyles(id, "Presente")}
               onClick={() => marcarAsistencia(id, "Presente")}
             >
-              {asistencia[id] === "Presente" ? "✅ Presente" : "Presente"}
+              ✅
             </button>
             <button
               style={getButtonStyles(id, "Ausente")}
               onClick={() => marcarAsistencia(id, "Ausente")}
             >
-              {asistencia[id] === "Ausente" ? "❌ Ausente" : "Ausente"}
+              ❌
             </button>
             <button
               style={getButtonStyles(id, "Justificado")}
               onClick={() => marcarAsistencia(id, "Justificado")}
             >
-              {asistencia[id] === "Justificado"
-                ? "🟡 Justificado"
-                : "Justificado"}
+              🟡
             </button>
           </div>
         ))}
       </div>
 
       <button onClick={guardarAsistencia} style={styles.buttonSave}>
-        Guardar Asistencia
+        💾 Guardar Asistencia
       </button>
       <button onClick={generarPDF} style={styles.buttonPDF}>
-        Generar PDF
+        📄 Generar PDF
       </button>
       <button
         onClick={() => setMostrarTablaResumen((prev) => !prev)}
         style={styles.buttonResumen}
       >
-        {mostrarTablaResumen ? "Ocultar resumen" : "Ver resumen en tabla"}
+        {mostrarTablaResumen ? "🔽 Ocultar resumen" : "🔼 Ver resumen"}
       </button>
 
       {mostrarTablaResumen && (
@@ -344,95 +342,103 @@ const Asistencia = () => {
 
 const styles = {
   container: {
-    maxWidth: "650px",
+    maxWidth: "750px",
     margin: "auto",
     marginTop: "30px",
-    padding: "20px",
-    borderRadius: "15px",
-    backgroundColor: "#f9f9f9",
-    boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+    padding: "25px",
+    borderRadius: "16px",
+    backgroundColor: "#ffffff",
+    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
     textAlign: "center",
+    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
   },
-  title: { marginBottom: "15px" },
-  label: { fontWeight: "bold", display: "block", marginTop: "10px" },
+  title: { marginBottom: "20px", fontSize: "24px", color: "#333" },
+  label: {
+    fontWeight: "600",
+    display: "block",
+    marginTop: "15px",
+    textAlign: "left",
+  },
   input: {
     width: "100%",
-    padding: "8px",
+    padding: "10px",
     marginBottom: "10px",
-    borderRadius: "5px",
+    borderRadius: "8px",
     border: "1px solid #ccc",
   },
   select: {
     width: "100%",
-    padding: "8px",
-    borderRadius: "5px",
+    padding: "10px",
+    borderRadius: "8px",
     border: "1px solid #ccc",
     marginBottom: "10px",
   },
-  message: { color: "red" },
-  studentsContainer: { marginTop: "10px" },
+  message: { color: "red", marginTop: "10px" },
+  studentsContainer: { marginTop: "20px" },
   studentRow: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: "8px",
-    padding: "10px",
-    borderBottom: "1px solid #ddd",
+    backgroundColor: "#f1f1f1",
+    padding: "10px 15px",
+    borderRadius: "8px",
+    marginBottom: "10px",
   },
-  studentName: { flex: 1, textAlign: "left" },
+  studentName: { flex: 1, textAlign: "left", fontWeight: "500" },
   buttonPresente: {
     backgroundColor: "#28a745",
-    color: "white",
+    color: "#fff",
     border: "none",
-    padding: "5px 8px",
-    margin: "0 2px",
-    borderRadius: "5px",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    margin: "0 4px",
     cursor: "pointer",
   },
   buttonAusente: {
     backgroundColor: "#dc3545",
-    color: "white",
+    color: "#fff",
     border: "none",
-    padding: "5px 8px",
-    margin: "0 2px",
-    borderRadius: "5px",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    margin: "0 4px",
     cursor: "pointer",
   },
   buttonJustificado: {
     backgroundColor: "#ffc107",
-    color: "black",
+    color: "#333",
     border: "none",
-    padding: "5px 8px",
-    margin: "0 2px",
-    borderRadius: "5px",
+    padding: "8px 12px",
+    borderRadius: "8px",
+    margin: "0 4px",
     cursor: "pointer",
   },
   buttonSave: {
-    marginTop: "15px",
-    marginRight: "10px",
+    marginTop: "20px",
+    padding: "10px 20px",
     backgroundColor: "#007bff",
-    color: "white",
+    color: "#fff",
     border: "none",
-    padding: "10px",
-    borderRadius: "5px",
+    borderRadius: "8px",
     cursor: "pointer",
+    marginRight: "10px",
   },
   buttonPDF: {
-    marginTop: "15px",
-    backgroundColor: "#17a2b8",
-    color: "white",
+    marginTop: "20px",
+    padding: "10px 20px",
+    backgroundColor: "#6f42c1",
+    color: "#fff",
     border: "none",
-    padding: "10px",
-    borderRadius: "5px",
+    borderRadius: "8px",
     cursor: "pointer",
+    marginRight: "10px",
   },
   buttonResumen: {
-    marginTop: "15px",
-    backgroundColor: "#6c757d",
-    color: "white",
+    marginTop: "20px",
+    padding: "10px 20px",
+    backgroundColor: "#17a2b8",
+    color: "#fff",
     border: "none",
-    padding: "10px",
-    borderRadius: "5px",
+    borderRadius: "8px",
     cursor: "pointer",
   },
   table: {
@@ -441,28 +447,28 @@ const styles = {
     borderCollapse: "collapse",
   },
   th: {
-    border: "1px solid #ccc",
-    padding: "8px",
-    backgroundColor: "#f2f2f2",
-    textAlign: "left",
+    backgroundColor: "#007bff",
+    color: "#fff",
+    padding: "10px",
+    borderRadius: "6px 6px 0 0",
   },
   td: {
-    border: "1px solid #ccc",
-    padding: "8px",
+    padding: "10px",
+    borderBottom: "1px solid #ddd",
   },
   paginacion: {
-    marginTop: "10px",
+    marginTop: "15px",
     display: "flex",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
-    gap: "10px",
   },
   pageButton: {
-    padding: "5px 10px",
-    borderRadius: "5px",
-    border: "1px solid #ccc",
+    padding: "8px 12px",
+    backgroundColor: "#6c757d",
+    color: "#fff",
+    border: "none",
+    borderRadius: "6px",
     cursor: "pointer",
-    backgroundColor: "#eee",
   },
 };
 

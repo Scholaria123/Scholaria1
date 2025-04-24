@@ -29,7 +29,6 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
   }, []);
 
   useEffect(() => {
-    // Calcular nota final cuando cambian los parciales
     const n1 = parseFloat(parcial1);
     const n2 = parseFloat(parcial2);
     const n3 = parseFloat(parcial3);
@@ -75,15 +74,12 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
     }
   };
 
-  // Extraer grados únicos
   const gradosDisponibles = [...new Set(estudiantes.map(e => e.grado))];
 
-  // Extraer grupos según grado
   const gruposDisponibles = gradoSeleccionado
     ? [...new Set(estudiantes.filter(e => e.grado === gradoSeleccionado).map(e => e.grupo))]
     : [];
 
-  // Filtrar estudiantes por grado y grupo
   const estudiantesFiltrados = estudiantes.filter(
     e => e.grado === gradoSeleccionado && e.grupo === grupoSeleccionado
   );
@@ -93,81 +89,101 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
       <div style={styles.modalContent}>
         <h3>Registrar Calificación</h3>
 
-        <label>Asignatura:</label>
-        <select
-          value={asignaturaSeleccionada}
-          onChange={e => setAsignaturaSeleccionada(e.target.value)}
-        >
-          <option value="">Seleccionar</option>
-          {asignaturas.map(a => (
-            <option key={a.id} value={a.id}>
-              {a.nombre}
-            </option>
-          ))}
-        </select>
+        <div style={styles.formGroup}>
+          <label>Asignatura:</label>
+          <select
+            value={asignaturaSeleccionada}
+            onChange={e => setAsignaturaSeleccionada(e.target.value)}
+          >
+            <option value="">Seleccionar</option>
+            {asignaturas.map(a => (
+              <option key={a.id} value={a.id}>
+                {a.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <label>Grado:</label>
-        <select
-          value={gradoSeleccionado}
-          onChange={e => {
-            setGradoSeleccionado(e.target.value);
-            setGrupoSeleccionado('');
-            setEstudianteSeleccionado('');
-          }}
-        >
-          <option value="">Seleccionar</option>
-          {gradosDisponibles.map(grado => (
-            <option key={grado} value={grado}>
-              {grado}
-            </option>
-          ))}
-        </select>
+        <div style={styles.formGroup}>
+          <label>Grado:</label>
+          <select
+            value={gradoSeleccionado}
+            onChange={e => {
+              setGradoSeleccionado(e.target.value);
+              setGrupoSeleccionado('');
+              setEstudianteSeleccionado('');
+            }}
+          >
+            <option value="">Seleccionar</option>
+            {gradosDisponibles.map(grado => (
+              <option key={grado} value={grado}>
+                {grado}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <label>Grupo:</label>
-        <select
-          value={grupoSeleccionado}
-          onChange={e => {
-            setGrupoSeleccionado(e.target.value);
-            setEstudianteSeleccionado('');
-          }}
-          disabled={!gradoSeleccionado}
-        >
-          <option value="">Seleccionar</option>
-          {gruposDisponibles.map(grupo => (
-            <option key={grupo} value={grupo}>
-              {grupo}
-            </option>
-          ))}
-        </select>
+        <div style={styles.formGroup}>
+          <label>Grupo:</label>
+          <select
+            value={grupoSeleccionado}
+            onChange={e => {
+              setGrupoSeleccionado(e.target.value);
+              setEstudianteSeleccionado('');
+            }}
+            disabled={!gradoSeleccionado}
+          >
+            <option value="">Seleccionar</option>
+            {gruposDisponibles.map(grupo => (
+              <option key={grupo} value={grupo}>
+                {grupo}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <label>Estudiante:</label>
-        <select
-          value={estudianteSeleccionado}
-          onChange={e => setEstudianteSeleccionado(e.target.value)}
-          disabled={!grupoSeleccionado}
-        >
-          <option value="">Seleccionar</option>
-          {estudiantesFiltrados.map(e => (
-            <option key={e.id} value={e.id}>
-              {e.nombre}
-            </option>
-          ))}
-        </select>
+        <div style={styles.formGroup}>
+          <label>Estudiante:</label>
+          <select
+            value={estudianteSeleccionado}
+            onChange={e => setEstudianteSeleccionado(e.target.value)}
+            disabled={!grupoSeleccionado}
+          >
+            <option value="">Seleccionar</option>
+            {estudiantesFiltrados.map(e => (
+              <option key={e.id} value={e.id}>
+                {e.nombre}
+              </option>
+            ))}
+          </select>
+        </div>
 
-        <label>Parcial 1:</label>
-        <input type="number" value={parcial1} onChange={e => setParcial1(e.target.value)} />
+        <div style={styles.gradesGroup}>
+          <div style={styles.formGroup}>
+            <label>Parcial 1:</label>
+            <input type="number" value={parcial1} onChange={e => setParcial1(e.target.value)} />
+          </div>
 
-        <label>Parcial 2:</label>
-        <input type="number" value={parcial2} onChange={e => setParcial2(e.target.value)} />
+          <div style={styles.formGroup}>
+            <label>Parcial 2:</label>
+            <input type="number" value={parcial2} onChange={e => setParcial2(e.target.value)} />
+          </div>
 
-        <label>Parcial 3:</label>
-        <input type="number" value={parcial3} onChange={e => setParcial3(e.target.value)} />
+          <div style={styles.formGroup}>
+            <label>Parcial 3:</label>
+            <input type="number" value={parcial3} onChange={e => setParcial3(e.target.value)} />
+          </div>
+        </div>
 
-        <label>Nota Final (promedio):</label>
-        <input type="text" value={final} disabled />
+        <div style={styles.formGroup}>
+          <label>Nota Final (promedio):</label>
+          <input type="text" value={final} disabled />
+        </div>
 
-        <label>Observaciones:</label>
-        <textarea value={observaciones} onChange={e => setObservaciones(e.target.value)} />
+        <div style={styles.formGroup}>
+          <label>Observaciones:</label>
+          <textarea value={observaciones} onChange={e => setObservaciones(e.target.value)} />
+        </div>
 
         <div style={styles.buttonRow}>
           <button style={styles.button} onClick={registrarCalificacion}>Guardar</button>
@@ -187,18 +203,25 @@ const styles = {
   },
   modalContent: {
     backgroundColor: '#fff', padding: '20px', borderRadius: '8px',
-    minWidth: '300px', display: 'flex', flexDirection: 'column', gap: '10px'
+    minWidth: '400px', display: 'flex', flexDirection: 'column', gap: '15px',
+    maxHeight: '80vh', overflowY: 'auto'
+  },
+  formGroup: {
+    display: 'flex', flexDirection: 'column', gap: '8px'
+  },
+  gradesGroup: {
+    display: 'flex', gap: '15px', justifyContent: 'space-between'
   },
   buttonRow: {
-    display: 'flex', justifyContent: 'space-between', marginTop: '10px'
+    display: 'flex', justifyContent: 'space-between', marginTop: '15px'
   },
   button: {
     backgroundColor: '#007bff', color: 'white', border: 'none',
-    padding: '8px 12px', borderRadius: '4px', cursor: 'pointer'
+    padding: '10px 15px', borderRadius: '4px', cursor: 'pointer', flex: 1
   },
   buttonCancelar: {
     backgroundColor: '#aaa', color: 'white', border: 'none',
-    padding: '8px 12px', borderRadius: '4px', cursor: 'pointer'
+    padding: '10px 15px', borderRadius: '4px', cursor: 'pointer', flex: 1
   }
 };
 

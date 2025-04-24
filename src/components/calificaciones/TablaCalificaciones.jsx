@@ -3,6 +3,8 @@ import { db } from '../../database/firebaseconfig';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import ModalEdicionCalificaciones from './ModalEdicionCalificaciones';
 import ModalEliminarCalificaciones from './ModalEliminarCalificaciones';
+import './TablaCalificaciones.css';
+import { Pencil, Trash2 } from 'lucide-react';
 
 const TablaCalificaciones = ({ actualizar, onExportReady }) => {
   const [calificaciones, setCalificaciones] = useState([]);
@@ -29,7 +31,6 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
       setAsignaturas(asignaturasData);
       setEstudiantes(estudiantesData);
 
-      // Datos para exportar a PDF
       if (onExportReady) {
         const exportData = calificacionesData.map(c => ({
           asignatura: asignaturasData.find(a => a.id === c.asignaturaId)?.nombre || 'Sin asignatura',
@@ -55,21 +56,18 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
       await deleteDoc(doc(db, 'calificaciones', calificacionAEliminar.id));
       setMostrarModalEliminar(false);
       setCalificacionAEliminar(null);
-      // Recargar datos
-      const actualizar = async () => {
-        const snap = await getDocs(collection(db, 'calificaciones'));
-        setCalificaciones(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-      };
-      actualizar();
+
+      const snap = await getDocs(collection(db, 'calificaciones'));
+      setCalificaciones(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
     } catch (error) {
       console.error("Error eliminando calificación:", error);
     }
   };
 
   return (
-    <div>
-      <h3>Lista de Calificaciones</h3>
-      <table border="1" cellPadding="5" style={{ width: '100%' }}>
+    <div className="tabla-container">
+      <h3 className="tabla-title">Lista de Calificaciones</h3>
+      <table className="tabla-estilizada">
         <thead>
           <tr>
             <th>Asignatura</th>
@@ -92,23 +90,24 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
               <td>{c.parcial3}</td>
               <td>{c.final}</td>
               <td>{c.observaciones}</td>
-              <td>
+              <td className="acciones">
                 <button
+                  className="editar"
                   onClick={() => {
                     setCalificacionSeleccionada(c);
                     setMostrarModalEdicion(true);
                   }}
                 >
-                  Editar
+                  <Pencil size={18} color="#fff" />
                 </button>
                 <button
+                  className="eliminar"
                   onClick={() => {
                     setCalificacionAEliminar(c);
                     setMostrarModalEliminar(true);
                   }}
-                  style={{ marginLeft: "10px", color: "red" }}
                 >
-                  Eliminar
+                  <Trash2 size={18} color="#fff" />
                 </button>
               </td>
             </tr>
@@ -122,10 +121,7 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
           setShow={setMostrarModalEdicion}
           calificacionEditada={calificacionSeleccionada}
           setCalificacionEditada={setCalificacionSeleccionada}
-          onCalificacionActualizada={() => {
-            setMostrarModalEdicion(false);
-            // Forzar recarga desde el padre
-          }}
+          onCalificacionActualizada={() => setMostrarModalEdicion(false)}
         />
       )}
 
