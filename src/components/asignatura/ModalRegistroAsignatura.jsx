@@ -22,6 +22,42 @@ const ModalRegistroAsignatura = ({
     handleInputChange({ target: { name, value: selectedValues } });
   };
 
+  // Validación del formulario
+  const validateForm = () => {
+    // Validación del nombre
+    if (!nuevaAsignatura.nombre || nuevaAsignatura.nombre.trim() === "") {
+      alert("El nombre de la asignatura es obligatorio.");
+      return false;
+    }
+
+    // Validación del docente
+    if (!nuevaAsignatura.docente || nuevaAsignatura.docente.trim() === "") {
+      alert("El nombre del docente es obligatorio.");
+      return false;
+    }
+
+    // Validación de grados
+    if (!nuevaAsignatura.grado || nuevaAsignatura.grado.length === 0) {
+      alert("Debe seleccionar al menos un grado.");
+      return false;
+    }
+
+    // Validación de grupos
+    if (!nuevaAsignatura.grupo || nuevaAsignatura.grupo.length === 0) {
+      alert("Debe seleccionar al menos un grupo.");
+      return false;
+    }
+
+    return true; // Si todas las validaciones pasan
+  };
+
+  // Manejo de la acción de agregar asignatura
+  const handleAddAsignaturaWithValidation = () => {
+    if (validateForm()) {
+      handleAddAsignatura();
+    }
+  };
+
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
       <Modal.Header closeButton>
@@ -89,7 +125,7 @@ const ModalRegistroAsignatura = ({
         <Button variant="secondary" onClick={() => setShowModal(false)}>
           Cerrar
         </Button>
-        <Button variant="primary" onClick={handleAddAsignatura}>
+        <Button variant="primary" onClick={handleAddAsignaturaWithValidation}>
           Guardar
         </Button>
       </Modal.Footer>

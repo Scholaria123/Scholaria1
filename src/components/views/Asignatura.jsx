@@ -11,23 +11,24 @@ import {
 } from "firebase/firestore";
 import ReactGA from "react-ga4";
 
-// Importaciones de componentes personalizados
+// Componentes personalizados
 import TablaAsignaturas from "../asignatura/TablaAsignatura";
 import ModalRegistroAsignatura from "../asignatura/ModalRegistroAsignatura";
 import ModalEdicionAsignatura from "../asignatura/ModalEdicionAsignatura";
 import ModalEliminacionAsignatura from "../asignatura/ModalEliminacionAsignatura";
+import Paginacion from "../ordenamiento/Paginacion"; // Ajusta la ruta si es necesario
 
 const Asignatura = () => {
   const [asignaturas, setAsignaturas] = useState([]);
-  const [filtro, setFiltro] = useState(""); // Estado para la búsqueda
+  const [filtro, setFiltro] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [nuevaAsignatura, setNuevaAsignatura] = useState({
-    nombre: '',
-    docente: '',
-    grado: '',
-    grupo: '',
+    nombre: "",
+    docente: "",
+    grado: "",
+    grupo: "",
   });
   const [asignaturaEditada, setAsignaturaEditada] = useState({
     nombre: "",
@@ -37,12 +38,13 @@ const Asignatura = () => {
   });
   const [asignaturaAEliminar, setAsignaturaAEliminar] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const asignaturasCollection = collection(db, "asignaturas");
 
-  // Inicialización de Google Analytics
-  ReactGA.initialize("G-T4JNY83CWB"); // Reemplaza con tu ID de seguimiento
+  ReactGA.initialize("G-T4JNY83CWB");
 
-  // Obtener asignaturas de Firestore
   const fetchAsignaturas = async () => {
     const querySnapshot = await getDocs(asignaturasCollection);
     const asignaturasArray = querySnapshot.docs.map((doc) => ({
@@ -56,7 +58,6 @@ const Asignatura = () => {
     fetchAsignaturas();
   }, []);
 
-  // Manejador de cambios en los inputs
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNuevaAsignatura((prevState) => ({
@@ -65,18 +66,24 @@ const Asignatura = () => {
     }));
   };
 
-  // Manejador de la búsqueda
   const handleFiltroChange = (e) => {
     setFiltro(e.target.value);
+    setCurrentPage(1); // Reiniciar a página 1 si se busca algo
   };
 
-  // Filtrar asignaturas por nombre y docente
   const asignaturasFiltradas = asignaturas.filter((asignatura) =>
-    (asignatura.nombre && asignatura.nombre.toLowerCase().includes(filtro.toLowerCase())) ||
-    (asignatura.docente && asignatura.docente.toLowerCase().includes(filtro.toLowerCase()))
+    ["nombre", "docente"].some((campo) =>
+      asignatura[campo]?.toLowerCase().includes(filtro.toLowerCase())
+    )
   );
 
-  // Agregar nueva asignatura
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentAsignaturas = asignaturasFiltradas.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
   const handleAddAsignatura = async () => {
     try {
       const docRef = await addDoc(asignaturasCollection, nuevaAsignatura);
@@ -86,20 +93,17 @@ const Asignatura = () => {
       ]);
       setShowModal(false);
       setNuevaAsignatura({ nombre: "", docente: "", grado: "", grupo: "" });
-      
-      // Evento de Google Analytics para agregar asignatura
+
       ReactGA.event({
         category: "Asignaturas",
         action: "Agregar Asignatura",
         label: nuevaAsignatura.nombre,
       });
-
     } catch (error) {
       console.error("Error al agregar asignatura:", error);
     }
   };
 
-  // Actualizar asignatura
   const handleEditAsignatura = async () => {
     if (!asignaturaEditada.id) return;
 
@@ -108,20 +112,17 @@ const Asignatura = () => {
       await updateDoc(asignaturaRef, { ...asignaturaEditada });
       fetchAsignaturas();
       setShowEditModal(false);
-      
-      // Evento de Google Analytics para editar asignatura
+
       ReactGA.event({
         category: "Asignaturas",
         action: "Editar Asignatura",
         label: asignaturaEditada.nombre,
       });
-
     } catch (error) {
       console.error("Error al actualizar la asignatura:", error);
     }
   };
 
-  // Eliminar asignatura
   const handleDeleteAsignatura = async () => {
     if (asignaturaAEliminar) {
       try {
@@ -129,14 +130,12 @@ const Asignatura = () => {
         await deleteDoc(asignaturaRef);
         fetchAsignaturas();
         setShowDeleteModal(false);
-        
-        // Evento de Google Analytics para eliminar asignatura
+
         ReactGA.event({
           category: "Asignaturas",
           action: "Eliminar Asignatura",
           label: asignaturaAEliminar.nombre,
         });
-
       } catch (error) {
         console.error("Error al eliminar la asignatura:", error);
       }
@@ -146,8 +145,7 @@ const Asignatura = () => {
   return (
     <Container className="mt-5">
       <h4>Gestión de Asignaturas</h4>
-      
-      {/* Campo de búsqueda */}
+
       <Form.Control
         type="text"
         placeholder="Buscar"
@@ -156,10 +154,12 @@ const Asignatura = () => {
         className="mb-3"
       />
 
-      <Button onClick={() => setShowModal(true)}>Agregar Asignatura</Button>
+      <Button className="mb-3" onClick={() => setShowModal(true)}>
+        Agregar Asignatura
+      </Button>
 
       <TablaAsignaturas
-        asignaturas={asignaturasFiltradas}
+        asignaturas={currentAsignaturas}
         openEditModal={(asignatura) => {
           setAsignaturaEditada(asignatura);
           setShowEditModal(true);
@@ -168,6 +168,13 @@ const Asignatura = () => {
           setAsignaturaAEliminar(asignatura);
           setShowDeleteModal(true);
         }}
+      />
+
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={asignaturasFiltradas.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
 
       <ModalRegistroAsignatura

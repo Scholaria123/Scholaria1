@@ -42,7 +42,6 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
         setAsignaturas(asignaturasList);
         setGrados([...new Set(asignaturasList.flatMap((a) => a.grado))]);
         setGrupos([...new Set(asignaturasList.flatMap((a) => a.grupo))]);
-        
       } catch (error) {
         console.error("❌ Error al obtener asignaturas:", error);
       }
@@ -74,6 +73,47 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
   };
 
   const handleAddEstudiante = async () => {
+    // Validación de campos
+    if (!nuevoEstudiante.nombre.trim()) {
+      alert("El nombre es obligatorio.");
+      return;
+    }
+
+    if (!nuevoEstudiante.direccion.trim()) {
+      alert("La dirección es obligatoria.");
+      return;
+    }
+
+    if (!nuevoEstudiante.telefono.trim()) {
+      alert("El teléfono es obligatorio.");
+      return;
+    }
+
+    if (!nuevoEstudiante.grado) {
+      alert("Debe seleccionar un grado.");
+      return;
+    }
+
+    if (!nuevoEstudiante.grupo) {
+      alert("Debe seleccionar un grupo.");
+      return;
+    }
+
+    if (nuevoEstudiante.asignaturaId.length === 0) {
+      alert("Debe seleccionar al menos una asignatura.");
+      return;
+    }
+
+    if (nuevoEstudiante.imagen) {
+      const imageFile = nuevoEstudiante.imagen;
+      const validImageTypes = ['image/jpeg', 'image/png', 'image/gif'];
+      if (!validImageTypes.includes(imageFile.type)) {
+        alert("Por favor, suba una imagen válida (JPEG, PNG, GIF).");
+        return;
+      }
+    }
+
+    // Si todo es válido, agregar el estudiante a la base de datos
     try {
       await addDoc(collection(db, "estudiantes"), {
         ...nuevoEstudiante,
@@ -100,22 +140,40 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
         <Form>
           <Form.Group controlId="formNombre">
             <Form.Label>Nombre</Form.Label>
-            <Form.Control type="text" name="nombre" value={nuevoEstudiante.nombre} onChange={handleInputChange} />
+            <Form.Control 
+              type="text" 
+              name="nombre" 
+              value={nuevoEstudiante.nombre} 
+              onChange={handleInputChange} 
+              required 
+            />
           </Form.Group>
           
           <Form.Group controlId="formDireccion">
             <Form.Label>Dirección</Form.Label>
-            <Form.Control type="text" name="direccion" value={nuevoEstudiante.direccion} onChange={handleInputChange} />
+            <Form.Control 
+              type="text" 
+              name="direccion" 
+              value={nuevoEstudiante.direccion} 
+              onChange={handleInputChange} 
+              required 
+            />
           </Form.Group>
           
           <Form.Group controlId="formTelefono">
             <Form.Label>Teléfono</Form.Label>
-            <Form.Control type="text" name="telefono" value={nuevoEstudiante.telefono} onChange={handleInputChange} />
+            <Form.Control 
+              type="text" 
+              name="telefono" 
+              value={nuevoEstudiante.telefono} 
+              onChange={handleInputChange} 
+              required 
+            />
           </Form.Group>
           
           <Form.Group controlId="formGrado">
             <Form.Label>Grado</Form.Label>
-            <Form.Select name="grado" value={nuevoEstudiante.grado} onChange={handleInputChange}>
+            <Form.Select name="grado" value={nuevoEstudiante.grado} onChange={handleInputChange} required>
               <option value="">Seleccione un grado</option>
               {grados.map((grado, index) => (<option key={index} value={grado}>{grado}</option>))}
             </Form.Select>
@@ -123,7 +181,7 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
           
           <Form.Group controlId="formGrupo">
             <Form.Label>Grupo</Form.Label>
-            <Form.Select name="grupo" value={nuevoEstudiante.grupo} onChange={handleInputChange}>
+            <Form.Select name="grupo" value={nuevoEstudiante.grupo} onChange={handleInputChange} required>
               <option value="">Seleccione un grupo</option>
               {grupos.map((grupo, index) => (<option key={index} value={grupo}>{grupo}</option>))}
             </Form.Select>
@@ -131,7 +189,7 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
           
           <Form.Group controlId="formAsignatura">
             <Form.Label>Asignaturas</Form.Label>
-            <Form.Select name="asignaturaId" multiple value={nuevoEstudiante.asignaturaId} onChange={handleInputChange}>
+            <Form.Select name="asignaturaId" multiple value={nuevoEstudiante.asignaturaId} onChange={handleInputChange} required>
               {asignaturas.map((asignatura) => (<option key={asignatura.id} value={asignatura.id}>{asignatura.nombre}</option>))}
             </Form.Select>
           </Form.Group>

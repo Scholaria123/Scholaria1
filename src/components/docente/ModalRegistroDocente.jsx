@@ -70,14 +70,51 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
     }
   };
 
-  const handleAddDocente = async () => {
-    try {
-      await addDoc(collection(db, "docentes"), nuevoDocente);
-      console.log("✅ Docente registrado correctamente");
-      fetchDocentes(); // Actualiza la lista en el componente padre
-      setShowModal(false);
-    } catch (error) {
-      console.error("❌ Error al registrar docente:", error);
+  // Validaciones del formulario
+  const validateForm = () => {
+    // Validación del nombre
+    if (!nuevoDocente.nombre || nuevoDocente.nombre.trim() === "") {
+      alert("El nombre del docente es obligatorio.");
+      return false;
+    }
+
+    // Validación de asignatura
+    if (!nuevoDocente.asignaturaId) {
+      alert("Debe seleccionar una asignatura.");
+      return false;
+    }
+
+    // Validación de dirección
+    if (!nuevoDocente.direccion || nuevoDocente.direccion.trim() === "") {
+      alert("La dirección es obligatoria.");
+      return false;
+    }
+
+    // Validación de teléfono
+    if (!nuevoDocente.telefono || nuevoDocente.telefono.trim() === "") {
+      alert("El teléfono es obligatorio.");
+      return false;
+    }
+
+    // Validación de título
+    if (!nuevoDocente.titulo || nuevoDocente.titulo.trim() === "") {
+      alert("El título es obligatorio.");
+      return false;
+    }
+
+    return true; // Si todas las validaciones pasan
+  };
+
+  const handleAddDocenteWithValidation = async () => {
+    if (validateForm()) {
+      try {
+        await addDoc(collection(db, "docentes"), nuevoDocente);
+        console.log("✅ Docente registrado correctamente");
+        fetchDocentes(); // Actualiza la lista en el componente padre
+        setShowModal(false);
+      } catch (error) {
+        console.error("❌ Error al registrar docente:", error);
+      }
     }
   };
 
@@ -131,7 +168,7 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>
-        <Button variant="primary" onClick={handleAddDocente}>Guardar</Button>
+        <Button variant="primary" onClick={handleAddDocenteWithValidation}>Guardar</Button>
       </Modal.Footer>
     </Modal>
   );

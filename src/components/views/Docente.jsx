@@ -15,6 +15,7 @@ import TablaDocente from "../docente/TablaDocente";
 import ModalRegistroDocente from "../docente/ModalRegistroDocente";
 import ModalEdicionDocente from "../docente/ModalEdicionDocente";
 import ModalEliminacionDocente from "../docente/ModalEliminacionDocente";
+import Paginacion from "../ordenamiento/Paginacion";
 
 const Docentes = () => {
   const [docentes, setDocentes] = useState([]);
@@ -24,6 +25,10 @@ const Docentes = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [docenteEditado, setDocenteEditado] = useState(null);
   const [docenteAEliminar, setDocenteAEliminar] = useState(null);
+
+  // Paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
   const docentesCollection = collection(db, "docentes");
 
@@ -71,6 +76,7 @@ const Docentes = () => {
 
   const handleFilterChange = (e) => {
     setFiltro(e.target.value);
+    setCurrentPage(1); // Reiniciar página al filtrar
   };
 
   const openEditModal = (docente) => {
@@ -169,6 +175,11 @@ const Docentes = () => {
     )
   );
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentDocentes = docentesFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(docentesFiltrados.length / itemsPerPage);
+
   return (
     <Container className="mt-5">
       <h4>Gestión de Docentes</h4>
@@ -182,11 +193,38 @@ const Docentes = () => {
       <Button className="mb-3" onClick={() => setShowModal(true)}>
         Agregar docente
       </Button>
+
       <TablaDocente
-        docentes={docentesFiltrados}
+        docentes={currentDocentes}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
       />
+
+      {/* Paginación */}
+      <div className="d-flex justify-content-between align-items-center mt-3">
+        <div>
+          Página {currentPage} de {totalPages}
+        </div>
+        <div>
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={currentPage === 1}
+            onClick={() => setCurrentPage(currentPage - 1)}
+          >
+            Anterior
+          </Button>{" "}
+          <Button
+            variant="secondary"
+            size="sm"
+            disabled={currentPage === totalPages}
+            onClick={() => setCurrentPage(currentPage + 1)}
+          >
+            Siguiente
+          </Button>
+        </div>
+      </div>
+
       <ModalRegistroDocente
         showModal={showModal}
         setShowModal={setShowModal}

@@ -9,16 +9,17 @@ import {
   deleteDoc,
   doc,
 } from "firebase/firestore";
-import ReactGA from "react-ga4"; // Importa Google Analytics
+import ReactGA from "react-ga4";
 
 import TablaEstudiantes from "../estudiantes/TablaEstudiantes";
 import ModalRegistroEstudiante from "../estudiantes/ModalRegistroEstudiantes";
 import ModalEdicionEstudiante from "../estudiantes/ModalEdicionEstudiantes";
 import ModalEliminacionEstudiante from "../estudiantes/ModalEliminacionEstudiantes";
+import Paginacion from "../ordenamiento/Paginacion"; // Asegúrate de que esta ruta sea correcta
 
 const Estudiantes = () => {
   const [estudiantes, setEstudiantes] = useState([]);
-  const [filtro, setFiltro] = useState(""); // Estado para el término de búsqueda
+  const [filtro, setFiltro] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -31,7 +32,14 @@ const Estudiantes = () => {
   const [estudianteEditado, setEstudianteEditado] = useState(null);
   const [estudianteAEliminar, setEstudianteAEliminar] = useState(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const estudiantesCollection = collection(db, "estudiantes");
+
+  useEffect(() => {
+    fetchEstudiantes();
+  }, []);
 
   const fetchEstudiantes = async () => {
     try {
@@ -46,10 +54,6 @@ const Estudiantes = () => {
     }
   };
 
-  useEffect(() => {
-    fetchEstudiantes();
-  }, []);
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setNuevoEstudiante((prev) => ({
@@ -58,23 +62,11 @@ const Estudiantes = () => {
     }));
   };
 
-  // Inicialización de Google Analytics
-  ReactGA.initialize("G-T4JNY83CWB"); // Reemplaza con tu ID de seguimiento
+  ReactGA.initialize("G-T4JNY83CWB");
 
   const handleFilterChange = (e) => {
     setFiltro(e.target.value);
-  };
-
-  const handleEditImageChange = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setEstudianteEditado((prev) => ({
-        ...prev,
-        imagen: reader.result,
-      }));
-    };
-    if (file) reader.readAsDataURL(file);
+    setCurrentPage(1); // Reiniciar a la página 1
   };
 
   const handleImageChange = (e) => {
@@ -89,19 +81,21 @@ const Estudiantes = () => {
     if (file) reader.readAsDataURL(file);
   };
 
-  const openEditModal = (estudiante) => {
-    if (!estudiante) {
-      console.error("No se ha encontrado el estudiante.");
-      return;
-    }
+  const handleEditImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEstudianteEditado((prev) => ({
+        ...prev,
+        imagen: reader.result,
+      }));
+    };
+    if (file) reader.readAsDataURL(file);
+  };
 
-    setEstudianteEditado({
-      id: estudiante.id,
-      nombre: estudiante.nombre || "",
-      direccion: estudiante.direccion || "",
-      telefono: estudiante.telefono || "",
-      imagen: estudiante.imagen || "",
-    });
+  const openEditModal = (estudiante) => {
+    if (!estudiante) return;
+    setEstudianteEditado({ ...estudiante });
     setShowEditModal(true);
   };
 
@@ -117,22 +111,17 @@ const Estudiantes = () => {
     }
     try {
       await addDoc(estudiantesCollection, nuevoEstudiante);
-
-      // Enviar evento a Google Analytics
       ReactGA.event({
         category: "Estudiantes",
         action: "Registro de Estudiante",
         label: nuevoEstudiante.nombre,
-        value: 1, // Puedes ajustar esto según sea necesario
+        value: 1,
       });
-
-      alert("Estudiante agregado correctamente.");
       setShowModal(false);
       setNuevoEstudiante({ nombre: "", direccion: "", telefono: "", imagen: "" });
       fetchEstudiantes();
     } catch (error) {
       console.error("Error al agregar estudiante:", error);
-      alert("Error al agregar estudiante.");
     }
   };
 
@@ -149,36 +138,25 @@ const Estudiantes = () => {
       alert("Por favor, completa el campo de nombre.");
       return;
     }
-
     try {
       const estudianteRef = doc(db, "estudiantes", estudianteEditado.id);
-      
       const updateData = {
         nombre: estudianteEditado.nombre,
         direccion: estudianteEditado.direccion,
         telefono: estudianteEditado.telefono,
+        imagen: estudianteEditado.imagen,
       };
-
-      if (estudianteEditado.imagen !== estudianteEditado.imagenOriginal) {
-        updateData.imagen = estudianteEditado.imagen;
-      }
-
       await updateDoc(estudianteRef, updateData);
-
-      // Enviar evento de edición a Google Analytics
       ReactGA.event({
         category: "Estudiantes",
         action: "Edición de Estudiante",
         label: estudianteEditado.nombre,
         value: 1,
       });
-
       setShowEditModal(false);
       fetchEstudiantes();
-      alert("Estudiante actualizado correctamente.");
     } catch (error) {
-      console.error("Error al editar el estudiante:", error);
-      alert("Error al actualizar el estudiante.");
+      console.error("Error al actualizar el estudiante:", error);
     }
   };
 
@@ -187,15 +165,12 @@ const Estudiantes = () => {
       try {
         const estudianteRef = doc(db, "estudiantes", estudianteAEliminar.id);
         await deleteDoc(estudianteRef);
-
-        // Enviar evento de eliminación a Google Analytics
         ReactGA.event({
           category: "Estudiantes",
           action: "Eliminación de Estudiante",
           label: estudianteAEliminar.nombre,
           value: 1,
         });
-
         setShowDeleteModal(false);
         fetchEstudiantes();
       } catch (error) {
@@ -204,16 +179,21 @@ const Estudiantes = () => {
     }
   };
 
-  // Filtrar estudiantes según el término de búsqueda
   const estudiantesFiltrados = estudiantes.filter((estudiante) =>
     ["nombre", "direccion", "telefono"].some((campo) =>
       estudiante[campo]?.toLowerCase().includes(filtro.toLowerCase())
     )
   );
 
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentEstudiantes = estudiantesFiltrados.slice(
+    indexOfFirstItem,
+    indexOfLastItem
+  );
+
   return (
     <Container className="mt-5">
-      <br />
       <h4>Gestión de Estudiantes</h4>
       <Form.Control
         type="text"
@@ -226,9 +206,15 @@ const Estudiantes = () => {
         Agregar estudiante
       </Button>
       <TablaEstudiantes
-        estudiantes={estudiantesFiltrados}
+        estudiantes={currentEstudiantes}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
+      />
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={estudiantesFiltrados.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
       />
       <ModalRegistroEstudiante
         showModal={showModal}
@@ -244,7 +230,9 @@ const Estudiantes = () => {
         setShowEditModal={setShowEditModal}
         estudianteEditado={estudianteEditado}
         setEstudianteEditado={setEstudianteEditado}
-        fetchData={fetchEstudiantes}
+        handleEditInputChange={handleEditInputChange}
+        handleEditImageChange={handleEditImageChange}
+        handleEditEstudiante={handleEditEstudiante}
       />
       <ModalEliminacionEstudiante
         showDeleteModal={showDeleteModal}
