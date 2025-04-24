@@ -15,41 +15,94 @@ import Calificaciones from "./components/views/Calificaciones";
 import './App.css';
 import Docentes from "./components/views/Docente";
 
-
 function App() {
   return (
     <AuthProvider>
       <Router>
         <div className="App">
-          {/* Barra de navegación */}
           <Encabezado />
-          
           <main>
             <Routes>
               {/* Ruta de Login */}
               <Route path="/" element={<Login />} />
 
-              {/* Ruta de Inicio protegida */}
-              <Route path="/inicio" element={<ProtectedRoute><Inicio /></ProtectedRoute>} />
+              {/* Rutas protegidas */}
+              <Route 
+                path="/inicio" 
+                element={
+                  <ProtectedRoute allowedRoles={["estudiante", "docente", "admin", "padre"]}>
+                    <Inicio />
+                  </ProtectedRoute>
+                } 
+              />
 
-              {/* Ruta de Estudiantes protegida */}
-              <Route path="/estudiantes" element={<ProtectedRoute><Estudiantes /></ProtectedRoute>} />
+              <Route 
+                path="/estudiantes" 
+                element={
+                  <ProtectedRoute allowedRoles={[ "admin"]}>
+                    <Estudiantes />
+                  </ProtectedRoute>
+                } 
+              />
 
-              {/* Ruta de Estudiantes protegida */}
-              <Route path="/Docentes" element={<ProtectedRoute><Docentes /></ProtectedRoute>} />
+              <Route 
+                path="/Docentes" 
+                element={
+                  <ProtectedRoute allowedRoles={["admin"]}>
+                    <Docentes />
+                  </ProtectedRoute>
+                } 
+              />
 
-              {/* Ruta de Asignaturas protegida */}
-              <Route path="/Asignatura" element={<ProtectedRoute><Asignaturas /></ProtectedRoute>} />
+              <Route 
+                path="/Asignatura" 
+                element={
+                  <ProtectedRoute allowedRoles={["docente", "admin"]}>
+                    <Asignaturas />
+                  </ProtectedRoute>
+                } 
+              />
 
-              <Route path="/Asistencia" element={<ProtectedRoute><Asistencia /></ProtectedRoute>} />
+              <Route 
+                path="/Asistencia" 
+                element={
+                  <ProtectedRoute allowedRoles={["docente", "admin"]}>
+                    <Asistencia />
+                  </ProtectedRoute>
+                } 
+              />
 
-              <Route path="/CatalogoCalificaciones" element={<ProtectedRoute><CatalogoCalificaciones /></ProtectedRoute>} />
+              <Route 
+                path="/CatalogoCalificaciones" 
+                element={
+                  <ProtectedRoute allowedRoles={["admin", "padre", "docente"]}>
+                    <CatalogoCalificaciones />
+                  </ProtectedRoute>
+                } 
+              />
 
-              <Route path="/Calendario" element={<ProtectedRoute><CalendarioEventos /></ProtectedRoute>} />
+              <Route 
+                path="/Calendario" 
+                element={
+                  <ProtectedRoute allowedRoles={["estudiante", "docente", "padre", "admin"]}>
+                    <CalendarioEventos />
+                  </ProtectedRoute>
+                } 
+              />
 
-              <Route path="/Calificaciones" element={<ProtectedRoute><Calificaciones /></ProtectedRoute>} />
+              <Route 
+                path="/Calificaciones" 
+                element={
+                  <ProtectedRoute allowedRoles={["docente", "admin", "padre", "estudiante"]}>
+                    <Calificaciones />
+                  </ProtectedRoute>
+                } 
+              />
 
-              {/* Ruta de error 404 */}
+              {/* Página de acceso no autorizado */}
+              <Route path="/no-autorizado" element={<h2>🚫 Acceso no autorizado</h2>} />
+
+              {/* Página no encontrada */}
               <Route path="*" element={<h1>Página no encontrada</h1>} />
             </Routes>
           </main>
