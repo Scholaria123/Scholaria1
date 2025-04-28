@@ -4,6 +4,8 @@ import ModalRegistroCalificaciones from '../calificaciones/ModalRegistroCalifica
 import ModalEdicionCalificaciones from '../calificaciones/ModalEdicionCalificaciones';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { useAuth } from '../../database/authcontext';
+
 
 const Calificaciones = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -11,6 +13,8 @@ const Calificaciones = () => {
   const [calificacionEditada, setCalificacionEditada] = useState(null);
   const [actualizarTabla, setActualizarTabla] = useState(false);
   const [calificacionesExport, setCalificacionesExport] = useState([]);
+
+  const { user } = useAuth(); // <-- OBTENEMOS el usuario de contexto
 
   const handleRegistroExitoso = () => {
     setActualizarTabla(prev => !prev);
@@ -52,10 +56,15 @@ const Calificaciones = () => {
     <div>
       <h2>Gestión de Calificaciones</h2>
 
-      <button onClick={() => setMostrarModal(true)}>Registrar Calificación</button>
-      <button onClick={exportarCalificacionesPDF} style={{ marginLeft: '10px' }}>
-        Exportar PDF
-      </button>
+      {/* Mostrar botones SOLO si no es estudiante */}
+      {user?.rol !== 'estudiante' && (
+        <div style={{ marginBottom: '20px' }}>
+          <button onClick={() => setMostrarModal(true)}>Registrar Calificación</button>
+          <button onClick={exportarCalificacionesPDF} style={{ marginLeft: '10px' }}>
+            Exportar PDF
+          </button>
+        </div>
+      )}
 
       {mostrarModal && (
         <ModalRegistroCalificaciones
@@ -74,7 +83,7 @@ const Calificaciones = () => {
 
       <TablaCalificaciones
         actualizar={actualizarTabla}
-        onEditar={handleEdicionCalificacion}
+        onEditar={user?.rol !== 'estudiante' ? handleEdicionCalificacion : null} // <-- SOLO permitir editar si no es estudiante
         onExportReady={setCalificacionesExport}
       />
     </div>

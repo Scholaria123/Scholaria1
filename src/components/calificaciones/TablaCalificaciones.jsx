@@ -3,6 +3,7 @@ import { db } from '../../database/firebaseconfig';
 import { collection, getDocs, deleteDoc, doc } from 'firebase/firestore';
 import ModalEdicionCalificaciones from './ModalEdicionCalificaciones';
 import ModalEliminarCalificaciones from './ModalEliminarCalificaciones';
+import { useAuth } from '../../database/authcontext'; // <-- Agregado aquí
 import './TablaCalificaciones.css';
 import { Pencil, Trash2 } from 'lucide-react';
 
@@ -10,12 +11,12 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
   const [calificaciones, setCalificaciones] = useState([]);
   const [asignaturas, setAsignaturas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
-
   const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
   const [calificacionSeleccionada, setCalificacionSeleccionada] = useState(null);
-
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [calificacionAEliminar, setCalificacionAEliminar] = useState(null);
+
+  const { user } = useAuth(); // <-- Agregado aquí
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -77,7 +78,8 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
             <th>Parcial 3</th>
             <th>Final</th>
             <th>Observaciones</th>
-            <th>Acciones</th>
+            {/* Mostrar encabezado de acciones solo si no es estudiante */}
+            {user?.rol !== 'estudiante' && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -90,26 +92,29 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
               <td>{c.parcial3}</td>
               <td>{c.final}</td>
               <td>{c.observaciones}</td>
-              <td className="acciones">
-                <button
-                  className="editar"
-                  onClick={() => {
-                    setCalificacionSeleccionada(c);
-                    setMostrarModalEdicion(true);
-                  }}
-                >
-                  <Pencil size={18} color="#fff" />
-                </button>
-                <button
-                  className="eliminar"
-                  onClick={() => {
-                    setCalificacionAEliminar(c);
-                    setMostrarModalEliminar(true);
-                  }}
-                >
-                  <Trash2 size={18} color="#fff" />
-                </button>
-              </td>
+              {/* Mostrar botones solo si no es estudiante */}
+              {user?.rol !== 'estudiante' && (
+                <td className="acciones">
+                  <button
+                    className="editar"
+                    onClick={() => {
+                      setCalificacionSeleccionada(c);
+                      setMostrarModalEdicion(true);
+                    }}
+                  >
+                    <Pencil size={18} color="#fff" />
+                  </button>
+                  <button
+                    className="eliminar"
+                    onClick={() => {
+                      setCalificacionAEliminar(c);
+                      setMostrarModalEliminar(true);
+                    }}
+                  >
+                    <Trash2 size={18} color="#fff" />
+                  </button>
+                </td>
+              )}
             </tr>
           ))}
         </tbody>
