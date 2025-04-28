@@ -11,7 +11,7 @@ import "../App.css";
 
 const Encabezado = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const { isLoggedIn, logout, user } = useAuth(); // <-- AÑADIMOS user
+  const { isLoggedIn, logout, user } = useAuth();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -33,7 +33,7 @@ const Encabezado = () => {
     setIsCollapsed(false);
   };
 
-  if (!user) return null; // <-- Si no hay usuario, NO mostrar el encabezado
+  if (!user) return null;
 
   return (
     <Navbar expand="sm" fixed="top" className="color-navbar">
@@ -52,7 +52,7 @@ const Encabezado = () => {
           />{" "}
           <strong>Scholaria</strong>
         </Navbar.Brand>
-  
+
         <Navbar.Toggle
           aria-controls="offcanvasNavbar-expand-sm"
           onClick={handleToggle}
@@ -62,7 +62,7 @@ const Encabezado = () => {
           <span className="toggler-bar"></span>
           <span className="toggler-bar"></span>
         </Navbar.Toggle>
-  
+
         <Navbar.Offcanvas
           id="offcanvasNavbar-expand-sm"
           aria-labelledby="offcanvasNavbarLabel-expand-sm"
@@ -80,83 +80,108 @@ const Encabezado = () => {
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Nav className="justify-content-end flex-grow-1 pe-3">
-              {/* Inicio - para todos */}
-              <Nav.Link
-                onClick={() => handleNavigate("/inicio")}
-                className={isCollapsed ? "color-texto-marca" : "text-white"}
-              >
-                {isCollapsed && <i className="bi-house-door-fill me-2"></i>}
-                <strong>Inicio</strong>
-              </Nav.Link>
-
-              {/* Solo Admin puede ver Estudiantes y Docentes */}
-              {user.rol === "admin" && (
+              {user.rol === "padre" ? (
                 <>
                   <Nav.Link
-                    onClick={() => handleNavigate("/Estudiantes")}
+                    onClick={() => handleNavigate("/Calificaciones")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                   >
-                    {isCollapsed && <i className="bi-people-fill me-2"></i>}
-                    <strong>Estudiantes</strong>
+                    {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
+                    <strong>Calificaciones</strong>
                   </Nav.Link>
 
                   <Nav.Link
-                    onClick={() => handleNavigate("/Docentes")}
+                    onClick={() => handleNavigate("/Calendario")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                   >
-                    {isCollapsed && <i className="bi-person-badge-fill me-2"></i>}
-                    <strong>Docentes</strong>
+                    {isCollapsed && <i className="bi-calendar-event-fill me-2"></i>}
+                    <strong>Calendario</strong>
                   </Nav.Link>
 
                   <Nav.Link
                     onClick={() => handleNavigate("/CatalogoCalificaciones")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                   >
-                    {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
+                    {isCollapsed && <i className="bi-search me-2"></i>}
                     <strong>Busca tu estudiante</strong>
                   </Nav.Link>
                 </>
-              )}
-
-              {/* Admin y Docente ven Asignaturas y Asistencia */}
-              {(user.rol === "admin" || user.rol === "docente") && (
+              ) : (
                 <>
                   <Nav.Link
-                    onClick={() => handleNavigate("/Asignatura")}
+                    onClick={() => handleNavigate("/inicio")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                   >
-                    {isCollapsed && <i className="bi-journal-bookmark-fill me-2"></i>}
-                    <strong>Asignaturas</strong>
+                    {isCollapsed && <i className="bi-house-door-fill me-2"></i>}
+                    <strong>Inicio</strong>
                   </Nav.Link>
+
+                  {user.rol === "admin" && (
+                    <>
+                      <Nav.Link
+                        onClick={() => handleNavigate("/Estudiantes")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-people-fill me-2"></i>}
+                        <strong>Estudiantes</strong>
+                      </Nav.Link>
+
+                      <Nav.Link
+                        onClick={() => handleNavigate("/Docentes")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-person-badge-fill me-2"></i>}
+                        <strong>Docentes</strong>
+                      </Nav.Link>
+
+                      <Nav.Link
+                        onClick={() => handleNavigate("/CatalogoCalificaciones")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-search me-2"></i>}
+                        <strong>Busca tu estudiante</strong>
+                      </Nav.Link>
+                    </>
+                  )}
+
+                  {(user.rol === "admin" || user.rol === "docente") && (
+                    <>
+                      <Nav.Link
+                        onClick={() => handleNavigate("/Asignatura")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-journal-bookmark-fill me-2"></i>}
+                        <strong>Asignaturas</strong>
+                      </Nav.Link>
+
+                      <Nav.Link
+                        onClick={() => handleNavigate("/Asistencia")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-calendar-check-fill me-2"></i>}
+                        <strong>Asistencia</strong>
+                      </Nav.Link>
+                    </>
+                  )}
 
                   <Nav.Link
-                    onClick={() => handleNavigate("/Asistencia")}
+                    onClick={() => handleNavigate("/Calendario")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                   >
-                    {isCollapsed && <i className="bi-calendar-check-fill me-2"></i>}
-                    <strong>Asistencia</strong>
+                    {isCollapsed && <i className="bi-calendar-event-fill me-2"></i>}
+                    <strong>Calendario</strong>
                   </Nav.Link>
+
+                  {(user.rol === "admin" || user.rol === "docente" || user.rol === "estudiante") && (
+                    <Nav.Link
+                      onClick={() => handleNavigate("/Calificaciones")}
+                      className={isCollapsed ? "color-texto-marca" : "text-white"}
+                    >
+                      {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
+                      <strong>Calificaciones</strong>
+                    </Nav.Link>
+                  )}
                 </>
-              )}
-
-              {/* Todos pueden ver Calendario */}
-              <Nav.Link
-                onClick={() => handleNavigate("/Calendario")}
-                className={isCollapsed ? "color-texto-marca" : "text-white"}
-              >
-                {isCollapsed && <i className="bi-calendar-event-fill me-2"></i>}
-                <strong>Calendario</strong>
-              </Nav.Link>
-
-              {/* Admin, Docente, Estudiante y Padre pueden ver Calificaciones */}
-              {(user.rol === "admin" || user.rol === "docente" || user.rol === "estudiante" || user.rol === "padre") && (
-                <Nav.Link
-                  onClick={() => handleNavigate("/Calificaciones")}
-                  className={isCollapsed ? "color-texto-marca" : "text-white"}
-                >
-                  {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
-                  <strong>Calificaciones</strong>
-                </Nav.Link>
               )}
 
               {/* Botón de Cerrar Sesión */}
