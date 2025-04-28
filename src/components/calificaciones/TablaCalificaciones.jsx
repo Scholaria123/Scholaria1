@@ -20,34 +20,34 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
 
   const esAdminODocente = user?.rol === 'admin' || user?.rol === 'docente';
 
+  const cargarDatos = async () => {
+    const calificacionesSnap = await getDocs(collection(db, 'calificaciones'));
+    const asignaturasSnap = await getDocs(collection(db, 'asignaturas'));
+    const estudiantesSnap = await getDocs(collection(db, 'estudiantes'));
+
+    const calificacionesData = calificacionesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const asignaturasData = asignaturasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const estudiantesData = estudiantesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    setCalificaciones(calificacionesData);
+    setAsignaturas(asignaturasData);
+    setEstudiantes(estudiantesData);
+
+    if (onExportReady) {
+      const exportData = calificacionesData.map(c => ({
+        asignatura: asignaturasData.find(a => a.id === c.asignaturaId)?.nombre || 'Sin asignatura',
+        estudiante: estudiantesData.find(e => e.id === c.estudianteId)?.nombre || 'Sin estudiante',
+        parcial1: c.parcial1,
+        parcial2: c.parcial2,
+        parcial3: c.parcial3,
+        final: c.final,
+        observaciones: c.observaciones || '',
+      }));
+      onExportReady(exportData);
+    }
+  };
+
   useEffect(() => {
-    const cargarDatos = async () => {
-      const calificacionesSnap = await getDocs(collection(db, 'calificaciones'));
-      const asignaturasSnap = await getDocs(collection(db, 'asignaturas'));
-      const estudiantesSnap = await getDocs(collection(db, 'estudiantes'));
-
-      const calificacionesData = calificacionesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const asignaturasData = asignaturasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      const estudiantesData = estudiantesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-      setCalificaciones(calificacionesData);
-      setAsignaturas(asignaturasData);
-      setEstudiantes(estudiantesData);
-
-      if (onExportReady) {
-        const exportData = calificacionesData.map(c => ({
-          asignatura: asignaturasData.find(a => a.id === c.asignaturaId)?.nombre || 'Sin asignatura',
-          estudiante: estudiantesData.find(e => e.id === c.estudianteId)?.nombre || 'Sin estudiante',
-          parcial1: c.parcial1,
-          parcial2: c.parcial2,
-          parcial3: c.parcial3,
-          final: c.final,
-          observaciones: c.observaciones || '',
-        }));
-        onExportReady(exportData);
-      }
-    };
-
     cargarDatos();
   }, [actualizar]);
 
@@ -59,12 +59,16 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
       await deleteDoc(doc(db, 'calificaciones', calificacionAEliminar.id));
       setMostrarModalEliminar(false);
       setCalificacionAEliminar(null);
-
-      const snap = await getDocs(collection(db, 'calificaciones'));
-      setCalificaciones(snap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
+      cargarDatos(); // 🔥 recargamos los datos después de eliminar
     } catch (error) {
       console.error("Error eliminando calificación:", error);
     }
+  };
+
+  const handleActualizacionExitosa = () => {
+    setMostrarModalEdicion(false);
+    setCalificacionSeleccionada(null);
+    cargarDatos(); // 🔥 recargamos los datos después de editar
   };
 
   return (
@@ -80,7 +84,6 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
             <th>Parcial 3</th>
             <th>Final</th>
             <th>Observaciones</th>
-            {/* Mostrar encabezado de acciones solo si es admin o docente */}
             {esAdminODocente && <th>Acciones</th>}
           </tr>
         </thead>
@@ -94,7 +97,6 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
               <td>{c.parcial3}</td>
               <td>{c.final}</td>
               <td>{c.observaciones}</td>
-              {/* Mostrar botones SOLO si es admin o docente */}
               {esAdminODocente && (
                 <td className="acciones">
                   <button
@@ -128,7 +130,7 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
           setShow={setMostrarModalEdicion}
           calificacionEditada={calificacionSeleccionada}
           setCalificacionEditada={setCalificacionSeleccionada}
-          onCalificacionActualizada={() => setMostrarModalEdicion(false)}
+          onCalificacionActualizada={handleActualizacionExitosa} // <-- usamos handleActualizacionExitosa
         />
       )}
 
