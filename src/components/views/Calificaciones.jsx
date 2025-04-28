@@ -14,7 +14,7 @@ const Calificaciones = () => {
   const [actualizarTabla, setActualizarTabla] = useState(false);
   const [calificacionesExport, setCalificacionesExport] = useState([]);
 
-  const { user } = useAuth(); // <-- OBTENEMOS el usuario de contexto
+  const { user } = useAuth(); // OBTENEMOS el usuario desde el contexto
 
   const handleRegistroExitoso = () => {
     setActualizarTabla(prev => !prev);
@@ -52,12 +52,15 @@ const Calificaciones = () => {
     doc.save('calificaciones.pdf');
   };
 
+  // Verificar si el usuario es admin o docente
+  const esAdminODocente = user?.rol === 'admin' || user?.rol === 'docente';
+
   return (
     <div>
       <h2>Gestión de Calificaciones</h2>
 
-      {/* Mostrar botones SOLO si no es estudiante */}
-      {user?.rol !== 'estudiante' && (
+      {/* Mostrar botones SOLO si es admin o docente */}
+      {esAdminODocente && (
         <div style={{ marginBottom: '20px' }}>
           <button onClick={() => setMostrarModal(true)}>Registrar Calificación</button>
           <button onClick={exportarCalificacionesPDF} style={{ marginLeft: '10px' }}>
@@ -66,6 +69,7 @@ const Calificaciones = () => {
         </div>
       )}
 
+      {/* Modal para registrar calificaciones */}
       {mostrarModal && (
         <ModalRegistroCalificaciones
           onClose={() => setMostrarModal(false)}
@@ -73,6 +77,7 @@ const Calificaciones = () => {
         />
       )}
 
+      {/* Modal para editar calificaciones */}
       <ModalEdicionCalificaciones
         show={mostrarModalEdicion}
         setShow={setMostrarModalEdicion}
@@ -81,10 +86,12 @@ const Calificaciones = () => {
         onCalificacionActualizada={handleActualizacionExitosa}
       />
 
+      {/* Tabla de calificaciones */}
       <TablaCalificaciones
         actualizar={actualizarTabla}
-        onEditar={user?.rol !== 'estudiante' ? handleEdicionCalificacion : null} // <-- SOLO permitir editar si no es estudiante
+        onEditar={esAdminODocente ? handleEdicionCalificacion : null} // SOLO admin o docente puede editar
         onExportReady={setCalificacionesExport}
+        puedeEliminar={esAdminODocente} // <-- le pasamos permiso para eliminar
       />
     </div>
   );

@@ -16,7 +16,9 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
   const [calificacionAEliminar, setCalificacionAEliminar] = useState(null);
 
-  const { user } = useAuth(); // <-- Agregado aquí
+  const { user } = useAuth();
+
+  const esAdminODocente = user?.rol === 'admin' || user?.rol === 'docente';
 
   useEffect(() => {
     const cargarDatos = async () => {
@@ -78,8 +80,8 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
             <th>Parcial 3</th>
             <th>Final</th>
             <th>Observaciones</th>
-            {/* Mostrar encabezado de acciones solo si no es estudiante */}
-            {user?.rol !== 'estudiante' && <th>Acciones</th>}
+            {/* Mostrar encabezado de acciones solo si es admin o docente */}
+            {esAdminODocente && <th>Acciones</th>}
           </tr>
         </thead>
         <tbody>
@@ -92,8 +94,8 @@ const TablaCalificaciones = ({ actualizar, onExportReady }) => {
               <td>{c.parcial3}</td>
               <td>{c.final}</td>
               <td>{c.observaciones}</td>
-              {/* Mostrar botones solo si no es estudiante */}
-              {user?.rol !== 'estudiante' && (
+              {/* Mostrar botones SOLO si es admin o docente */}
+              {esAdminODocente && (
                 <td className="acciones">
                   <button
                     className="editar"
