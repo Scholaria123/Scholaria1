@@ -11,8 +11,10 @@ import {
   doc,
 } from "firebase/firestore";
 import "./CalendarioEventos.css";
+import { useAuth } from "../../database/authcontext"; 
 
 const CalendarioEventos = () => {
+  const { user } = useAuth(); // 👈 Cambio aquí (antes decía currentUser)
   const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
   const [evento, setEvento] = useState("");
   const [tipoEvento, setTipoEvento] = useState("examen");
@@ -83,6 +85,8 @@ const CalendarioEventos = () => {
       : null;
   };
 
+  const isAdmin = user?.rol === "admin"; // 👈 Cambio aquí (antes decía currentUser)
+
   return (
     <div className="calendario-container">
       <h2>📆 Calendario de Eventos</h2>
@@ -99,42 +103,47 @@ const CalendarioEventos = () => {
         Fecha seleccionada: <strong>{format(fechaSeleccionada, "dd/MM/yyyy")}</strong>
       </p>
 
-      <div className="formulario-evento">
-        <input
-          type="text"
-          placeholder="Escribe un evento..."
-          value={evento}
-          onChange={(e) => setEvento(e.target.value)}
-        />
+      {isAdmin && (
+        <div className="formulario-evento">
+          <input
+            type="text"
+            placeholder="Escribe un evento..."
+            value={evento}
+            onChange={(e) => setEvento(e.target.value)}
+          />
 
-        <div className="tipo-evento-container">
-          <button className="btn-examen" onClick={() => setTipoEvento("examen")}>
-            📅 Examen
-          </button>
-          <button className="btn-reunion" onClick={() => setTipoEvento("reunion")}>
-            👨‍👩‍👧 Reunión
-          </button>
-          <button className="btn-festividad" onClick={() => setTipoEvento("festividad")}>
-            🎉 Festividad
+          <div className="tipo-evento-container">
+            <button className="btn-examen" onClick={() => setTipoEvento("examen")}>
+              📅 Examen
+            </button>
+            <button className="btn-reunion" onClick={() => setTipoEvento("reunion")}>
+              👨‍👩‍👧 Reunión
+            </button>
+            <button className="btn-festividad" onClick={() => setTipoEvento("festividad")}>
+              🎉 Festividad
+            </button>
+          </div>
+
+          <button className="btn-agregar" onClick={agregarEvento}>
+            ➕ Agregar Evento
           </button>
         </div>
-
-        <button className="btn-agregar" onClick={agregarEvento}>
-          ➕ Agregar Evento
-        </button>
-      </div>
+      )}
 
       <h3>Eventos Agregados</h3>
       <ul className="lista-eventos">
         {eventos.map((e) => (
           <li key={e.id} className={`evento-${e.tipo}`}>
             {tiposEventos[e.tipo]?.icono || "🗓️"} {e.fecha}: {e.titulo}
-            <button
-              onClick={() => eliminarEvento(e.id)}
-              className="btn-eliminar"
-            >
-              ❌
-            </button>
+
+            {isAdmin && (
+              <button
+                onClick={() => eliminarEvento(e.id)}
+                className="btn-eliminar"
+              >
+                ❌
+              </button>
+            )}
           </li>
         ))}
       </ul>
