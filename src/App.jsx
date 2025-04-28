@@ -39,7 +39,7 @@ function App() {
               <Route 
                 path="/estudiantes" 
                 element={
-                  <ProtectedRoute allowedRoles={[ "admin"]}>
+                  <ProtectedRoute allowedRoles={["admin"]}>
                     <Estudiantes />
                   </ProtectedRoute>
                 } 
@@ -98,9 +98,6 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-
-              {/* Página de acceso no autorizado */}
-              <Route path="/no-autorizado" element={<h2>🚫 Acceso no autorizado</h2>} />
 
               {/* Página no encontrada */}
               <Route path="*" element={<h1>Página no encontrada</h1>} />

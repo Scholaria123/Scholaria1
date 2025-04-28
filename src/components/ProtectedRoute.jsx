@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   }
 
   if (allowedRoles && !allowedRoles.includes(user.rol)) {
-    return <Navigate to="/no-autorizado" replace />;
+    return <Navigate to="/" replace />;
   }
 
   return children;
