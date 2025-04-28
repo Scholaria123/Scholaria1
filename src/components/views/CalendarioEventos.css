@@ -1,154 +1,148 @@
 .calendario-container {
-    max-width: 450px;
-    margin: auto;
-    text-align: center;
-    background: #f9f9f9;
+    max-width: 500px;
+    margin: 0 auto;
     padding: 20px;
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .calendar-wrapper {
+    overflow-x: auto;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-}
-
-.react-calendar {
+  }
+  
+  .react-calendar {
     width: 100%;
     max-width: 100%;
-    background: skyblue;
+    background: #f9f9f9;
     border: none;
     border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.react-calendar__tile {
+    font-family: 'Poppins', sans-serif;
+  }
+  
+  .react-calendar__tile {
     padding: 10px;
-    text-align: center;
-    font-size: 1rem;
-}
-
-.react-calendar__tile:disabled {
-    background: #f0f0f0;
-    color: #d0d0d0;
-}
-
-.react-calendar__tile--active {
-    background: #007bff !important;
+    font-size: 14px;
+  }
+  
+  .react-calendar__tile--active {
+    background: #6c5ce7;
     color: white;
-    border-radius: 50%;
-}
-
-.react-calendar__tile--now {
-    background: #ff5e00 !important;
-    border-radius: 50%;
-}
-
-.react-calendar__tile.evento-examen {
-    background-color: #ffcc00 !important;
-    color: black !important;
-    font-weight: bold;
-    border-radius: 50% !important;
+    border-radius: 10px;
   }
   
-  .react-calendar__tile.evento-reunion {
-    background-color: #6c60b5!important;
-    color: white !important;
-    font-weight: bold;
-    border-radius: 50% !important;
+  .react-calendar__tile--now {
+    background: #ffeaa7;
+    border-radius: 10px;
+  }
+
+  .react-calendar__month-view__days__day {
+    color: #000000; 
+  }
+
+.react-calendar__month-view__days__day--weekend {
+    color: #d63031; 
   }
   
-  .react-calendar__tile.evento-festividad {
-    background-color: #28a745 !important;
-    color: white !important;
-    font-weight: bold;
-    border-radius: 50% !important;
+  input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
   }
   
-.evento-reunion {
-    background-color: #6c60b5 !important;
-    color: white !important;
-    font-weight: bold;
-    border-radius: 1%;
-}
-
-.react-calendar__tile.evento-examen {
-    background-color: #ffcc00  !important;
-    color: white !important;
-    font-weight: bold;
-    border-radius: 1%;
-}
-
-
-.evento-festividad {
-    background-color: #28a745 !important;
-    color: white !important;
-    font-weight: bold;
-    border-radius: 1%;
-}
-
-/* Botones */
-button {
-    padding: 8px 12px;
-    margin: 5px;
-    border: none;
-    border-radius: 5px;
-    background: #007bff;
-    color: white;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-button:hover {
-    background: #0056b3;
-}
-
-/* Estilos para los tipos de eventos */
-.tipo-evento-container {
+  .tipo-evento-container {
     display: flex;
-    justify-content: center;
-    gap: 20px;
-    margin: 10px 0;
-}
-
-.btn-examen {
-    background: #f9ed05;
-    color: black;
-}
-
-.btn-reunion {
-    background: #6c60b5;
-}
-
-.btn-festividad {
-    background: #28a745;
-}
-
-ul {
+    justify-content: space-around;
+    margin-bottom: 15px;
+  }
+  
+  .tipo-evento-container button {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .btn-examen {
+    background-color: #ffcc00;
+  }
+  
+  .btn-reunion {
+    background-color: #6c60b5;
+  }
+  
+  .btn-festividad {
+    background-color: #28a745;
+  }
+  
+  .btn-agregar {
+    background: #0984e3;
+    color: white;
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 10px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .lista-eventos {
     list-style: none;
     padding: 0;
-}
-
-li {
-    background: #fff;
-    margin: 5px 0;
-    padding: 8px;
-    border-radius: 5px;
+  }
+  
+  .lista-eventos li {
+    background: #f1f2f6;
+    margin: 8px 0;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 14px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-li button {
-    background: #70dbff;
-}
-
-.btn-eliminar {
-    margin-left: 10px;
-    background-color: #e74c3c;
-    color: white;
-    border: none;
-    padding: 3px 8px;
-    border-radius: 5px;
-    cursor: pointer;
   }
   
-  .btn-eliminar:hover {
-    background-color: #c0392b;
+  .btn-eliminar {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #d63031;
+  }
+  
+  .evento-examen {
+    border-left: 5px solid #ffcc00;
+  }
+  
+  .evento-reunion {
+    border-left: 5px solid #6c60b5;
+  }
+  
+  .evento-festividad {
+    border-left: 5px solid #28a745;
+  }
+  
+  @media (max-width: 600px) {
+    .tipo-evento-container {
+      flex-direction: column;
+    }
+  
+    .tipo-evento-container button {
+      margin-bottom: 10px;
+    }
+  
+    .calendar-wrapper {
+      margin-bottom: 20px;
+    }
   }
   
