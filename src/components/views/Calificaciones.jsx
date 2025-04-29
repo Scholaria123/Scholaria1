@@ -1,20 +1,60 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TablaCalificaciones from '../calificaciones/TablaCalificaciones';
 import ModalRegistroCalificaciones from '../calificaciones/ModalRegistroCalificaciones';
 import ModalEdicionCalificaciones from '../calificaciones/ModalEdicionCalificaciones';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useAuth } from '../../database/authcontext';
-
+import { db } from '../../database/firebaseconfig';
+import { collection, getDocs } from 'firebase/firestore';
+import Paginacion from '../ordenamiento/Paginacion';
+import { Form, Button, Container } from 'react-bootstrap';
 
 const Calificaciones = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
   const [calificacionEditada, setCalificacionEditada] = useState(null);
   const [actualizarTabla, setActualizarTabla] = useState(false);
+  const [calificaciones, setCalificaciones] = useState([]);
+  const [asignaturas, setAsignaturas] = useState([]);
+  const [estudiantes, setEstudiantes] = useState([]);
   const [calificacionesExport, setCalificacionesExport] = useState([]);
+  const [filtro, setFiltro] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
 
-  const { user } = useAuth(); // OBTENEMOS el usuario desde el contexto
+  const { user } = useAuth();
+
+  // Traer datos desde Firebase
+  const cargarDatos = async () => {
+    const calificacionesSnap = await getDocs(collection(db, 'calificaciones'));
+    const asignaturasSnap = await getDocs(collection(db, 'asignaturas'));
+    const estudiantesSnap = await getDocs(collection(db, 'estudiantes'));
+
+    const calificacionesData = calificacionesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const asignaturasData = asignaturasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const estudiantesData = estudiantesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+
+    setCalificaciones(calificacionesData);
+    setAsignaturas(asignaturasData);
+    setEstudiantes(estudiantesData);
+
+    // También actualizar la data para exportar PDF
+    const exportData = calificacionesData.map(c => ({
+      asignatura: asignaturasData.find(a => a.id === c.asignaturaId)?.nombre || 'Sin asignatura',
+      estudiante: estudiantesData.find(e => e.id === c.estudianteId)?.nombre || 'Sin estudiante',
+      parcial1: c.parcial1,
+      parcial2: c.parcial2,
+      parcial3: c.parcial3,
+      final: c.final,
+      observaciones: c.observaciones || '',
+    }));
+    setCalificacionesExport(exportData);
+  };
+
+  useEffect(() => {
+    cargarDatos();
+  }, [actualizarTabla]);
 
   const handleRegistroExitoso = () => {
     setActualizarTabla(prev => !prev);
@@ -45,29 +85,53 @@ const Calificaciones = () => {
         c.parcial2,
         c.parcial3,
         c.final,
-        c.observaciones || '',
+        c.observaciones,
       ]),
     });
 
     doc.save('calificaciones.pdf');
   };
 
-  // Verificar si el usuario es admin o docente
+  const handleFilterChange = (e) => {
+    setFiltro(e.target.value);
+    setCurrentPage(1);
+  };
+
   const esAdminODocente = user?.rol === 'admin' || user?.rol === 'docente';
 
+  // Filtrar calificaciones
+  const calificacionesFiltradas = calificaciones.filter((calificacion) =>
+    ["asignaturaId", "estudianteId", "observaciones"].some((campo) =>
+      (calificacion[campo] || '').toString().toLowerCase().includes(filtro.toLowerCase())
+    )
+  );
+
+  // Paginación
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCalificaciones = calificacionesFiltradas.slice(indexOfFirstItem, indexOfLastItem);
+
   return (
-    <div>
+    <Container className="mt-5">
       <h2>Gestión de Calificaciones</h2>
 
-      {/* Mostrar botones SOLO si es admin o docente */}
       {esAdminODocente && (
         <div style={{ marginBottom: '20px' }}>
-          <button onClick={() => setMostrarModal(true)}>Registrar Calificación</button>
-          <button onClick={exportarCalificacionesPDF} style={{ marginLeft: '10px' }}>
+          <Button onClick={() => setMostrarModal(true)}>Registrar Calificación</Button>
+          <Button onClick={exportarCalificacionesPDF} style={{ marginLeft: '10px' }}>
             Exportar PDF
-          </button>
+          </Button>
         </div>
       )}
+
+      {/* Buscador */}
+      <Form.Control
+        type="text"
+        placeholder="Buscar"
+        value={filtro}
+        onChange={handleFilterChange}
+        className="mb-3"
+      />
 
       {/* Modal para registrar calificaciones */}
       {mostrarModal && (
@@ -89,11 +153,20 @@ const Calificaciones = () => {
       {/* Tabla de calificaciones */}
       <TablaCalificaciones
         actualizar={actualizarTabla}
-        onEditar={esAdminODocente ? handleEdicionCalificacion : null} // SOLO admin o docente puede editar
+        calificaciones={currentCalificaciones}
         onExportReady={setCalificacionesExport}
-        puedeEliminar={esAdminODocente} // <-- le pasamos permiso para eliminar
+        asignaturas={asignaturas}
+        estudiantes={estudiantes}
       />
-    </div>
+
+      {/* Paginación */}
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={calificacionesFiltradas.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
+    </Container>
   );
 };
 

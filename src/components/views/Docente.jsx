@@ -185,7 +185,7 @@ const Docentes = () => {
       <h4>Gestión de Docentes</h4>
       <Form.Control
         type="text"
-        placeholder="Buscar por título, dirección, teléfono, docente o asignatura"
+        placeholder="Buscar"
         value={filtro}
         onChange={handleFilterChange}
         className="mb-3"
