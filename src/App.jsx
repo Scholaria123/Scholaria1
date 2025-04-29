@@ -10,8 +10,8 @@ import CatalogoCalificaciones from "./components/views/CatalogoCalificacion";
 import Asistencia from "./components/views/Asistencia";
 import CalendarioEventos from "./components/views/CalendarioEventos";
 import Calificaciones from "./components/views/Calificaciones";
-
-
+import SeleccionLogin from "./components/SeleccionLogin";
+import LoginDocente from "./components/LoginDocente";
 import './App.css';
 import Docentes from "./components/views/Docente";
 
@@ -24,7 +24,8 @@ function App() {
           <main>
             <Routes>
               {/* Ruta de Login */}
-              <Route path="/" element={<Login />} />
+              <Route path="/" element={<SeleccionLogin />} />
+              
 
               {/* Rutas protegidas */}
               <Route 
@@ -98,6 +99,11 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
+              
+              <Route path="/login" element={<Login />} />
+              
+              <Route path="/login-docente" element={<LoginDocente />} />
+
 
               {/* Página no encontrada */}
               <Route path="*" element={<h1>Página no encontrada</h1>} />

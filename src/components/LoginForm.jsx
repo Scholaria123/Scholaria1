@@ -36,6 +36,7 @@ const LoginForm = ({ email, password, error, setEmail, setPassword, handleSubmit
               <Button variant="primary" type="submit" className="w-100">
                 Iniciar Sesión
               </Button>
+              
             </Form>
           </Card.Body>
         </Card>
