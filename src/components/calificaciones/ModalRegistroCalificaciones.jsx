@@ -197,31 +197,65 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
 const styles = {
   modalOverlay: {
     position: 'fixed',
-    top: 0, left: 0, width: '100vw', height: '100vh',
+    top: 0,
+    left: 0,
+    width: '100vw',
+    height: '100vh',
     backgroundColor: 'rgba(0,0,0,0.5)',
-    display: 'flex', justifyContent: 'center', alignItems: 'center'
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '10px',
+    zIndex: 1000
   },
   modalContent: {
-    backgroundColor: '#fff', padding: '20px', borderRadius: '8px',
-    minWidth: '400px', display: 'flex', flexDirection: 'column', gap: '15px',
-    maxHeight: '80vh', overflowY: 'auto'
+    backgroundColor: '#fff',
+    padding: '20px',
+    borderRadius: '8px',
+    width: '100%',
+    maxWidth: '500px',
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px',
+    maxHeight: '90vh',
+    overflowY: 'auto'
   },
   formGroup: {
-    display: 'flex', flexDirection: 'column', gap: '8px'
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '8px'
   },
   gradesGroup: {
-    display: 'flex', gap: '15px', justifyContent: 'space-between'
+    display: 'flex',
+    flexDirection: 'column',
+    gap: '15px'
   },
   buttonRow: {
-    display: 'flex', justifyContent: 'space-between', marginTop: '15px'
+    display: 'flex',
+    flexDirection: 'row',
+    gap: '10px',
+    marginTop: '15px',
+    justifyContent: 'center'
   },
   button: {
-    backgroundColor: '#007bff', color: 'white', border: 'none',
-    padding: '10px 15px', borderRadius: '4px', cursor: 'pointer', flex: 1
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    padding: '10px 15px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    flex: 1,
+    maxWidth: '150px'
   },
   buttonCancelar: {
-    backgroundColor: '#aaa', color: 'white', border: 'none',
-    padding: '10px 15px', borderRadius: '4px', cursor: 'pointer', flex: 1
+    backgroundColor: '#aaa',
+    color: 'white',
+    border: 'none',
+    padding: '10px 15px',
+    borderRadius: '4px',
+    cursor: 'pointer',
+    flex: 1,
+    maxWidth: '150px'
   }
 };
 
