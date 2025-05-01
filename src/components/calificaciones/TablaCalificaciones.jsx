@@ -48,13 +48,13 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
         <tbody>
           {calificaciones.map(c => (
             <tr key={c.id}>
-              <td>{obtenerNombreAsignatura(c.asignaturaId)}</td>
-              <td>{obtenerNombreEstudiante(c.estudianteId)}</td>
-              <td>{c.parcial1}</td>
-              <td>{c.parcial2}</td>
-              <td>{c.parcial3}</td>
-              <td>{c.final}</td>
-              <td>{c.observaciones}</td>
+              <td data-label="Asignatura">{obtenerNombreAsignatura(c.asignaturaId)}</td>
+              <td data-label="Estudiante">{obtenerNombreEstudiante(c.estudianteId)}</td>
+              <td data-label="Parcial 1">{c.parcial1}</td>
+              <td data-label="Parcial 2">{c.parcial2}</td>
+              <td data-label="Parcial 3">{c.parcial3}</td>
+              <td data-label="Final">{c.final}</td>
+              <td data-label="Observaciones">{c.observaciones}</td>
               {esAdminODocente && (
                 <td className="acciones">
                   <button
