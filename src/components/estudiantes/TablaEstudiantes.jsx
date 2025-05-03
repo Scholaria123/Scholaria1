@@ -1,53 +1,54 @@
 import React from "react";
-import { Table, Button, Image } from "react-bootstrap";
-import "bootstrap-icons/font/bootstrap-icons.css";
+import { Image } from "react-bootstrap";
+import "./TablaEstudiantes.css";
+import { Pencil, Trash2 } from "lucide-react";
 
 const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
   return (
-    <Table striped bordered hover responsive>
-      <thead>
-        <tr>
-          <th>Imagen</th>
-          <th>Nombre</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        {estudiantes.map((estudiante) => (
-          <tr key={estudiante.id}>
-            <td>
-              {estudiante.imagen ? (
-                <Image src={estudiante.imagen} width="50" height="50" rounded />
-              ) : (
-                "Sin imagen"
-              )}
-            </td>
-            <td>{estudiante.nombre}</td>
-            <td>{estudiante.direccion}</td>
-            <td>{estudiante.telefono}</td>
-            <td>
-              <Button
-                variant="outline-warning"
-                size="sm"
-                className="me-2"
-                onClick={() => openEditModal(estudiante)}
-              >
-                <i className="bi bi-pencil"></i>
-              </Button>
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={() => openDeleteModal(estudiante)}
-              >
-                <i className="bi bi-trash"></i>
-              </Button>
-            </td>
+    <div className="tabla-container">
+      <h3 className="tabla-title">Lista de Estudiantes</h3>
+      <table className="tabla-estilizada">
+        <thead>
+          <tr>
+            <th>Imagen</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Acciones</th>
           </tr>
-        ))}
-      </tbody>
-    </Table>
+        </thead>
+        <tbody>
+          {estudiantes.map((estudiante) => (
+            <tr key={estudiante.id}>
+              <td data-label="Imagen">
+                {estudiante.imagen ? (
+                  <Image src={estudiante.imagen} roundedCircle />
+                ) : (
+                  "Sin imagen"
+                )}
+              </td>
+              <td data-label="Nombre">{estudiante.nombre}</td>
+              <td data-label="Dirección">{estudiante.direccion}</td>
+              <td data-label="Teléfono">{estudiante.telefono}</td>
+              <td data-label="Acciones" className="acciones">
+                <button
+                  className="editar"
+                  onClick={() => openEditModal(estudiante)}
+                >
+                  <Pencil size={18} color="#fff" />
+                </button>
+                <button
+                  className="eliminar"
+                  onClick={() => openDeleteModal(estudiante)}
+                >
+                  <Trash2 size={18} color="#fff" />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 };
 
