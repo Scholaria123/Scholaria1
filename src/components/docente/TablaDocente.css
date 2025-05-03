@@ -1,0 +1,110 @@
+.tabla-container {
+    padding: 1rem;
+    overflow-x: auto;
+  }
+  
+  .tabla-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  /* Estilo general de tabla */
+  .tabla-estilizada {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+    background-color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .tabla-estilizada th,
+  .tabla-estilizada td {
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    text-align: center;
+    vertical-align: middle;
+  }
+  
+  .tabla-estilizada thead {
+    background-color: #4f46e5; /* Indigo */
+    color: white;
+  }
+  
+  /* Imagen del docente */
+  .tabla-estilizada img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+  
+  /* Acciones */
+  .acciones button {
+    margin: 0 0.25rem;
+    padding: 0.4rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .editar {
+    background-color: #10b981; /* Boton Editar */
+    color: white;
+  }
+  
+  .eliminar {
+    background-color: #ef4444; /* Boton Eliminar */
+    color: white;
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .tabla-estilizada {
+      font-size: 0.85rem;
+    }
+  
+    .tabla-estilizada thead {
+      display: none;
+    }
+  
+    .tabla-estilizada,
+    .tabla-estilizada tbody,
+    .tabla-estilizada tr,
+    .tabla-estilizada td {
+      display: block;
+      width: 100%;
+    }
+  
+    .tabla-estilizada tr {
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0.5rem;
+      background-color: #f9fafb;
+    }
+  
+    .tabla-estilizada td {
+      text-align: right;
+      padding-left: 50%;
+      position: relative;
+      border: none;
+      border-bottom: 1px solid #ddd;
+    }
+  
+    .tabla-estilizada td::before {
+      content: attr(data-label);
+      position: absolute;
+      left: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-weight: bold;
+      text-align: left;
+    }
+  
+    .tabla-estilizada td:last-child {
+      border-bottom: none;
+    }
+  }
+  
