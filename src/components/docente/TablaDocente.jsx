@@ -16,6 +16,7 @@ const TablaDocente = ({ docentes, openEditModal, openDeleteModal }) => {
             <th>Título</th>
             <th>Dirección</th>
             <th>Teléfono</th>
+            <th>Carnet</th> {/* Nueva columna para el carnet */}
             <th>Acciones</th>
           </tr>
         </thead>
@@ -34,6 +35,7 @@ const TablaDocente = ({ docentes, openEditModal, openDeleteModal }) => {
               <td data-label="Título">{docente.titulo}</td>
               <td data-label="Dirección">{docente.direccion}</td>
               <td data-label="Teléfono">{docente.telefono}</td>
+              <td data-label="Carnet">{docente.carnet}</td> {/* Mostrar carnet */}
               <td data-label="Acciones" className="acciones">
                 <button
                   className="editar"

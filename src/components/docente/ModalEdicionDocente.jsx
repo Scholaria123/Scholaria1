@@ -86,7 +86,18 @@ const ModalEdicionDocente = ({
     }
   };
 
+   // Validar el carnet para que no tenga más de 6 caracteres
+   const validateCarnet = () => {
+    if (docenteEditado.carnet && docenteEditado.carnet.length > 6) {
+      alert("El carnet no puede tener más de 6 caracteres.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSaveChanges = async () => {
+    if (!validateCarnet()) return; // Solo guarda si el carnet es válido
+
     if (!docenteEditado.id) {
       console.error("❌ No hay ID del docente para actualizar.");
       return;
@@ -173,6 +184,16 @@ const ModalEdicionDocente = ({
               type="text"
               name="telefono"
               value={docenteEditado.telefono || ""}
+              onChange={handleInputChange}
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formCarnet">
+            <Form.Label>Carnet</Form.Label>
+            <Form.Control
+              type="text"
+              name="carnet"
+              value={docenteEditado.carnet}
               onChange={handleInputChange}
             />
           </Form.Group>

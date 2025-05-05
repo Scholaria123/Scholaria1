@@ -56,6 +56,7 @@ const Docentes = () => {
           direccion: data.direccion,
           telefono: data.telefono,
           imagen: data.imagen,
+          carnet: data.carnet || "",  // Agregado
           docente: asignatura.docenteNombre || "Sin docente",
           asignaturaNombre: asignatura.nombreAsignatura || "Sin asignatura",
           asignaturaId: data.asignaturaId || "",
@@ -89,6 +90,7 @@ const Docentes = () => {
       imagen: docente.imagen || "",
       asignaturaId: docente.asignaturaId || "",
       docente: docente.docente || "",
+      carnet: docente.carnet || "", // Agregado
     });
     setShowEditModal(true);
   };
@@ -126,6 +128,7 @@ const Docentes = () => {
         direccion: docenteEditado.direccion,
         telefono: docenteEditado.telefono,
         asignaturaId: docenteEditado.asignaturaId,
+        carnet: docenteEditado.carnet,  // Agregado
       };
 
       if (docenteEditado.imagen) {
@@ -170,7 +173,7 @@ const Docentes = () => {
   };
 
   const docentesFiltrados = docentes.filter((docente) =>
-    ["titulo", "direccion", "telefono", "docente", "asignaturaNombre"].some((campo) =>
+    ["titulo", "direccion", "telefono", "docente", "asignaturaNombre", "carnet"].some((campo) =>
       docente[campo]?.toLowerCase().includes(filtro.toLowerCase())
     )
   );

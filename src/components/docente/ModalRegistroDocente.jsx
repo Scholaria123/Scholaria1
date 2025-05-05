@@ -10,6 +10,7 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
 
   const [nuevoDocente, setNuevoDocente] = useState({
     nombre: "",
+    carnet: "",            // 👈 Nuevo campo
     direccion: "",
     telefono: "",
     titulo: "",
@@ -27,8 +28,6 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
         }));
 
         setAsignaturas(asignaturasList);
-
-        // Obtener docentes únicos
         const docentes = [...new Set(asignaturasList.map(a => a.docente))];
         setDocentesUnicos(docentes);
       } catch (error) {
@@ -70,39 +69,43 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
     }
   };
 
-  // Validaciones del formulario
   const validateForm = () => {
-    // Validación del nombre
-    if (!nuevoDocente.nombre || nuevoDocente.nombre.trim() === "") {
+    if (!nuevoDocente.nombre.trim()) {
       alert("El nombre del docente es obligatorio.");
       return false;
     }
 
-    // Validación de asignatura
+    if (!nuevoDocente.carnet.trim()) {
+      alert("El carnet del docente es obligatorio.");
+      return false;
+    }
+
+    if (nuevoDocente.carnet && nuevoDocente.carnet.length > 6) {
+      alert("El carnet no puede tener más de 6 caracteres.");
+      return false; // Si la validación falla, no se envía el formulario
+    }
+
     if (!nuevoDocente.asignaturaId) {
       alert("Debe seleccionar una asignatura.");
       return false;
     }
 
-    // Validación de dirección
-    if (!nuevoDocente.direccion || nuevoDocente.direccion.trim() === "") {
+    if (!nuevoDocente.direccion.trim()) {
       alert("La dirección es obligatoria.");
       return false;
     }
 
-    // Validación de teléfono
-    if (!nuevoDocente.telefono || nuevoDocente.telefono.trim() === "") {
+    if (!nuevoDocente.telefono.trim()) {
       alert("El teléfono es obligatorio.");
       return false;
     }
 
-    // Validación de título
-    if (!nuevoDocente.titulo || nuevoDocente.titulo.trim() === "") {
+    if (!nuevoDocente.titulo.trim()) {
       alert("El título es obligatorio.");
       return false;
     }
 
-    return true; // Si todas las validaciones pasan
+    return true;
   };
 
   const handleAddDocenteWithValidation = async () => {
@@ -110,13 +113,16 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
       try {
         await addDoc(collection(db, "docentes"), nuevoDocente);
         console.log("✅ Docente registrado correctamente");
-        fetchDocentes(); // Actualiza la lista en el componente padre
+        fetchDocentes();
         setShowModal(false);
       } catch (error) {
         console.error("❌ Error al registrar docente:", error);
       }
     }
   };
+  
+  
+  
 
   return (
     <Modal show={showModal} onHide={() => setShowModal(false)}>
@@ -133,6 +139,16 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
                 <option key={index} value={docente}>{docente}</option>
               ))}
             </Form.Select>
+          </Form.Group>
+
+          <Form.Group controlId="formCarnet">
+            <Form.Label>Carnet</Form.Label>
+            <Form.Control
+              type="text"
+              name="carnet"
+              value={nuevoDocente.carnet}
+              onChange={handleInputChange}
+            />
           </Form.Group>
 
           <Form.Group controlId="formAsignaturaId">
