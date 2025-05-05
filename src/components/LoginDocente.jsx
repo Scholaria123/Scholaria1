@@ -6,11 +6,22 @@ import {
   where,
   getDocs,
   doc,
-  getDoc
+  getDoc,
+  addDoc,
+  updateDoc,
 } from "firebase/firestore";
 import { db } from "../database/firebaseconfig";
-import { Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Alert,
+  Modal,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { FaPlus, FaEdit } from "react-icons/fa";
 import "../App.css";
 
 const LoginDocente = () => {
@@ -22,6 +33,13 @@ const LoginDocente = () => {
   const [gradoFiltro, setGradoFiltro] = useState("");
   const [grupoFiltro, setGrupoFiltro] = useState("");
 
+  const [mostrarModal, setMostrarModal] = useState(false);
+  const [estudianteSeleccionado, setEstudianteSeleccionado] = useState(null);
+  const [parcial1, setParcial1] = useState("");
+  const [parcial2, setParcial2] = useState("");
+  const [parcial3, setParcial3] = useState("");
+  const [observaciones, setObservaciones] = useState("");
+
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
@@ -29,10 +47,7 @@ const LoginDocente = () => {
     setError("");
 
     try {
-      const q = query(
-        collection(db, "docentes"),
-        where("nombre", "==", nombre)
-      );
+      const q = query(collection(db, "docentes"), where("nombre", "==", nombre));
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
@@ -45,7 +60,7 @@ const LoginDocente = () => {
 
       const asignaturaDoc = await getDoc(doc(db, "asignaturas", asignaturaId));
       const asignatura = asignaturaDoc.data();
-      setInfoAsignatura(asignatura);
+      setInfoAsignatura({ ...asignatura, id: asignaturaDoc.id });
 
       const estudiantesSnapshot = await getDocs(collection(db, "estudiantes"));
       const estudiantesFiltrados = estudiantesSnapshot.docs
@@ -55,14 +70,9 @@ const LoginDocente = () => {
       setEstudiantes(estudiantesFiltrados);
 
       const calificacionesSnapshot = await getDocs(
-        query(
-          collection(db, "calificaciones"),
-          where("asignaturaId", "==", asignaturaId)
-        )
+        query(collection(db, "calificaciones"), where("asignaturaId", "==", asignaturaId))
       );
-      const calificacionesData = calificacionesSnapshot.docs.map((doc) =>
-        doc.data()
-      );
+      const calificacionesData = calificacionesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setCalificaciones(calificacionesData);
     } catch (err) {
       console.error(err);
@@ -72,6 +82,52 @@ const LoginDocente = () => {
 
   const obtenerCalificacionDeEstudiante = (idEstudiante) => {
     return calificaciones.find((c) => c.estudianteId === idEstudiante);
+  };
+
+  const abrirModal = (estudiante, modoEdicion = false) => {
+    setEstudianteSeleccionado(estudiante);
+    const nota = obtenerCalificacionDeEstudiante(estudiante.id);
+    if (nota && modoEdicion) {
+      setParcial1(nota.parcial1);
+      setParcial2(nota.parcial2);
+      setParcial3(nota.parcial3);
+      setObservaciones(nota.observaciones || "");
+    } else {
+      setParcial1("");
+      setParcial2("");
+      setParcial3("");
+      setObservaciones("");
+    }
+    setMostrarModal(true);
+  };
+
+  const guardarCalificacion = async () => {
+    const final = (parseFloat(parcial1 || 0) + parseFloat(parcial2 || 0) + parseFloat(parcial3 || 0)) / 3;
+    const calificacionExistente = obtenerCalificacionDeEstudiante(estudianteSeleccionado.id);
+
+    const calificacionData = {
+      estudianteId: estudianteSeleccionado.id,
+      asignaturaId: infoAsignatura.id,
+      parcial1: parseFloat(parcial1),
+      parcial2: parseFloat(parcial2),
+      parcial3: parseFloat(parcial3),
+      final: parseFloat(final.toFixed(2)),
+      observaciones,
+    };
+
+    if (calificacionExistente) {
+      const calificacionRef = doc(db, "calificaciones", calificacionExistente.id);
+      await updateDoc(calificacionRef, calificacionData);
+      const nuevasCalificaciones = calificaciones.map((c) =>
+        c.estudianteId === estudianteSeleccionado.id ? { ...calificacionData, id: c.id } : c
+      );
+      setCalificaciones(nuevasCalificaciones);
+    } else {
+      const nuevaRef = await addDoc(collection(db, "calificaciones"), calificacionData);
+      setCalificaciones([...calificaciones, { ...calificacionData, id: nuevaRef.id }]);
+    }
+
+    setMostrarModal(false);
   };
 
   const estudiantesFiltradosPorGrupo = estudiantes.filter(
@@ -169,6 +225,7 @@ const LoginDocente = () => {
                     <th>Parcial 3</th>
                     <th>Final</th>
                     <th>Observaciones</th>
+                    <th>Acciones</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -184,6 +241,17 @@ const LoginDocente = () => {
                         <td>{nota?.parcial3 || "-"}</td>
                         <td>{nota?.final || "-"}</td>
                         <td>{nota?.observaciones || "-"}</td>
+                        <td>
+                          {!nota ? (
+                            <Button variant="success" size="sm" onClick={() => abrirModal(est)}>
+                              <FaPlus /> 
+                            </Button>
+                          ) : (
+                            <Button variant="warning" size="sm" onClick={() => abrirModal(est, true)}>
+                              <FaEdit /> 
+                            </Button>
+                          )}
+                        </td>
                       </tr>
                     );
                   })}
@@ -191,16 +259,63 @@ const LoginDocente = () => {
               </table>
             </div>
 
-            <Button
-              variant="secondary"
-              className="mt-3"
-              onClick={() => navigate("/inicio")}
-            >
-              Ir al inicio
-            </Button>
+            <Button variant="secondary" className="mt-3" onClick={() => navigate("/inicio")}>Ir al inicio</Button>
           </Card.Body>
         </Card>
       )}
+
+      <Modal show={mostrarModal} onHide={() => setMostrarModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>
+            {obtenerCalificacionDeEstudiante(estudianteSeleccionado?.id) ? "Editar calificación" : "Nueva calificación"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Parcial 1</Form.Label>
+              <Form.Control
+                type="number"
+                value={parcial1}
+                onChange={(e) => setParcial1(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Parcial 2</Form.Label>
+              <Form.Control
+                type="number"
+                value={parcial2}
+                onChange={(e) => setParcial2(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Parcial 3</Form.Label>
+              <Form.Control
+                type="number"
+                value={parcial3}
+                onChange={(e) => setParcial3(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>Observaciones</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={2}
+                value={observaciones}
+                onChange={(e) => setObservaciones(e.target.value)}
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setMostrarModal(false)}>
+            Cancelar
+          </Button>
+          <Button variant="primary" onClick={guardarCalificacion}>
+            Guardar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
