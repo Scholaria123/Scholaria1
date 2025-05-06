@@ -1,24 +1,27 @@
-// database/authcontext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { appfirebase } from "./firebaseconfig";
 
+// Crear el contexto
 const AuthContext = createContext();
 
+// Hook para acceder fácilmente al contexto
 export const useAuth = () => useContext(AuthContext);
 
+// Proveedor del contexto
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null); // datos del usuario actual
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // estado de sesión
+  const [loading, setLoading] = useState(true); // estado de carga de datos
 
   useEffect(() => {
     const auth = getAuth(appfirebase);
     const db = getFirestore(appfirebase);
 
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
-      setLoading(true);
+      setLoading(true); // empieza a cargar
+
       if (firebaseUser) {
         try {
           const docRef = doc(db, "usuarios", firebaseUser.uid);
@@ -26,10 +29,11 @@ export const AuthProvider = ({ children }) => {
 
           if (docSnap.exists()) {
             const userData = docSnap.data();
+
             setUser({
               uid: firebaseUser.uid,
               email: firebaseUser.email,
-              rol: userData.rol || "estudiante", // valor por defecto
+              rol: userData.rol || "estudiante", // por defecto 'estudiante'
               nombre_completo: userData.nombre_completo || "",
             });
             setIsLoggedIn(true);
@@ -47,12 +51,15 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
         setIsLoggedIn(false);
       }
-      setLoading(false);
+
+      setLoading(false); // termina de cargar
     });
 
+    // Cleanup
     return () => unsubscribe();
   }, []);
 
+  // Función para cerrar sesión
   const logout = async () => {
     const auth = getAuth(appfirebase);
     await signOut(auth);
