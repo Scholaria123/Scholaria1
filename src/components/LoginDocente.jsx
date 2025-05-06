@@ -25,6 +25,7 @@ import { FaPlus, FaEdit } from "react-icons/fa";
 import "../App.css";
 
 const LoginDocente = () => {
+  const [carnet, setCarnet] = useState("");
   const [nombre, setNombre] = useState("");
   const [error, setError] = useState("");
   const [infoAsignatura, setInfoAsignatura] = useState(null);
@@ -47,7 +48,7 @@ const LoginDocente = () => {
     setError("");
 
     try {
-      const q = query(collection(db, "docentes"), where("nombre", "==", nombre));
+      const q = query(collection(db, "docentes"), where("carnet", "==", carnet));
       const snapshot = await getDocs(q);
 
       if (snapshot.empty) {
@@ -56,6 +57,7 @@ const LoginDocente = () => {
       }
 
       const docenteData = snapshot.docs[0].data();
+      setNombre(docenteData.nombre);
       const asignaturaId = docenteData.asignaturaId;
 
       const asignaturaDoc = await getDoc(doc(db, "asignaturas", asignaturaId));
@@ -146,13 +148,13 @@ const LoginDocente = () => {
                 <h3 className="text-center mb-4">Login Docente</h3>
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form onSubmit={handleLogin}>
-                  <Form.Group className="mb-3" controlId="nombreDocente">
-                    <Form.Label>Nombre del docente</Form.Label>
+                  <Form.Group className="mb-3" controlId="carnetDocente">
+                    <Form.Label>Carnet del docente</Form.Label>
                     <Form.Control
                       type="text"
-                      placeholder="Ej. Ana Martínez"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
+                      placeholder="Ej. D12345"
+                      value={carnet}
+                      onChange={(e) => setCarnet(e.target.value)}
                       required
                     />
                   </Form.Group>
@@ -244,11 +246,11 @@ const LoginDocente = () => {
                         <td>
                           {!nota ? (
                             <Button variant="success" size="sm" onClick={() => abrirModal(est)}>
-                              <FaPlus /> 
+                              <FaPlus />
                             </Button>
                           ) : (
                             <Button variant="warning" size="sm" onClick={() => abrirModal(est, true)}>
-                              <FaEdit /> 
+                              <FaEdit />
                             </Button>
                           )}
                         </td>
@@ -259,7 +261,9 @@ const LoginDocente = () => {
               </table>
             </div>
 
-            <Button variant="secondary" className="mt-3" onClick={() => navigate("/inicio")}>Ir al inicio</Button>
+            <Button variant="secondary" className="mt-3" onClick={() => navigate("/inicio")}>
+              Ir al inicio
+            </Button>
           </Card.Body>
         </Card>
       )}
@@ -267,7 +271,9 @@ const LoginDocente = () => {
       <Modal show={mostrarModal} onHide={() => setMostrarModal(false)}>
         <Modal.Header closeButton>
           <Modal.Title>
-            {obtenerCalificacionDeEstudiante(estudianteSeleccionado?.id) ? "Editar calificación" : "Nueva calificación"}
+            {obtenerCalificacionDeEstudiante(estudianteSeleccionado?.id)
+              ? "Editar calificación"
+              : "Nueva calificación"}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
