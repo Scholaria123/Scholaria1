@@ -1,19 +1,21 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./database/authcontext";
-import ProtectedRoute from "./components/ProtectedRoute"; 
+import ProtectedRoute from "./components/ProtectedRoute";
 import Login from './views/Login';
 import Encabezado from "./components/Encabezado";
 import Inicio from "./views/Inicio";
-import Estudiantes from "./components/views/Estudiantes"  // Asegúrate de que esté en la carpeta correcta
-import Asignaturas from "./components/views/Asignatura";  // Se corrigió la importación
+import Estudiantes from "./components/views/Estudiantes";
+import Asignaturas from "./components/views/Asignatura";
 import CatalogoCalificaciones from "./components/views/CatalogoCalificacion";
 import Asistencia from "./components/views/Asistencia";
 import CalendarioEventos from "./components/views/CalendarioEventos";
 import Calificaciones from "./components/views/Calificaciones";
 import SeleccionLogin from "./components/SeleccionLogin";
 import LoginDocente from "./components/LoginDocente";
-import './App.css';
 import Docentes from "./components/views/Docente";
+import Notificaciones from "./components/Notificaciones/Notificaciones";
+
+import './App.css';
 
 function App() {
   return (
@@ -25,7 +27,6 @@ function App() {
             <Routes>
               {/* Ruta de Login */}
               <Route path="/" element={<SeleccionLogin />} />
-              
 
               {/* Rutas protegidas */}
               <Route 
@@ -99,11 +100,18 @@ function App() {
                   </ProtectedRoute>
                 } 
               />
-              
-              <Route path="/login" element={<Login />} />
-              
-              <Route path="/login-docente" element={<LoginDocente />} />
 
+              <Route 
+                path="/Notificaciones"  
+                element={
+                  <ProtectedRoute allowedRoles={["docente", "admin", "padre", "estudiante"]}>
+                    <Notificaciones />
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route path="/login" element={<Login />} />
+              <Route path="/login-docente" element={<LoginDocente />} />
 
               {/* Página no encontrada */}
               <Route path="*" element={<h1>Página no encontrada</h1>} />

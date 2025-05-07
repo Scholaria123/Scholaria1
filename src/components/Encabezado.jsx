@@ -44,7 +44,7 @@ const Encabezado = () => {
           style={{ cursor: "pointer" }}
         >
           <img
-            alt=""
+            alt="Logo Scholaria"
             src={Scholaria_logo}
             width="30"
             height="30"
@@ -181,6 +181,15 @@ const Encabezado = () => {
                       <strong>Calificaciones</strong>
                     </Nav.Link>
                   )}
+
+                  {/* Notificaciones */}
+                  <Nav.Link
+                    onClick={() => handleNavigate("/Notificaciones")}
+                    className={isCollapsed ? "color-texto-marca" : "text-white"}
+                  >
+                    {isCollapsed && <i className="bi-bell-fill me-2"></i>}
+                    <strong>Notificaciones</strong>
+                  </Nav.Link>
                 </>
               )}
 
