@@ -24,7 +24,7 @@ const Inicio = () => {
 
   return (
     <div className="inicio-container">
-      <h2>Bienvenido</h2>
+      <h2>Bienvenido a Scholaria</h2>
 
       <div className="botones-contenedor">
         {rol === "admin" && (

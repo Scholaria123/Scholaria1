@@ -8,7 +8,7 @@ const Inicio = () => {
     const handleNavigate = (path) => {
       navigate(path);
     };
-
+ 
   return (
     <div>
       <br />
