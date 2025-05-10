@@ -1,99 +1,126 @@
 /* Estilos generales para el contenedor de notificaciones */
 .notificaciones-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 50px; /* Ajusta según lo necesario */
-    padding: 20px;
-  }
-  
-  /* Estilo del título de las notificaciones */
-  .notificaciones-container h2 {
-    text-align: center;
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  /* Estilos para la lista de notificaciones */
-  .notificaciones-lista {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-    max-width: 600px; /* Limita el ancho máximo */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  /* Estilo para cada notificación */
-  .notificacion-item {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  padding: 20px;
+}
+
+/* Estilo del título de las notificaciones */
+.notificaciones-container h2 {
+  text-align: center;
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+/* Estilos para la lista de notificaciones */
+.notificaciones-lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Estilo para cada notificación */
+.notificacion-item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 15px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background-color: #f4f4f4;
+  transition: transform 0.2s ease;
+}
+
+/* Cambia el fondo cuando se pasa el mouse sobre la notificación */
+.notificacion-item:hover {
+  transform: translateY(-5px);
+}
+
+/* Icono de la notificación */
+.notificacion-icono {
+  font-size: 2rem;
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+/* Detalles de la notificación */
+.notificacion-detalles {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.notificacion-detalles strong {
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.notificacion-detalles p {
+  font-size: 1rem;
+  color: #666;
+  margin: 5px 0;
+}
+
+/* Responsividad para dispositivos pequeños */
+@media (max-width: 576px) {
+  .notificaciones-container {
     padding: 15px;
-    border-radius: 10px;
+    margin-top: 30px;
+  }
+
+  .notificaciones-lista {
     width: 100%;
-    max-width: 500px; /* Limita el tamaño de cada notificación */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    background-color: #f4f4f4;
-    transition: transform 0.2s ease;
+    max-width: none;
   }
-  
-  /* Cambia el fondo cuando se pasa el mouse sobre la notificación */
-  .notificacion-item:hover {
-    transform: translateY(-5px);
+
+  .notificacion-item {
+    padding: 10px;
+    font-size: 0.9rem;
+    width: 100%;
+    max-width: 100%;
   }
-  
-  /* Icono de la notificación */
+
   .notificacion-icono {
-    font-size: 2rem;
-    margin-right: 15px;
-    flex-shrink: 0; /* Evita que el icono se reduzca */
+    font-size: 1.5rem;
   }
-  
-  /* Detalles de la notificación */
-  .notificacion-detalles {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .notificacion-detalles strong {
-    font-size: 1.2rem;
-    color: #333;
-  }
-  
-  .notificacion-detalles p {
-    font-size: 1rem;
-    color: #666;
-    margin: 5px 0;
-  }
-  
-  /* Responsividad para dispositivos pequeños */
-  @media (max-width: 576px) {
-    .notificaciones-container {
-      padding: 15px;
-      margin-top: 30px;
-    }
-  
-    .notificaciones-lista {
-      width: 100%;
-      max-width: none;
-    }
-  
-    .notificacion-item {
-      padding: 10px;
-      font-size: 0.9rem;
-      width: 100%;
-      max-width: 100%;
-    }
-  
-    .notificacion-icono {
-      font-size: 1.5rem;
-    }
-  }
-  
+}
+
+/* Contenedor del botón al pie de las notificaciones */
+.notificaciones-footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* Botón estilizado */
+.btn-marcar-todas {
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.3s ease;
+}
+
+.btn-marcar-todas:hover {
+  background-color: #357ac8;
+}

@@ -11,19 +11,30 @@ import {
   doc,
 } from "firebase/firestore";
 import "./CalendarioEventos.css";
-import { useAuth } from "../../database/authcontext"; 
+import { useAuth } from "../../database/authcontext";
+
+// Iconos de lucide-react
+import {
+  CalendarDays,
+  Users2,
+  PartyPopper,
+  Trash2,
+  Plus,
+  Megaphone,
+} from "lucide-react";
 
 const CalendarioEventos = () => {
-  const { user } = useAuth(); // 👈 Cambio aquí (antes decía currentUser)
+  const { user } = useAuth();
   const [fechaSeleccionada, setFechaSeleccionada] = useState(new Date());
   const [evento, setEvento] = useState("");
-  const [tipoEvento, setTipoEvento] = useState("examen");
+  const [tipoEvento, setTipoEvento] = useState("");
   const [eventos, setEventos] = useState([]);
 
   const tiposEventos = {
-    examen: { icono: "📅", color: "#ffcc00" },
-    reunion: { icono: "👨‍👩‍👧", color: "#6c60b5" },
-    festividad: { icono: "🎉", color: "#28a745" },
+    examen: { icono: <CalendarDays size={16} />, color: "#ffcc00" },
+    reunion: { icono: <Users2 size={16} />, color: "#6c60b5" },
+    festividad: { icono: <PartyPopper size={16} />, color: "#28a745" },
+    anuncio: { icono: <Megaphone size={16} />, color: "#0d6efd" }, // Nuevo tipo
   };
 
   const handleDateChange = (date) => {
@@ -36,7 +47,7 @@ const CalendarioEventos = () => {
     const nuevoEvento = {
       fecha: format(fechaSeleccionada, "dd/MM/yyyy"),
       titulo: evento,
-      tipo: tipoEvento,
+      tipo: tipoEvento || "anuncio",
       descripcion: evento,
     };
 
@@ -44,6 +55,7 @@ const CalendarioEventos = () => {
       const docRef = await addDoc(collection(db, "eventos"), nuevoEvento);
       setEventos((prev) => [...prev, { id: docRef.id, ...nuevoEvento }]);
       setEvento("");
+      setTipoEvento("");
     } catch (error) {
       console.error("Error al guardar el evento:", error);
       alert("Hubo un error al guardar el evento.");
@@ -85,11 +97,11 @@ const CalendarioEventos = () => {
       : null;
   };
 
-  const isAdmin = user?.rol === "admin"; // 👈 Cambio aquí (antes decía currentUser)
+  const isAdmin = user?.rol === "admin";
 
   return (
     <div className="calendario-container">
-      <h2>📆 Calendario de Eventos</h2>
+      <h2><CalendarDays size={24} /> Calendario de Eventos</h2>
 
       <div className="calendar-wrapper">
         <Calendar
@@ -107,25 +119,25 @@ const CalendarioEventos = () => {
         <div className="formulario-evento">
           <input
             type="text"
-            placeholder="Escribe un evento..."
+            placeholder="Escribe un evento o anuncio..."
             value={evento}
             onChange={(e) => setEvento(e.target.value)}
           />
 
           <div className="tipo-evento-container">
             <button className="btn-examen" onClick={() => setTipoEvento("examen")}>
-              📅 Examen
+              <CalendarDays size={16} /> Examen
             </button>
             <button className="btn-reunion" onClick={() => setTipoEvento("reunion")}>
-              👨‍👩‍👧 Reunión
+              <Users2 size={16} /> Reunión
             </button>
             <button className="btn-festividad" onClick={() => setTipoEvento("festividad")}>
-              🎉 Festividad
+              <PartyPopper size={16} /> Festividad
             </button>
           </div>
 
           <button className="btn-agregar" onClick={agregarEvento}>
-            ➕ Agregar Evento
+            <Plus size={16} /> Agregar Evento
           </button>
         </div>
       )}
@@ -134,14 +146,14 @@ const CalendarioEventos = () => {
       <ul className="lista-eventos">
         {eventos.map((e) => (
           <li key={e.id} className={`evento-${e.tipo}`}>
-            {tiposEventos[e.tipo]?.icono || "🗓️"} {e.fecha}: {e.titulo}
+            {tiposEventos[e.tipo]?.icono || <Megaphone size={16} />} {e.fecha}: {e.titulo}
 
             {isAdmin && (
               <button
                 onClick={() => eliminarEvento(e.id)}
                 className="btn-eliminar"
               >
-                ❌
+                <Trash2 size={16} />
               </button>
             )}
           </li>
