@@ -1,120 +1,81 @@
-
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Container, Form, Button } from "react-bootstrap";
-import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
-import { appfirebase } from "../database/firebaseconfig";
-
-
-
-import "../App.css";
+import { getDocs, collection, query, where } from "firebase/firestore";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../database/firebaseconfig";
+import { Form, Button, Alert, Card } from "react-bootstrap";
 
 const Login = () => {
-  const [isLogin, setIsLogin] = useState(true); // true = login, false = registro
-  const [email, setEmail] = useState("");
+  const [identificador, setIdentificador] = useState("");
   const [password, setPassword] = useState("");
-  const [nombreCompleto, setNombreCompleto] = useState("");
-  const [rol, setRol] = useState("estudiante");
   const [error, setError] = useState("");
-
   const navigate = useNavigate();
-  const auth = getAuth(appfirebase);
-  const db = getFirestore(appfirebase);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setError("");
+
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
+      if (!identificador.includes("@")) {
+        // Es un docente → buscar por carnet
+        const q = query(collection(db, "docentes"), where("carnet", "==", identificador));
+        const snapshot = await getDocs(q);
 
-      // Verificar si tiene rol en Firestore
-      const docRef = doc(db, "usuarios", uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        const userData = docSnap.data();
-        console.log("Rol:", userData.rol);
-        navigate("/inicio");
-      } else {
-        setError("No se encontró información del usuario.");
+        if (!snapshot.empty) {
+          navigate(`/logindocente/${identificador}`);
+        } else {
+          setError("Carnet no encontrado.");
+        }
+        return;
       }
-    } catch (error) {
-      console.error(error);
-      setError("Credenciales incorrectas.");
-    }
-  };
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCredential.user.uid;
-
-      // Guardar información adicional en Firestore
-      await setDoc(doc(db, "usuarios", uid), {
-        email,
-        nombre_completo: nombreCompleto,
-        rol,
-      });
-
-      console.log("Usuario registrado con éxito");
+      // Si contiene @, es un login con correo
+      const userCredential = await signInWithEmailAndPassword(auth, identificador, password);
       navigate("/inicio");
-    } catch (error) {
-      console.error(error);
-      setError("Error al registrar el usuario.");
+    } catch (err) {
+      console.error(err);
+      setError("Credenciales incorrectas o usuario no registrado.");
     }
   };
 
   return (
-    <Container className="d-flex vh-100 justify-content-center align-items-center">
-      <div style={{ width: "100%", maxWidth: 400 }}>
-        <h3 className="text-center">{isLogin ? "Iniciar sesión" : "Registrarse"}</h3>
+    <div className="container mt-5">
+      <Card className="p-4 shadow">
+        <Card.Body>
+          <h3 className="mb-4">Iniciar sesión</h3>
+          {error && <Alert variant="danger">{error}</Alert>}
+          <Form onSubmit={handleLogin}>
+            <Form.Group className="mb-3">
+              <Form.Label>Email o carnet:</Form.Label>
+              <Form.Control
+                type="text"
+                value={identificador}
+                onChange={(e) => setIdentificador(e.target.value)}
+                placeholder="Correo o carnet"
+                required
+              />
+            </Form.Group>
 
-        <Form onSubmit={isLogin ? handleLogin : handleRegister}>
-          <Form.Group className="mb-3">
-            <Form.Label>Correo electrónico</Form.Label>
-            <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          </Form.Group>
-
-          <Form.Group className="mb-3">
-            <Form.Label>Contraseña</Form.Label>
-            <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-          </Form.Group>
-
-          {!isLogin && (
-            <>
+            {identificador.includes("@") && (
               <Form.Group className="mb-3">
-                <Form.Label>Nombre completo</Form.Label>
-                <Form.Control type="text" value={nombreCompleto} onChange={(e) => setNombreCompleto(e.target.value)} required />
+                <Form.Label>Contraseña:</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Contraseña"
+                  required
+                />
               </Form.Group>
+            )}
 
-              <Form.Group className="mb-3">
-              <Form.Label>Rol</Form.Label>
-              <Form.Select value={rol} onChange={(e) => setRol(e.target.value)}>
-              <option value="estudiante">Estudiante</option>
-              <option value="docente">Docente</option>
-              <option value="padre">Padre</option> {/* <- nuevo rol agregado */}
-              </Form.Select>
-              </Form.Group>
-
-            </>
-          )}
-
-          {error && <p className="text-danger">{error}</p>}
-
-          <Button variant="primary" type="submit" className="w-100">
-            {isLogin ? "Ingresar" : "Registrarse"}
-          </Button>
-        </Form>
-
-        <div className="text-center mt-3">
-          <Button variant="link" onClick={() => setIsLogin(!isLogin)}>
-            {isLogin ? "¿No tienes cuenta? Regístrate" : "¿Ya tienes cuenta? Inicia sesión"}
-          </Button>
-        </div>
-      </div>
-    </Container>
+            <Button variant="primary" type="submit" className="w-100">
+              Iniciar sesión
+            </Button>
+          </Form>
+        </Card.Body>
+      </Card>
+    </div>
   );
 };
 

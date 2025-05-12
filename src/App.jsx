@@ -10,7 +10,6 @@ import CatalogoCalificaciones from "./components/views/CatalogoCalificacion";
 import Asistencia from "./components/views/Asistencia";
 import CalendarioEventos from "./components/views/CalendarioEventos";
 import Calificaciones from "./components/views/Calificaciones";
-import SeleccionLogin from "./components/SeleccionLogin";
 import LoginDocente from "./components/LoginDocente";
 import Docentes from "./components/views/Docente";
 import Notificaciones from "./components/Notificaciones/Notificaciones";
@@ -25,8 +24,8 @@ function App() {
           <Encabezado />
           <main>
             <Routes>
-              {/* Ruta de Login */}
-              <Route path="/" element={<SeleccionLogin />} />
+              {/* Ruta de Login principal (unificado) */}
+              <Route path="/" element={<Login />} />
 
               {/* Rutas protegidas */}
               <Route 
@@ -110,8 +109,8 @@ function App() {
                 }
               />
 
-              <Route path="/login" element={<Login />} />
-              <Route path="/login-docente" element={<LoginDocente />} />
+              {/* Ruta especial para docentes con carnet por URL */}
+              <Route path="/logindocente/:carnet" element={<LoginDocente />} />
 
               {/* Página no encontrada */}
               <Route path="*" element={<h1>Página no encontrada</h1>} />

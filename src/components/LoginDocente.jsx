@@ -1,5 +1,4 @@
-// components/LoginDocente.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   collection,
   query,
@@ -20,12 +19,12 @@ import {
   Alert,
   Modal,
 } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { FaPlus, FaEdit } from "react-icons/fa";
 import "../App.css";
 
 const LoginDocente = () => {
-  const [carnet, setCarnet] = useState("");
+  const { carnet } = useParams();
   const [nombre, setNombre] = useState("");
   const [error, setError] = useState("");
   const [infoAsignatura, setInfoAsignatura] = useState(null);
@@ -43,44 +42,47 @@ const LoginDocente = () => {
 
   const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
+  useEffect(() => {
+    const cargarDatosDocente = async () => {
+      try {
+        const q = query(collection(db, "docentes"), where("carnet", "==", carnet));
+        const snapshot = await getDocs(q);
 
-    try {
-      const q = query(collection(db, "docentes"), where("carnet", "==", carnet));
-      const snapshot = await getDocs(q);
+        if (snapshot.empty) {
+          setError("Docente no encontrado.");
+          return;
+        }
 
-      if (snapshot.empty) {
-        setError("Docente no encontrado.");
-        return;
+        const docenteData = snapshot.docs[0].data();
+        setNombre(docenteData.nombre);
+        const asignaturaId = docenteData.asignaturaId;
+
+        const asignaturaDoc = await getDoc(doc(db, "asignaturas", asignaturaId));
+        const asignatura = asignaturaDoc.data();
+        setInfoAsignatura({ ...asignatura, id: asignaturaDoc.id });
+
+        const estudiantesSnapshot = await getDocs(collection(db, "estudiantes"));
+        const estudiantesFiltrados = estudiantesSnapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .filter((est) => est.asignaturaId?.includes(asignaturaId));
+
+        setEstudiantes(estudiantesFiltrados);
+
+        const calificacionesSnapshot = await getDocs(
+          query(collection(db, "calificaciones"), where("asignaturaId", "==", asignaturaId))
+        );
+        const calificacionesData = calificacionesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        setCalificaciones(calificacionesData);
+      } catch (err) {
+        console.error(err);
+        setError("Error al cargar los datos.");
       }
+    };
 
-      const docenteData = snapshot.docs[0].data();
-      setNombre(docenteData.nombre);
-      const asignaturaId = docenteData.asignaturaId;
-
-      const asignaturaDoc = await getDoc(doc(db, "asignaturas", asignaturaId));
-      const asignatura = asignaturaDoc.data();
-      setInfoAsignatura({ ...asignatura, id: asignaturaDoc.id });
-
-      const estudiantesSnapshot = await getDocs(collection(db, "estudiantes"));
-      const estudiantesFiltrados = estudiantesSnapshot.docs
-        .map((doc) => ({ id: doc.id, ...doc.data() }))
-        .filter((est) => est.asignaturaId?.includes(asignaturaId));
-
-      setEstudiantes(estudiantesFiltrados);
-
-      const calificacionesSnapshot = await getDocs(
-        query(collection(db, "calificaciones"), where("asignaturaId", "==", asignaturaId))
-      );
-      const calificacionesData = calificacionesSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setCalificaciones(calificacionesData);
-    } catch (err) {
-      console.error(err);
-      setError("Error al iniciar sesión.");
+    if (carnet) {
+      cargarDatosDocente();
     }
-  };
+  }, [carnet]);
 
   const obtenerCalificacionDeEstudiante = (idEstudiante) => {
     return calificaciones.find((c) => c.estudianteId === idEstudiante);
@@ -138,135 +140,122 @@ const LoginDocente = () => {
       (!grupoFiltro || est.grupo === grupoFiltro)
   );
 
+  if (error) {
+    return (
+      <div className="container mt-5">
+        <Alert variant="danger">{error}</Alert>
+      </div>
+    );
+  }
+
+  if (!infoAsignatura) {
+    return (
+      <div className="container mt-5">
+        <p>Cargando información del docente...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container mt-5">
-      {!infoAsignatura ? (
-        <Row className="justify-content-center">
-          <Col md={6} lg={5}>
-            <Card className="p-4 shadow">
-              <Card.Body>
-                <h3 className="text-center mb-4">Login Docente</h3>
-                {error && <Alert variant="danger">{error}</Alert>}
-                <Form onSubmit={handleLogin}>
-                  <Form.Group className="mb-3" controlId="carnetDocente">
-                    <Form.Label>Carnet del docente</Form.Label>
-                    <Form.Control
-                      type="text"
-                      placeholder="Ej. D12345"
-                      value={carnet}
-                      onChange={(e) => setCarnet(e.target.value)}
-                      required
-                    />
-                  </Form.Group>
+      <Card className="p-4 shadow">
+        <Card.Body>
+          <h4 className="mb-3">Bienvenido, {nombre}</h4>
+          <p>
+            <strong>Asignatura:</strong> {infoAsignatura.nombre} <br />
+            <strong>Grados:</strong> {infoAsignatura.grado.join(", ")} <br />
+            <strong>Grupos:</strong> {infoAsignatura.grupo.join(", ")}
+          </p>
 
-                  <Button variant="primary" type="submit" className="w-100">
-                    Ingresar
-                  </Button>
-                </Form>
-              </Card.Body>
-            </Card>
-          </Col>
-        </Row>
-      ) : (
-        <Card className="p-4 shadow">
-          <Card.Body>
-            <h4 className="mb-3">Bienvenido, {nombre}</h4>
-            <p>
-              <strong>Asignatura:</strong> {infoAsignatura.nombre} <br />
-              <strong>Grados:</strong> {infoAsignatura.grado.join(", ")} <br />
-              <strong>Grupos:</strong> {infoAsignatura.grupo.join(", ")}
-            </p>
+          <hr />
 
-            <hr />
+          <Row className="mb-3">
+            <Col md={6}>
+              <Form.Group controlId="gradoFiltro">
+                <Form.Label>Filtrar por grado:</Form.Label>
+                <Form.Select
+                  value={gradoFiltro}
+                  onChange={(e) => setGradoFiltro(e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  {infoAsignatura.grado.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+            <Col md={6}>
+              <Form.Group controlId="grupoFiltro">
+                <Form.Label>Filtrar por grupo:</Form.Label>
+                <Form.Select
+                  value={grupoFiltro}
+                  onChange={(e) => setGrupoFiltro(e.target.value)}
+                >
+                  <option value="">Todos</option>
+                  {infoAsignatura.grupo.map((g) => (
+                    <option key={g} value={g}>
+                      {g}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Form.Group>
+            </Col>
+          </Row>
 
-            <Row className="mb-3">
-              <Col md={6}>
-                <Form.Group controlId="gradoFiltro">
-                  <Form.Label>Filtrar por grado:</Form.Label>
-                  <Form.Select
-                    value={gradoFiltro}
-                    onChange={(e) => setGradoFiltro(e.target.value)}
-                  >
-                    <option value="">Todos</option>
-                    {infoAsignatura.grado.map((g) => (
-                      <option key={g} value={g}>
-                        {g}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-              <Col md={6}>
-                <Form.Group controlId="grupoFiltro">
-                  <Form.Label>Filtrar por grupo:</Form.Label>
-                  <Form.Select
-                    value={grupoFiltro}
-                    onChange={(e) => setGrupoFiltro(e.target.value)}
-                  >
-                    <option value="">Todos</option>
-                    {infoAsignatura.grupo.map((g) => (
-                      <option key={g} value={g}>
-                        {g}
-                      </option>
-                    ))}
-                  </Form.Select>
-                </Form.Group>
-              </Col>
-            </Row>
+          <h5>Estudiantes asignados:</h5>
+          <div className="table-responsive">
+            <table className="table table-striped table-bordered">
+              <thead>
+                <tr>
+                  <th>Nombre</th>
+                  <th>Grado</th>
+                  <th>Grupo</th>
+                  <th>Parcial 1</th>
+                  <th>Parcial 2</th>
+                  <th>Parcial 3</th>
+                  <th>Final</th>
+                  <th>Observaciones</th>
+                  <th>Acciones</th>
+                </tr>
+              </thead>
+              <tbody>
+                {estudiantesFiltradosPorGrupo.map((est) => {
+                  const nota = obtenerCalificacionDeEstudiante(est.id);
+                  return (
+                    <tr key={est.id}>
+                      <td>{est.nombre}</td>
+                      <td>{est.grado}</td>
+                      <td>{est.grupo}</td>
+                      <td>{nota?.parcial1 || "-"}</td>
+                      <td>{nota?.parcial2 || "-"}</td>
+                      <td>{nota?.parcial3 || "-"}</td>
+                      <td>{nota?.final || "-"}</td>
+                      <td>{nota?.observaciones || "-"}</td>
+                      <td>
+                        {!nota ? (
+                          <Button variant="success" size="sm" onClick={() => abrirModal(est)}>
+                            <FaPlus />
+                          </Button>
+                        ) : (
+                          <Button variant="warning" size="sm" onClick={() => abrirModal(est, true)}>
+                            <FaEdit />
+                          </Button>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
 
-            <h5>Estudiantes asignados:</h5>
-            <div className="table-responsive">
-              <table className="table table-striped table-bordered">
-                <thead>
-                  <tr>
-                    <th>Nombre</th>
-                    <th>Grado</th>
-                    <th>Grupo</th>
-                    <th>Parcial 1</th>
-                    <th>Parcial 2</th>
-                    <th>Parcial 3</th>
-                    <th>Final</th>
-                    <th>Observaciones</th>
-                    <th>Acciones</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {estudiantesFiltradosPorGrupo.map((est) => {
-                    const nota = obtenerCalificacionDeEstudiante(est.id);
-                    return (
-                      <tr key={est.id}>
-                        <td>{est.nombre}</td>
-                        <td>{est.grado}</td>
-                        <td>{est.grupo}</td>
-                        <td>{nota?.parcial1 || "-"}</td>
-                        <td>{nota?.parcial2 || "-"}</td>
-                        <td>{nota?.parcial3 || "-"}</td>
-                        <td>{nota?.final || "-"}</td>
-                        <td>{nota?.observaciones || "-"}</td>
-                        <td>
-                          {!nota ? (
-                            <Button variant="success" size="sm" onClick={() => abrirModal(est)}>
-                              <FaPlus />
-                            </Button>
-                          ) : (
-                            <Button variant="warning" size="sm" onClick={() => abrirModal(est, true)}>
-                              <FaEdit />
-                            </Button>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            <Button variant="secondary" className="mt-3" onClick={() => navigate("/inicio")}>
-              Ir al inicio
-            </Button>
-          </Card.Body>
-        </Card>
-      )}
+          <Button variant="secondary" className="mt-3" onClick={() => navigate("/inicio")}>
+            Ir al inicio
+          </Button>
+        </Card.Body>
+      </Card>
 
       <Modal show={mostrarModal} onHide={() => setMostrarModal(false)}>
         <Modal.Header closeButton>
