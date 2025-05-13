@@ -86,17 +86,24 @@ const ModalEdicionDocente = ({
     }
   };
 
-   // Validar el carnet para que no tenga más de 6 caracteres
-   const validateCarnet = () => {
-    if (docenteEditado.carnet && docenteEditado.carnet.length > 6) {
-      alert("El carnet no puede tener más de 6 caracteres.");
-      return false;
-    }
-    return true;
-  };
+   const validateInputs = () => {
+  if (!/^\d{6}$/.test(docenteEditado.carnet)) {
+    alert("El carnet debe contener exactamente 6 dígitos numéricos.");
+    return false;
+  }
+
+  if (!/^\d{7,8}$/.test(docenteEditado.telefono)) {
+    alert("El teléfono debe tener entre 7 y 8 dígitos numéricos.");
+    return false;
+  }
+
+  return true;
+};
+
 
   const handleSaveChanges = async () => {
-    if (!validateCarnet()) return; // Solo guarda si el carnet es válido
+    if (!validateInputs()) return;
+
 
     if (!docenteEditado.id) {
       console.error("❌ No hay ID del docente para actualizar.");
@@ -179,24 +186,48 @@ const ModalEdicionDocente = ({
           </Form.Group>
 
           <Form.Group controlId="telefono">
-            <Form.Label>Teléfono</Form.Label>
-            <Form.Control
-              type="text"
-              name="telefono"
-              value={docenteEditado.telefono || ""}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
+  <Form.Label>Teléfono</Form.Label>
+  <Form.Control
+    type="text"
+    name="telefono"
+    value={docenteEditado.telefono || ""}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (/^\d{0,8}$/.test(value)) {
+        setDocenteEditado((prev) => ({ ...prev, telefono: value }));
+      }
+    }}
+    placeholder="Máx. 8 dígitos"
+  />
+  {docenteEditado.telefono && docenteEditado.telefono.length < 7 && (
+    <Form.Text className="text-warning">
+      El teléfono debería tener al menos 7 dígitos.
+    </Form.Text>
+  )}
+</Form.Group>
 
-          <Form.Group controlId="formCarnet">
-            <Form.Label>Carnet</Form.Label>
-            <Form.Control
-              type="text"
-              name="carnet"
-              value={docenteEditado.carnet}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
+
+         <Form.Group controlId="formCarnet">
+  <Form.Label>Carnet</Form.Label>
+  <Form.Control
+    type="text"
+    name="carnet"
+    value={docenteEditado.carnet || ""}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (/^\d{0,6}$/.test(value)) {
+        setDocenteEditado((prev) => ({ ...prev, carnet: value }));
+      }
+    }}
+    placeholder="Carnet de 6 dígitos"
+  />
+  {docenteEditado.carnet && docenteEditado.carnet.length !== 6 && (
+    <Form.Text className="text-danger">
+      El carnet debe tener exactamente 6 dígitos numéricos.
+    </Form.Text>
+  )}
+</Form.Group>
+
 
           <Form.Group controlId="imagen">
             <Form.Label>Imagen</Form.Label>

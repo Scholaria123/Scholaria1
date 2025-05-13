@@ -80,33 +80,33 @@ const Encabezado = () => {
           </Offcanvas.Header>
           <Offcanvas.Body>
             <Nav className="justify-content-end flex-grow-1 pe-3">
-              {user.rol === "padre" ? (
-                <>
-                  <Nav.Link
-                    onClick={() => handleNavigate("/Calificaciones")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                  >
-                    {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
-                    <strong>Calificaciones</strong>
-                  </Nav.Link>
+                              {user.rol === "padre" ? (
+                    <>
+                      <Nav.Link
+                        onClick={() => handleNavigate("/Calificaciones")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-file-earmark-bar-graph-fill me-2"></i>}
+                        <strong>Calificaciones</strong>
+                      </Nav.Link>
 
-                  <Nav.Link
-                    onClick={() => handleNavigate("/Calendario")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                  >
-                    {isCollapsed && <i className="bi-calendar-event-fill me-2"></i>}
-                    <strong>Calendario</strong>
-                  </Nav.Link>
+                      <Nav.Link
+                        onClick={() => handleNavigate("/CatalogoCalificaciones")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-search me-2"></i>}
+                        <strong>Busca tu estudiante</strong>
+                      </Nav.Link>
 
-                  <Nav.Link
-                    onClick={() => handleNavigate("/CatalogoCalificaciones")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                  >
-                    {isCollapsed && <i className="bi-search me-2"></i>}
-                    <strong>Busca tu estudiante</strong>
-                  </Nav.Link>
-                </>
-              ) : (
+                      <Nav.Link
+                        onClick={() => handleNavigate("/Notificaciones")}
+                        className={isCollapsed ? "color-texto-marca" : "text-white"}
+                      >
+                        {isCollapsed && <i className="bi-bell-fill me-2"></i>}
+                        <strong>Notificaciones</strong>
+                      </Nav.Link>
+                    </>
+                  ) : (
                 <>
                   <Nav.Link
                     onClick={() => handleNavigate("/inicio")}

@@ -88,6 +88,12 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
       return;
     }
 
+    if (!/^\d{8}$/.test(nuevoEstudiante.telefono)) {
+  alert("El número de teléfono debe contener exactamente 8 dígitos numéricos.");
+  return;
+}
+
+
     if (!nuevoEstudiante.grado) {
       alert("Debe seleccionar un grado.");
       return;
@@ -152,15 +158,30 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
           </Form.Group>
 
           <Form.Group controlId="formTelefono">
-            <Form.Label>Teléfono</Form.Label>
-            <Form.Control 
-              type="text" 
-              name="telefono" 
-              value={nuevoEstudiante.telefono} 
-              onChange={handleInputChange} 
-              required 
-            />
-          </Form.Group>
+  <Form.Label>Teléfono</Form.Label>
+  <Form.Control
+    type="text"
+    name="telefono"
+    value={nuevoEstudiante.telefono}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (/^\d{0,8}$/.test(value)) {
+        setNuevoEstudiante((prev) => ({
+          ...prev,
+          telefono: value,
+        }));
+      }
+    }}
+    placeholder="Número de teléfono (8 dígitos)"
+    required
+  />
+  {nuevoEstudiante.telefono && nuevoEstudiante.telefono.length !== 8 && (
+    <Form.Text className="text-danger">
+      El número debe tener exactamente 8 dígitos.
+    </Form.Text>
+  )}
+</Form.Group>
+
 
           <Form.Group controlId="formGrado">
             <Form.Label>Grado</Form.Label>

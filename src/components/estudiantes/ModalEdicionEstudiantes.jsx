@@ -104,49 +104,29 @@ const ModalEdicionEstudiante = ({
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="apellido">
-            <Form.Label className="fw-bold">Apellido</Form.Label>
-            <Form.Control
-              type="text"
-              name="apellido"
-              value={estudianteEditado.apellido || ""}
-              onChange={handleInputChange}
-              placeholder="Apellido del estudiante"
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="carnet">
-            <Form.Label className="fw-bold">Carnet</Form.Label>
-            <Form.Control
-              type="text"
-              name="carnet"
-              value={estudianteEditado.carnet || ""}
-              onChange={handleInputChange}
-              placeholder="Carnet del estudiante"
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3" controlId="correo">
-            <Form.Label className="fw-bold">Correo</Form.Label>
-            <Form.Control
-              type="email"
-              name="correo"
-              value={estudianteEditado.correo || ""}
-              onChange={handleInputChange}
-              placeholder="Correo electrónico"
-            />
-          </Form.Group>
 
           <Form.Group className="mb-3" controlId="telefono">
-            <Form.Label className="fw-bold">Teléfono</Form.Label>
-            <Form.Control
-              type="tel"
-              name="telefono"
-              value={estudianteEditado.telefono || ""}
-              onChange={handleInputChange}
-              placeholder="Número de teléfono"
-            />
-          </Form.Group>
+  <Form.Label className="fw-bold">Teléfono</Form.Label>
+  <Form.Control
+    type="text"
+    name="telefono"
+    value={estudianteEditado.telefono || ""}
+    onChange={(e) => {
+      const value = e.target.value;
+      // Solo permite hasta 8 dígitos numéricos
+      if (/^\d{0,8}$/.test(value)) {
+        setEstudianteEditado((prev) => ({ ...prev, telefono: value }));
+      }
+    }}
+    placeholder="Número de teléfono (8 dígitos)"
+  />
+  {estudianteEditado.telefono && estudianteEditado.telefono.length !== 8 && (
+    <Form.Text className="text-danger">
+      El número debe tener exactamente 8 dígitos.
+    </Form.Text>
+  )}
+</Form.Group>
+
 
           <Form.Group className="mb-3" controlId="direccion">
             <Form.Label className="fw-bold">Dirección</Form.Label>

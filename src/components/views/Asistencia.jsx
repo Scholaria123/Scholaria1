@@ -299,21 +299,28 @@ const Asistencia = () => {
       {mostrarTablaResumen && (
         <>
           <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Estudiante</th>
-                <th style={styles.th}>Estado</th>
-              </tr>
-            </thead>
-            <tbody>
-              {estudiantesPagina.map(({ id, nombre }) => (
-                <tr key={id}>
-                  <td style={styles.td}>{nombre}</td>
-                  <td style={styles.td}>{asistencia[id] || "No marcado"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+  <thead>
+    <tr>
+      <th style={styles.th}>Estudiante</th>
+      <th style={styles.th}>Grado</th>
+      <th style={styles.th}>Grupo</th>
+      <th style={styles.th}>Asignatura</th>
+      <th style={styles.th}>Estado</th>
+    </tr>
+  </thead>
+  <tbody>
+    {estudiantesPagina.map(({ id, nombre }) => (
+      <tr key={id}>
+        <td style={styles.td}>{nombre}</td>
+        <td style={styles.td}>{gradoSeleccionado}</td>
+        <td style={styles.td}>{grupoSeleccionado.toUpperCase()}</td>
+        <td style={styles.td}>{nombreAsignatura}</td>
+        <td style={styles.td}>{asistencia[id] || "No marcado"}</td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+
 
           <div style={styles.paginacion}>
             <button

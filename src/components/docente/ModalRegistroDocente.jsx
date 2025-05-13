@@ -81,10 +81,11 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
       return false;
     }
 
-    if (nuevoDocente.carnet && nuevoDocente.carnet.length > 6) {
-      alert("El carnet no puede tener más de 6 caracteres.");
-      return false; // Si la validación falla, no se envía el formulario
-    }
+    if (!/^\d{6}$/.test(nuevoDocente.carnet)) {
+  alert("El carnet debe contener exactamente 6 dígitos numéricos.");
+  return false;
+}
+
 
     if (!nuevoDocente.asignaturaId) {
       alert("Debe seleccionar una asignatura.");
@@ -96,10 +97,11 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
       return false;
     }
 
-    if (!nuevoDocente.telefono.trim()) {
-      alert("El teléfono es obligatorio.");
-      return false;
-    }
+    if (!/^\d{8}$/.test(nuevoDocente.telefono)) {
+  alert("El número de teléfono debe contener exactamente 8 dígitos numéricos.");
+  return false;
+}
+
 
     if (!nuevoDocente.titulo.trim()) {
       alert("El título es obligatorio.");
@@ -143,14 +145,27 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
           </Form.Group>
 
           <Form.Group controlId="formCarnet">
-            <Form.Label>Carnet</Form.Label>
-            <Form.Control
-              type="text"
-              name="carnet"
-              value={nuevoDocente.carnet}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
+  <Form.Label>Carnet</Form.Label>
+  <Form.Control
+    type="text"
+    name="carnet"
+    value={nuevoDocente.carnet}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (/^\d{0,6}$/.test(value)) {
+        setNuevoDocente((prev) => ({ ...prev, carnet: value }));
+      }
+    }}
+    placeholder="Carnet de 6 dígitos"
+    required
+  />
+  {nuevoDocente.carnet && nuevoDocente.carnet.length !== 6 && (
+    <Form.Text className="text-danger">
+      El carnet debe tener exactamente 6 dígitos numéricos.
+    </Form.Text>
+  )}
+</Form.Group>
+
 
           <Form.Group controlId="formAsignaturaId">
             <Form.Label>Asignatura</Form.Label>
@@ -168,9 +183,30 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
           </Form.Group>
 
           <Form.Group controlId="formTelefono">
-            <Form.Label>Teléfono</Form.Label>
-            <Form.Control type="text" name="telefono" value={nuevoDocente.telefono} onChange={handleInputChange} />
-          </Form.Group>
+  <Form.Label>Teléfono</Form.Label>
+  <Form.Control
+    type="text"
+    name="telefono"
+    value={nuevoDocente.telefono}
+    onChange={(e) => {
+      const value = e.target.value;
+      if (/^\d{0,8}$/.test(value)) {
+        setNuevoDocente((prev) => ({
+          ...prev,
+          telefono: value,
+        }));
+      }
+    }}
+    placeholder="Número de teléfono (8 dígitos)"
+    required
+  />
+  {nuevoDocente.telefono && nuevoDocente.telefono.length !== 8 && (
+    <Form.Text className="text-danger">
+      El número debe tener exactamente 8 dígitos.
+    </Form.Text>
+  )}
+</Form.Group>
+
 
           <Form.Group controlId="formTitulo">
             <Form.Label>Título</Form.Label>
