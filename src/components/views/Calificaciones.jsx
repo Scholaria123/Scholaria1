@@ -6,7 +6,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { useAuth } from '../../database/authcontext';
 import { db } from '../../database/firebaseconfig';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot } from 'firebase/firestore';
 import Paginacion from '../ordenamiento/Paginacion';
 import { Form, Button, Container } from 'react-bootstrap';
 
@@ -14,50 +14,56 @@ const Calificaciones = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
   const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
   const [calificacionEditada, setCalificacionEditada] = useState(null);
-  const [actualizarTabla, setActualizarTabla] = useState(false);
   const [calificaciones, setCalificaciones] = useState([]);
   const [asignaturas, setAsignaturas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
   const [calificacionesExport, setCalificacionesExport] = useState([]);
-  const [filtro, setFiltro] = useState("");
+  const [filtro, setFiltro] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
   const { user } = useAuth();
 
-  // Traer datos desde Firebase
-  const cargarDatos = async () => {
-    const calificacionesSnap = await getDocs(collection(db, 'calificaciones'));
-    const asignaturasSnap = await getDocs(collection(db, 'asignaturas'));
-    const estudiantesSnap = await getDocs(collection(db, 'estudiantes'));
-
-    const calificacionesData = calificacionesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const asignaturasData = asignaturasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const estudiantesData = estudiantesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-
-    setCalificaciones(calificacionesData);
-    setAsignaturas(asignaturasData);
-    setEstudiantes(estudiantesData);
-
-    // También actualizar la data para exportar PDF
-    const exportData = calificacionesData.map(c => ({
-      asignatura: asignaturasData.find(a => a.id === c.asignaturaId)?.nombre || 'Sin asignatura',
-      estudiante: estudiantesData.find(e => e.id === c.estudianteId)?.nombre || 'Sin estudiante',
-      parcial1: c.parcial1,
-      parcial2: c.parcial2,
-      parcial3: c.parcial3,
-      final: c.final,
-      observaciones: c.observaciones || '',
-    }));
-    setCalificacionesExport(exportData);
-  };
-
   useEffect(() => {
-    cargarDatos();
-  }, [actualizarTabla]);
+    // Listener para asignaturas
+    const unsubAsignaturas = onSnapshot(collection(db, 'asignaturas'), (snapshot) => {
+      const asignaturasData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setAsignaturas(asignaturasData);
+    });
+
+    // Listener para estudiantes
+    const unsubEstudiantes = onSnapshot(collection(db, 'estudiantes'), (snapshot) => {
+      const estudiantesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setEstudiantes(estudiantesData);
+    });
+
+    // Listener para calificaciones
+    const unsubCalificaciones = onSnapshot(collection(db, 'calificaciones'), (snapshot) => {
+      const calificacionesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      setCalificaciones(calificacionesData);
+
+      // Actualizar exportación de PDF con datos actualizados
+      const exportData = calificacionesData.map(c => ({
+        asignatura: asignaturas.find(a => a.id === c.asignaturaId)?.nombre || 'Sin asignatura',
+        estudiante: estudiantes.find(e => e.id === c.estudianteId)?.nombre || 'Sin estudiante',
+        parcial1: c.parcial1,
+        parcial2: c.parcial2,
+        parcial3: c.parcial3,
+        final: c.final,
+        observaciones: c.observaciones || '',
+      }));
+      setCalificacionesExport(exportData);
+    });
+
+    // Cleanup
+    return () => {
+      unsubAsignaturas();
+      unsubEstudiantes();
+      unsubCalificaciones();
+    };
+  }, [asignaturas, estudiantes]);
 
   const handleRegistroExitoso = () => {
-    setActualizarTabla(prev => !prev);
     setMostrarModal(false);
   };
 
@@ -67,7 +73,6 @@ const Calificaciones = () => {
   };
 
   const handleActualizacionExitosa = () => {
-    setActualizarTabla(prev => !prev);
     setMostrarModalEdicion(false);
   };
 
@@ -99,14 +104,12 @@ const Calificaciones = () => {
 
   const esAdminODocente = user?.rol === 'admin' || user?.rol === 'docente';
 
-  // Filtrar calificaciones
   const calificacionesFiltradas = calificaciones.filter((calificacion) =>
-    ["asignaturaId", "estudianteId", "observaciones"].some((campo) =>
+    ['asignaturaId', 'estudianteId', 'observaciones'].some((campo) =>
       (calificacion[campo] || '').toString().toLowerCase().includes(filtro.toLowerCase())
     )
   );
 
-  // Paginación
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCalificaciones = calificacionesFiltradas.slice(indexOfFirstItem, indexOfLastItem);
@@ -124,7 +127,6 @@ const Calificaciones = () => {
         </div>
       )}
 
-      {/* Buscador */}
       <Form.Control
         type="text"
         placeholder="Buscar"
@@ -133,7 +135,6 @@ const Calificaciones = () => {
         className="mb-3"
       />
 
-      {/* Modal para registrar calificaciones */}
       {mostrarModal && (
         <ModalRegistroCalificaciones
           onClose={() => setMostrarModal(false)}
@@ -141,7 +142,6 @@ const Calificaciones = () => {
         />
       )}
 
-      {/* Modal para editar calificaciones */}
       <ModalEdicionCalificaciones
         show={mostrarModalEdicion}
         setShow={setMostrarModalEdicion}
@@ -150,16 +150,14 @@ const Calificaciones = () => {
         onCalificacionActualizada={handleActualizacionExitosa}
       />
 
-      {/* Tabla de calificaciones */}
       <TablaCalificaciones
-        actualizar={actualizarTabla}
         calificaciones={currentCalificaciones}
         onExportReady={setCalificacionesExport}
         asignaturas={asignaturas}
         estudiantes={estudiantes}
+        onEditCalificacion={handleEdicionCalificacion}
       />
 
-      {/* Paginación */}
       <Paginacion
         itemsPerPage={itemsPerPage}
         totalItems={calificacionesFiltradas.length}
