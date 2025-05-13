@@ -1,0 +1,83 @@
+.custom-modal .modal-content {
+  border-radius: 16px;
+  padding: 1rem 1.5rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+/* Título estilizado */
+.custom-modal .modal-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  color: #333;
+  margin: 0 auto;
+}
+
+/* Espaciado entre campos del formulario */
+.custom-modal .form-group {
+  margin-bottom: 1rem;
+}
+
+/* Inputs y selects */
+.custom-modal .form-control,
+.custom-modal .form-select {
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ced4da;
+  transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.custom-modal .form-control:focus,
+.custom-modal .form-select:focus {
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+
+/* Etiquetas */
+.custom-modal label {
+  font-weight: 500;
+  color: #444;
+  margin-bottom: 0.3rem;
+  display: block;
+}
+
+/* Botones del modal */
+.custom-modal .modal-footer .btn {
+  min-width: 120px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 12px;
+}
+
+.custom-modal .btn-primary {
+  background-color: #4f46e5;
+  border-color: #4f46e5;
+}
+
+.custom-modal .btn-primary:hover {
+  background-color: #4338ca;
+  border-color: #4338ca;
+}
+
+.custom-modal .btn-outline-secondary:hover {
+  background-color: #f3f4f6;
+  border-color: #ccc;
+}
+
+/* Responsive para móviles */
+@media (max-width: 576px) {
+  .custom-modal .modal-content {
+    padding: 1rem;
+  }
+
+  .custom-modal .modal-footer {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .custom-modal .modal-footer .btn {
+    width: 100%;
+  }
+}

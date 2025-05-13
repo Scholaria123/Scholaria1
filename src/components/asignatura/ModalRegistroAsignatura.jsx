@@ -1,5 +1,6 @@
 import React from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import "./ModalRegistroAsignatura.css";
 
 const ModalRegistroAsignatura = ({
   showModal,
@@ -59,7 +60,7 @@ const ModalRegistroAsignatura = ({
   };
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
       <Modal.Header closeButton>
         <Modal.Title>Agregar Asignatura</Modal.Title>
       </Modal.Header>

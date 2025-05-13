@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig"; // Importa la configuración de Firebase
 import { collection, getDocs, addDoc } from "firebase/firestore";
-
+import "./ModalRegistroEstudiante.css"
 import ReactGA from "react-ga4";
 
 // Inicialización de ReactGA con el ID de seguimiento
@@ -123,7 +123,7 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
   };
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
       <Modal.Header closeButton>
         <Modal.Title>Registrar Estudiante</Modal.Title>
       </Modal.Header>

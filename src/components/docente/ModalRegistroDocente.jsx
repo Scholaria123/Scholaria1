@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig";
 import { collection, getDocs, addDoc } from "firebase/firestore";
+import "./ModalRegistroDocente.css";
 
 const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
   const [asignaturas, setAsignaturas] = useState([]);
@@ -125,7 +126,7 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
   
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)}>
+    <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
       <Modal.Header closeButton>
         <Modal.Title>Registrar Docente</Modal.Title>
       </Modal.Header>
