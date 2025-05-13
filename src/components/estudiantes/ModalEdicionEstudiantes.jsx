@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { db } from "../../database/firebaseconfig"; // Asegúrate de que la ruta es correcta
+import { db } from "../../database/firebaseconfig";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import "./ModalEdicionEstudiante.css";
+
 
 const ModalEdicionEstudiante = ({
   showEditModal,
@@ -27,11 +29,9 @@ const ModalEdicionEstudiante = ({
 
         setAsignaturas(asignaturasList);
 
-        // 🔧 Aplanar los arrays de grado y grupo
         const allGrados = asignaturasList.flatMap((a) => a.grado || []);
         const allGrupos = asignaturasList.flatMap((a) => a.grupo || []);
 
-        // ✨ Eliminar duplicados
         const uniqueGrados = [...new Set(allGrados)];
         const uniqueGrupos = [...new Set(allGrupos)];
 
@@ -69,10 +69,7 @@ const ModalEdicionEstudiante = ({
   };
 
   const handleSaveChanges = async () => {
-    if (!estudianteEditado.id) {
-      console.error("❌ No hay ID del estudiante para actualizar.");
-      return;
-    }
+    if (!estudianteEditado.id) return;
 
     try {
       const estudianteRef = doc(db, "estudiantes", estudianteEditado.id);
@@ -81,7 +78,6 @@ const ModalEdicionEstudiante = ({
         imagen: imagenBase64 || estudianteEditado.imagen,
       };
       await updateDoc(estudianteRef, updateData);
-      console.log("✅ Estudiante actualizado correctamente");
       fetchData();
       setShowEditModal(false);
     } catch (error) {
@@ -96,41 +92,110 @@ const ModalEdicionEstudiante = ({
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group controlId="nombre">
-            <Form.Label>Nombre</Form.Label>
+          <Form.Group className="mb-3" controlId="nombre">
+            <Form.Label className="fw-bold">Nombre</Form.Label>
             <Form.Control
               type="text"
               name="nombre"
               value={estudianteEditado.nombre || ""}
               onChange={handleInputChange}
+              placeholder="Nombre del estudiante"
             />
           </Form.Group>
 
-          <Form.Group controlId="grado">
-            <Form.Label>Grado</Form.Label>
-            <Form.Select name="grado" value={estudianteEditado.grado || ""} onChange={handleInputChange}>
+          <Form.Group className="mb-3" controlId="apellido">
+            <Form.Label className="fw-bold">Apellido</Form.Label>
+            <Form.Control
+              type="text"
+              name="apellido"
+              value={estudianteEditado.apellido || ""}
+              onChange={handleInputChange}
+              placeholder="Apellido del estudiante"
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="carnet">
+            <Form.Label className="fw-bold">Carnet</Form.Label>
+            <Form.Control
+              type="text"
+              name="carnet"
+              value={estudianteEditado.carnet || ""}
+              onChange={handleInputChange}
+              placeholder="Carnet del estudiante"
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="correo">
+            <Form.Label className="fw-bold">Correo</Form.Label>
+            <Form.Control
+              type="email"
+              name="correo"
+              value={estudianteEditado.correo || ""}
+              onChange={handleInputChange}
+              placeholder="Correo electrónico"
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="telefono">
+            <Form.Label className="fw-bold">Teléfono</Form.Label>
+            <Form.Control
+              type="tel"
+              name="telefono"
+              value={estudianteEditado.telefono || ""}
+              onChange={handleInputChange}
+              placeholder="Número de teléfono"
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="direccion">
+            <Form.Label className="fw-bold">Dirección</Form.Label>
+            <Form.Control
+              as="textarea"
+              rows={2}
+              name="direccion"
+              value={estudianteEditado.direccion || ""}
+              onChange={handleInputChange}
+              placeholder="Dirección del estudiante"
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3" controlId="grado">
+            <Form.Label className="fw-bold">Grado</Form.Label>
+            <Form.Select
+              name="grado"
+              value={estudianteEditado.grado || ""}
+              onChange={handleInputChange}
+            >
               <option value="">Seleccione un grado</option>
               {grados.map((grado, index) => (
-                <option key={index} value={grado}>{grado}</option>
+                <option key={index} value={grado}>
+                  {grado}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
 
-          <Form.Group controlId="grupo">
-            <Form.Label>Grupo</Form.Label>
-            <Form.Select name="grupo" value={estudianteEditado.grupo || ""} onChange={handleInputChange}>
+          <Form.Group className="mb-3" controlId="grupo">
+            <Form.Label className="fw-bold">Grupo</Form.Label>
+            <Form.Select
+              name="grupo"
+              value={estudianteEditado.grupo || ""}
+              onChange={handleInputChange}
+            >
               <option value="">Seleccione un grupo</option>
               {grupos.map((grupo, index) => (
-                <option key={index} value={grupo}>{grupo}</option>
+                <option key={index} value={grupo}>
+                  {grupo}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
 
-          <Form.Group controlId="asignatura">
-            <Form.Label>Asignaturas</Form.Label>
+          <Form.Group className="mb-3" controlId="asignaturaId">
+            <Form.Label className="fw-bold">Asignaturas</Form.Label>
             <Form.Select
-              name="asignaturaId"
               multiple
+              name="asignaturaId"
               value={estudianteEditado.asignaturaId || []}
               onChange={handleAsignaturaChange}
             >
@@ -141,19 +206,26 @@ const ModalEdicionEstudiante = ({
               ))}
             </Form.Select>
             <Form.Text className="text-muted">
-              Mantén presionada la tecla Ctrl (Windows) o Cmd (Mac) para seleccionar varias asignaturas.
+              Usa Ctrl (Windows) o Cmd (Mac) para seleccionar múltiples.
             </Form.Text>
           </Form.Group>
 
-          <Form.Group controlId="imagen">
-            <Form.Label>Imagen</Form.Label>
+          <Form.Group className="mb-3" controlId="imagen">
+            <Form.Label className="fw-bold">Imagen</Form.Label>
             <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
+            {estudianteEditado.imagen && (
+              <img
+                src={imagenBase64 || estudianteEditado.imagen}
+                alt="Foto del estudiante"
+                className="preview-img"
+              />
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-          Cerrar
+          Cancelar
         </Button>
         <Button variant="primary" onClick={handleSaveChanges}>
           Guardar Cambios
