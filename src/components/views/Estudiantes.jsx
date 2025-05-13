@@ -225,15 +225,17 @@ const Estudiantes = () => {
         handleImageChange={handleImageChange}
         handleAddEstudiante={handleAddEstudiante}
       />
+
       <ModalEdicionEstudiante
-        showEditModal={showEditModal}
-        setShowEditModal={setShowEditModal}
-        estudianteEditado={estudianteEditado}
-        setEstudianteEditado={setEstudianteEditado}
-        handleEditInputChange={handleEditInputChange}
-        handleEditImageChange={handleEditImageChange}
-        handleEditEstudiante={handleEditEstudiante}
-      />
+  showEditModal={showEditModal}
+  setShowEditModal={setShowEditModal}
+  estudianteEditado={estudianteEditado}
+  setEstudianteEditado={setEstudianteEditado}
+  fetchData={fetchEstudiantes}
+/>
+
+
+
       <ModalEliminacionEstudiante
         showDeleteModal={showDeleteModal}
         setShowDeleteModal={setShowDeleteModal}

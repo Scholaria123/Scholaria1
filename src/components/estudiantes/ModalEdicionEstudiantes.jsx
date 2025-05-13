@@ -11,6 +11,7 @@ const ModalEdicionEstudiante = ({
   estudianteEditado,
   setEstudianteEditado,
   fetchData,
+   handleEditEstudiante
 }) => {
   const [asignaturas, setAsignaturas] = useState([]);
   const [grados, setGrados] = useState([]);
