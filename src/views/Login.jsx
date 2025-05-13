@@ -4,6 +4,8 @@ import { getDocs, collection, query, where } from "firebase/firestore";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../database/firebaseconfig";
 import { Form, Button, Alert, Card } from "react-bootstrap";
+import "./Login.css";
+import ScholariaLogo from "../assets/imagenes/Scholaria_logo.png";
 
 const Login = () => {
   const [identificador, setIdentificador] = useState("");
@@ -39,44 +41,44 @@ const Login = () => {
   };
 
   return (
-    <div className="container mt-5">
-      <Card className="p-4 shadow">
-        <Card.Body>
-          <h3 className="mb-4">Iniciar sesión</h3>
-          {error && <Alert variant="danger">{error}</Alert>}
-          <Form onSubmit={handleLogin}>
-            <Form.Group className="mb-3">
-              <Form.Label>Email o carnet:</Form.Label>
-              <Form.Control
-                type="text"
-                value={identificador}
-                onChange={(e) => setIdentificador(e.target.value)}
-                placeholder="Correo o carnet"
-                required
-              />
-            </Form.Group>
+  <div className="login-container">
+    <div className="login-card">
+      <img src={ScholariaLogo} alt="Scholaria logo" className="login-logo" />
+      <h3 className="login-title">Iniciar sesión</h3>
+      {error && <Alert variant="danger">{error}</Alert>}
+      <Form onSubmit={handleLogin}>
+        <Form.Group className="mb-3">
+          <Form.Label>Email o carnet:</Form.Label>
+          <Form.Control
+            type="text"
+            value={identificador}
+            onChange={(e) => setIdentificador(e.target.value)}
+            placeholder="Correo o carnet"
+            required
+          />
+        </Form.Group>
 
-            {identificador.includes("@") && (
-              <Form.Group className="mb-3">
-                <Form.Label>Contraseña:</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Contraseña"
-                  required
-                />
-              </Form.Group>
-            )}
+        {identificador.includes("@") && (
+          <Form.Group className="mb-3">
+            <Form.Label>Contraseña:</Form.Label>
+            <Form.Control
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Contraseña"
+              required
+            />
+          </Form.Group>
+        )}
 
-            <Button variant="primary" type="submit" className="w-100">
-              Iniciar sesión
-            </Button>
-          </Form>
-        </Card.Body>
-      </Card>
+        <Button variant="primary" type="submit" className="w-100 login-button">
+          Iniciar sesión
+        </Button>
+      </Form>
     </div>
-  );
-};
+  </div>
+);
+
+}
 
 export default Login;
