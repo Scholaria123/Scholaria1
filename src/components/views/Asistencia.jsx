@@ -8,6 +8,22 @@ import {
   addDoc,
 } from "firebase/firestore";
 import jsPDF from "jspdf";
+import {
+  Calendar,
+  School,
+  Users,
+  BookOpen,
+  Check,
+  X,
+  Circle,
+  Save,
+  FileText,
+  Table,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 
 const Asistencia = () => {
   const [grados, setGrados] = useState([]);
@@ -167,9 +183,11 @@ const Asistencia = () => {
 
   return (
     <div style={styles.container}>
-      <h2 style={styles.title}>📋 Registro de Asistencia</h2>
+      <h2 style={styles.title}>Registro de Asistencia</h2>
 
-      <label style={styles.label}>📅 Fecha:</label>
+      <label style={styles.label}>
+        <Calendar size={16} style={styles.icon} /> Fecha:
+      </label>
       <input
         type="date"
         value={fecha}
@@ -177,7 +195,9 @@ const Asistencia = () => {
         style={styles.input}
       />
 
-      <label style={styles.label}>🏫 Grado:</label>
+      <label style={styles.label}>
+        <School size={16} style={styles.icon} /> Grado:
+      </label>
       <select
         value={gradoSeleccionado}
         onChange={(e) => {
@@ -197,7 +217,9 @@ const Asistencia = () => {
 
       {gradoSeleccionado && (
         <>
-          <label style={styles.label}>👥 Grupo:</label>
+          <label style={styles.label}>
+            <Users size={16} style={styles.icon} /> Grupo:
+          </label>
           <select
             value={grupoSeleccionado}
             onChange={(e) => {
@@ -218,7 +240,9 @@ const Asistencia = () => {
 
       {gradoSeleccionado && grupoSeleccionado && (
         <>
-          <label style={styles.label}>📘 Asignatura:</label>
+          <label style={styles.label}>
+            <BookOpen size={16} style={styles.icon} /> Asignatura:
+          </label>
           <select
             value={asignaturaSeleccionada}
             onChange={(e) => setAsignaturaSeleccionada(e.target.value)}
@@ -265,62 +289,69 @@ const Asistencia = () => {
               style={getButtonStyles(id, "Presente")}
               onClick={() => marcarAsistencia(id, "Presente")}
             >
-              ✅
+              <Check size={16} />
             </button>
             <button
               style={getButtonStyles(id, "Ausente")}
               onClick={() => marcarAsistencia(id, "Ausente")}
             >
-              ❌
+              <X size={16} />
             </button>
             <button
               style={getButtonStyles(id, "Justificado")}
               onClick={() => marcarAsistencia(id, "Justificado")}
             >
-              🟡
+              <Circle size={16} />
             </button>
           </div>
         ))}
       </div>
 
       <button onClick={guardarAsistencia} style={styles.buttonSave}>
-        💾 Guardar Asistencia
+        <Save size={16} style={styles.icon} /> Guardar Asistencia
       </button>
       <button onClick={generarPDF} style={styles.buttonPDF}>
-        📄 Generar PDF
+        <FileText size={16} style={styles.icon} /> Generar PDF
       </button>
       <button
         onClick={() => setMostrarTablaResumen((prev) => !prev)}
         style={styles.buttonResumen}
       >
-        {mostrarTablaResumen ? "🔽 Ocultar resumen" : "🔼 Ver resumen"}
+        {mostrarTablaResumen ? (
+          <>
+            <ChevronDown size={16} style={styles.icon} /> Ocultar resumen
+          </>
+        ) : (
+          <>
+            <ChevronUp size={16} style={styles.icon} /> Ver resumen
+          </>
+        )}
       </button>
 
       {mostrarTablaResumen && (
         <>
           <table style={styles.table}>
-  <thead>
-    <tr>
-      <th style={styles.th}>Estudiante</th>
-      <th style={styles.th}>Grado</th>
-      <th style={styles.th}>Grupo</th>
-      <th style={styles.th}>Asignatura</th>
-      <th style={styles.th}>Estado</th>
-    </tr>
-  </thead>
-  <tbody>
-    {estudiantesPagina.map(({ id, nombre }) => (
-      <tr key={id}>
-        <td style={styles.td}>{nombre}</td>
-        <td style={styles.td}>{gradoSeleccionado}</td>
-        <td style={styles.td}>{grupoSeleccionado.toUpperCase()}</td>
-        <td style={styles.td}>{nombreAsignatura}</td>
-        <td style={styles.td}>{asistencia[id] || "No marcado"}</td>
-      </tr>
-    ))}
-  </tbody>
-</table>
-
+            <thead>
+              <tr>
+                <th style={styles.th}>Estudiante</th>
+                <th style={styles.th}>Grado</th>
+                <th style={styles.th}>Grupo</th>
+                <th style={styles.th}>Asignatura</th>
+                <th style={styles.th}>Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              {estudiantesPagina.map(({ id, nombre }) => (
+                <tr key={id}>
+                  <td style={styles.td}>{nombre}</td>
+                  <td style={styles.td}>{gradoSeleccionado}</td>
+                  <td style={styles.td}>{grupoSeleccionado.toUpperCase()}</td>
+                  <td style={styles.td}>{nombreAsignatura}</td>
+                  <td style={styles.td}>{asistencia[id] || "No marcado"}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
 
           <div style={styles.paginacion}>
             <button
@@ -328,7 +359,7 @@ const Asistencia = () => {
               disabled={paginaActual === 1}
               style={styles.pageButton}
             >
-              ⬅️ Anterior
+              <ChevronLeft size={16} /> Anterior
             </button>
             <span>
               Página {paginaActual} de {totalPaginas}
@@ -338,7 +369,7 @@ const Asistencia = () => {
               disabled={paginaActual === totalPaginas}
               style={styles.pageButton}
             >
-              Siguiente ➡️
+              Siguiente <ChevronRight size={16} />
             </button>
           </div>
         </>
