@@ -1,6 +1,9 @@
 .inicio-container {
   text-align: center;
   padding: 2rem;
+  margin-top: 0; 
+  background-color: #f9f9f9;
+  min-height: 100vh;
 }
 
 .botones-contenedor {
@@ -16,6 +19,7 @@
   align-items: center;
   cursor: pointer;
   width: 120px;
+  transition: transform 0.2s ease;
 }
 
 .boton-imagen {
@@ -49,4 +53,20 @@
   font-weight: 500;
   color: #333;
   text-align: center;
+}
+
+/* ✅ Responsivo para pantallas pequeñas */
+@media (max-width: 500px) {
+  .boton-wrapper {
+    width: 100px;
+  }
+
+  .boton-imagen {
+    width: 100px;
+    height: 100px;
+  }
+
+  .boton-texto {
+    font-size: 0.8rem;
+  }
 }
