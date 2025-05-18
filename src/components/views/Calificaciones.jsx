@@ -31,6 +31,8 @@ const Calificaciones = () => {
       setAsignaturas(asignaturasData);
     });
 
+    
+
     // Listener para estudiantes
     const unsubEstudiantes = onSnapshot(collection(db, 'estudiantes'), (snapshot) => {
       const estudiantesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
@@ -99,6 +101,13 @@ const Calificaciones = () => {
 
   const handleFilterChange = (e) => {
     setFiltro(e.target.value);
+    setCurrentPage(1); // resetear página al filtrar
+  };
+
+  // Función para refrescar lista (por ejemplo tras eliminar o editar)
+  const refrescarCalificaciones = () => {
+    // Como usas onSnapshot, la lista se actualiza automáticamente, pero podrías agregar aquí lógica si usas fetch.
+    // También puedes usar esta función para resetear página si quieres.
     setCurrentPage(1);
   };
 
@@ -156,6 +165,7 @@ const Calificaciones = () => {
         asignaturas={asignaturas}
         estudiantes={estudiantes}
         onEditCalificacion={handleEdicionCalificacion}
+         actualizar={refrescarCalificaciones}
       />
 
       <Paginacion

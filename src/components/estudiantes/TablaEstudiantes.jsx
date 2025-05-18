@@ -1,9 +1,39 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Image } from "react-bootstrap";
 import "./TablaEstudiantes.css";
 import { Pencil, Trash2 } from "lucide-react";
 
 const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
+  const [paginaActual, setPaginaActual] = useState(1);
+  const estudiantesPorPagina = 5;
+
+  // 👀 Detectar cambios en los IDs de los estudiantes
+  const prevIdsRef = useRef(estudiantes.map(e => e.id));
+
+  useEffect(() => {
+    const prevIds = prevIdsRef.current;
+    const currentIds = estudiantes.map(e => e.id);
+    
+    const seEliminoAlguien = prevIds.length > currentIds.length;
+    if (seEliminoAlguien) {
+      setPaginaActual(1);
+    }
+
+    // Actualiza los IDs previos
+    prevIdsRef.current = currentIds;
+  }, [estudiantes]);
+
+  const indiceUltimo = paginaActual * estudiantesPorPagina;
+  const indicePrimero = indiceUltimo - estudiantesPorPagina;
+  const estudiantesActuales = estudiantes.slice(indicePrimero, indiceUltimo);
+  const totalPaginas = Math.ceil(estudiantes.length / estudiantesPorPagina);
+
+  const cambiarPagina = (numero) => {
+    if (numero >= 1 && numero <= totalPaginas) {
+      setPaginaActual(numero);
+    }
+  };
+
   return (
     <div className="tabla-container">
       <h3 className="tabla-title">Lista de Estudiantes</h3>
@@ -18,7 +48,7 @@ const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
           </tr>
         </thead>
         <tbody>
-          {estudiantes.map((estudiante) => (
+          {estudiantesActuales.map((estudiante) => (
             <tr key={estudiante.id}>
               <td data-label="Imagen">
                 {estudiante.imagen ? (
@@ -48,6 +78,31 @@ const TablaEstudiantes = ({ estudiantes, openEditModal, openDeleteModal }) => {
           ))}
         </tbody>
       </table>
+
+      {/* Paginación */}
+      <div className="paginacion">
+        <button
+          onClick={() => cambiarPagina(paginaActual - 1)}
+          disabled={paginaActual === 1}
+        >
+          Anterior
+        </button>
+        {Array.from({ length: totalPaginas }, (_, i) => (
+          <button
+            key={i}
+            onClick={() => cambiarPagina(i + 1)}
+            className={paginaActual === i + 1 ? "activo" : ""}
+          >
+            {i + 1}
+          </button>
+        ))}
+        <button
+          onClick={() => cambiarPagina(paginaActual + 1)}
+          disabled={paginaActual === totalPaginas}
+        >
+          Siguiente
+        </button>
+      </div>
     </div>
   );
 };

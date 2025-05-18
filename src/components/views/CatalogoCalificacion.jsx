@@ -4,11 +4,11 @@ import { db } from "../../database/firebaseconfig";
 import { collection, getDocs } from "firebase/firestore";
 import TarjetaCalificaciones from "../tarjetas/TarjetaCalificaciones";
 
-
 const CatalogoCalificaciones = () => {
   const [estudiantes, setEstudiantes] = useState([]);
   const [asignaturas, setAsignaturas] = useState([]);
   const [asignaturaSeleccionada, setAsignaturaSeleccionada] = useState("Todas");
+  const [busqueda, setBusqueda] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -19,14 +19,6 @@ const CatalogoCalificaciones = () => {
         const estudiantesData = await getDocs(estudiantesCollection);
         const asignaturasData = await getDocs(asignaturasCollection);
 
-        // Mapear asignaturas en un objeto { id: { nombre, docente } }
-        const asignaturasMap = {};
-        asignaturasData.docs.forEach((doc) => {
-          const data = doc.data();
-          asignaturasMap[doc.id] = { nombre: data.nombre, docente: data.docente };
-        });
-
-        // Procesar estudiantes
         const estudiantesProcesados = estudiantesData.docs.map((doc) => {
           const data = doc.data();
           return {
@@ -36,7 +28,9 @@ const CatalogoCalificaciones = () => {
           };
         });
 
-        setAsignaturas(asignaturasData.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
+        setAsignaturas(
+          asignaturasData.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+        );
         setEstudiantes(estudiantesProcesados);
       } catch (error) {
         console.error("❌ Error al obtener datos:", error);
@@ -46,19 +40,26 @@ const CatalogoCalificaciones = () => {
     fetchData();
   }, []);
 
-  // Filtrar estudiantes por asignatura seleccionada
-  const estudiantesFiltrados =
-    asignaturaSeleccionada === "Todas"
-      ? estudiantes
-      : estudiantes.filter((estudiante) =>
-          estudiante.asignaturaId.includes(asignaturaSeleccionada)
-        );
+  const estudiantesFiltrados = estudiantes.filter((estudiante) => {
+    const coincideAsignatura =
+      asignaturaSeleccionada === "Todas" ||
+      estudiante.asignaturaId.includes(asignaturaSeleccionada);
+
+    const terminoBusqueda = busqueda.toLowerCase();
+    const coincideBusqueda =
+      estudiante.nombre?.toLowerCase().includes(terminoBusqueda) ||
+      estudiante.apellido?.toLowerCase().includes(terminoBusqueda) ||
+      estudiante.grado?.toLowerCase().includes(terminoBusqueda) ||
+      estudiante.seccion?.toLowerCase().includes(terminoBusqueda);
+
+    return coincideAsignatura && coincideBusqueda;
+  });
 
   return (
     <Container className="mt-5">
       <h4>Catálogo de Estudiantes</h4>
       <Row>
-        <Col lg={3} md={3} sm={6}>
+        <Col lg={3} md={4} sm={12}>
           <Form.Group className="mb-3">
             <Form.Label>Filtrar por asignatura:</Form.Label>
             <Form.Select
@@ -74,14 +75,27 @@ const CatalogoCalificaciones = () => {
             </Form.Select>
           </Form.Group>
         </Col>
+
+        <Col lg={4} md={8} sm={12}>
+          <Form.Group className="mb-3">
+            <Form.Label>Buscar estudiante:</Form.Label>
+            <Form.Control
+              type="text"
+              placeholder="Nombre, apellido, grado o sección"
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+            />
+          </Form.Group>
+        </Col>
       </Row>
+
       <Row>
         {estudiantesFiltrados.length > 0 ? (
           estudiantesFiltrados.map((estudiante) => (
             <TarjetaCalificaciones key={estudiante.id} estudiante={estudiante} />
           ))
         ) : (
-          <p>No hay estudiantes en esta asignatura.</p>
+          <p>No hay estudiantes que coincidan con la búsqueda.</p>
         )}
       </Row>
     </Container>

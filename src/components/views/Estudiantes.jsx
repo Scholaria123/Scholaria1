@@ -161,23 +161,28 @@ const Estudiantes = () => {
   };
 
   const handleDeleteEstudiante = async () => {
-    if (estudianteAEliminar) {
-      try {
-        const estudianteRef = doc(db, "estudiantes", estudianteAEliminar.id);
-        await deleteDoc(estudianteRef);
-        ReactGA.event({
-          category: "Estudiantes",
-          action: "Eliminación de Estudiante",
-          label: estudianteAEliminar.nombre,
-          value: 1,
-        });
-        setShowDeleteModal(false);
-        fetchEstudiantes();
-      } catch (error) {
-        console.error("Error al eliminar el estudiante:", error);
-      }
+  if (estudianteAEliminar) {
+    try {
+      const estudianteRef = doc(db, "estudiantes", estudianteAEliminar.id);
+      await deleteDoc(estudianteRef);
+      ReactGA.event({
+        category: "Estudiantes",
+        action: "Eliminación de Estudiante",
+        label: estudianteAEliminar.nombre,
+        value: 1,
+      });
+      setShowDeleteModal(false);
+
+      // ✅ Volver a la página 1
+      setCurrentPage(1);
+
+      fetchEstudiantes();
+    } catch (error) {
+      console.error("Error al eliminar el estudiante:", error);
     }
-  };
+  }
+};
+
 
   const estudiantesFiltrados = estudiantes.filter((estudiante) =>
     ["nombre", "direccion", "telefono"].some((campo) =>
