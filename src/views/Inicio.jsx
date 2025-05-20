@@ -5,13 +5,12 @@ import EstudiantesImg from '../assets/imagenes/EstudiantesBoton.png';
 import DocentesImg from '../assets/imagenes/DocentesBoton.png';
 import AsignaturasImg from '../assets/imagenes/AsignaturasBoton.png';
 import AsistenciaImg from '../assets/imagenes/AsistenciaBoton.png';
-import CatalogoImg from '../assets/imagenes/CatalogoEstudiantes.png';
 import EventosImg from '../assets/imagenes/EventosBoton.png';
 import CalificacionesImg from '../assets/imagenes/CalificacionesBoton.png';
 
 const Inicio = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth(); // ✅ usamos 'user' y 'loading'
+  const { user, loading } = useAuth();
   const rol = user?.rol;
 
   const handleNavigate = (path) => {
@@ -19,7 +18,7 @@ const Inicio = () => {
   };
 
   if (loading) {
-    return <p>Cargando...</p>; // 👈 Puedes personalizar esto con un spinner
+    return <p>Cargando...</p>;
   }
 
   return (
@@ -60,15 +59,6 @@ const Inicio = () => {
               <img src={AsistenciaImg} alt="Asistencia" />
             </div>
             <p className="boton-texto">Asistencia</p>
-          </div>
-        )}
-
-        {(rol === "admin" || rol === "docente" || rol === "padre") && (
-          <div className="boton-wrapper" onClick={() => handleNavigate("/CatalogoCalificaciones")}>
-            <div className="boton-imagen">
-              <img src={CatalogoImg} alt="Catálogo de Estudiantes" />
-            </div>
-            <p className="boton-texto">Catálogo</p>
           </div>
         )}
 

@@ -10,12 +10,13 @@ import {
   doc,
 } from "firebase/firestore";
 import ReactGA from "react-ga4";
-
+import { useNavigate } from "react-router-dom";
 import TablaEstudiantes from "../estudiantes/TablaEstudiantes";
 import ModalRegistroEstudiante from "../estudiantes/ModalRegistroEstudiantes";
 import ModalEdicionEstudiante from "../estudiantes/ModalEdicionEstudiantes";
 import ModalEliminacionEstudiante from "../estudiantes/ModalEliminacionEstudiantes";
-import Paginacion from "../ordenamiento/Paginacion"; // Asegúrate de que esta ruta sea correcta
+import Paginacion from "../ordenamiento/Paginacion"; 
+import CatalogoCalificaciones from "../views/CatalogoCalificacion";
 
 const Estudiantes = () => {
   const [estudiantes, setEstudiantes] = useState([]);
@@ -197,57 +198,66 @@ const Estudiantes = () => {
     indexOfLastItem
   );
 
-  return (
-    <Container className="mt-5">
-      <h4>Gestión de Estudiantes</h4>
-      <Form.Control
-        type="text"
-        placeholder="Buscar"
-        value={filtro}
-        onChange={handleFilterChange}
-        className="mb-3"
-      />
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Agregar estudiante
+const navigate = useNavigate();
+
+return (
+  <Container className="mt-5">
+    <h4>Gestión de Estudiantes</h4>
+
+    <Form.Control
+      type="text"
+      placeholder="Buscar"
+      value={filtro}
+      onChange={handleFilterChange}
+      className="mb-3"
+    />
+
+    <div className="d-flex align-items-center gap-2 mb-3">
+      <Button onClick={() => setShowModal(true)}>Agregar estudiante</Button>
+      <Button variant="secondary" onClick={() => navigate("/catalogocalificaciones")}>
+        Inscritos
       </Button>
-      <TablaEstudiantes
-        estudiantes={currentEstudiantes}
-        openEditModal={openEditModal}
-        openDeleteModal={openDeleteModal}
-      />
-      <Paginacion
-        itemsPerPage={itemsPerPage}
-        totalItems={estudiantesFiltrados.length}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-      <ModalRegistroEstudiante
-        showModal={showModal}
-        setShowModal={setShowModal}
-        fetchEstudiantes={fetchEstudiantes}
-        nuevoEstudiante={nuevoEstudiante}
-        handleInputChange={handleInputChange}
-        handleImageChange={handleImageChange}
-        handleAddEstudiante={handleAddEstudiante}
-      />
+    </div>
 
-      <ModalEdicionEstudiante
-  showEditModal={showEditModal}
-  setShowEditModal={setShowEditModal}
-  estudianteEditado={estudianteEditado}
-  setEstudianteEditado={setEstudianteEditado}
-  fetchData={fetchEstudiantes}
-/>
+    <TablaEstudiantes
+      estudiantes={currentEstudiantes}
+      openEditModal={openEditModal}
+      openDeleteModal={openDeleteModal}
+    />
 
+    <Paginacion
+      itemsPerPage={itemsPerPage}
+      totalItems={estudiantesFiltrados.length}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+    />
 
+    <ModalRegistroEstudiante
+      showModal={showModal}
+      setShowModal={setShowModal}
+      fetchEstudiantes={fetchEstudiantes}
+      nuevoEstudiante={nuevoEstudiante}
+      handleInputChange={handleInputChange}
+      handleImageChange={handleImageChange}
+      handleAddEstudiante={handleAddEstudiante}
+    />
 
-      <ModalEliminacionEstudiante
-        showDeleteModal={showDeleteModal}
-        setShowDeleteModal={setShowDeleteModal}
-        handleDeleteEstudiante={handleDeleteEstudiante}
-      />
-    </Container>
-  );
+    <ModalEdicionEstudiante
+      showEditModal={showEditModal}
+      setShowEditModal={setShowEditModal}
+      estudianteEditado={estudianteEditado}
+      setEstudianteEditado={setEstudianteEditado}
+      fetchData={fetchEstudiantes}
+    />
+
+    <ModalEliminacionEstudiante
+      showDeleteModal={showDeleteModal}
+      setShowDeleteModal={setShowDeleteModal}
+      handleDeleteEstudiante={handleDeleteEstudiante}
+    />
+  </Container>
+);
+
 };
 
 export default Estudiantes;
