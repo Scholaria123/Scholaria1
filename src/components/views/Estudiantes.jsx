@@ -15,8 +15,7 @@ import TablaEstudiantes from "../estudiantes/TablaEstudiantes";
 import ModalRegistroEstudiante from "../estudiantes/ModalRegistroEstudiantes";
 import ModalEdicionEstudiante from "../estudiantes/ModalEdicionEstudiantes";
 import ModalEliminacionEstudiante from "../estudiantes/ModalEliminacionEstudiantes";
-import Paginacion from "../ordenamiento/Paginacion"; 
-import CatalogoCalificaciones from "../views/CatalogoCalificacion";
+import Paginacion from "../ordenamiento/Paginacion";
 
 const Estudiantes = () => {
   const [estudiantes, setEstudiantes] = useState([]);
@@ -32,6 +31,7 @@ const Estudiantes = () => {
   });
   const [estudianteEditado, setEstudianteEditado] = useState(null);
   const [estudianteAEliminar, setEstudianteAEliminar] = useState(null);
+  const [verPapelera, setVerPapelera] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
@@ -63,11 +63,9 @@ const Estudiantes = () => {
     }));
   };
 
-  ReactGA.initialize("G-T4JNY83CWB");
-
   const handleFilterChange = (e) => {
     setFiltro(e.target.value);
-    setCurrentPage(1); // Reiniciar a la página 1
+    setCurrentPage(1);
   };
 
   const handleImageChange = (e) => {
@@ -111,7 +109,10 @@ const Estudiantes = () => {
       return;
     }
     try {
-      await addDoc(estudiantesCollection, nuevoEstudiante);
+      await addDoc(estudiantesCollection, {
+        ...nuevoEstudiante,
+        eliminado: false,
+      });
       ReactGA.event({
         category: "Estudiantes",
         action: "Registro de Estudiante",
@@ -162,102 +163,128 @@ const Estudiantes = () => {
   };
 
   const handleDeleteEstudiante = async () => {
-  if (estudianteAEliminar) {
+    if (estudianteAEliminar) {
+      try {
+        const estudianteRef = doc(db, "estudiantes", estudianteAEliminar.id);
+        await updateDoc(estudianteRef, { eliminado: true });
+        ReactGA.event({
+          category: "Estudiantes",
+          action: "Eliminación lógica de Estudiante",
+          label: estudianteAEliminar.nombre,
+          value: 1,
+        });
+        setShowDeleteModal(false);
+        setCurrentPage(1);
+        fetchEstudiantes();
+      } catch (error) {
+        console.error("Error al eliminar el estudiante:", error);
+      }
+    }
+  };
+
+  const restaurarEstudiante = async (id) => {
     try {
-      const estudianteRef = doc(db, "estudiantes", estudianteAEliminar.id);
-      await deleteDoc(estudianteRef);
-      ReactGA.event({
-        category: "Estudiantes",
-        action: "Eliminación de Estudiante",
-        label: estudianteAEliminar.nombre,
-        value: 1,
-      });
-      setShowDeleteModal(false);
-
-      // ✅ Volver a la página 1
-      setCurrentPage(1);
-
+      const estudianteRef = doc(db, "estudiantes", id);
+      await updateDoc(estudianteRef, { eliminado: false });
       fetchEstudiantes();
     } catch (error) {
-      console.error("Error al eliminar el estudiante:", error);
+      console.error("Error al restaurar estudiante:", error);
     }
-  }
-};
+  };
 
+  const eliminarDefinitivamente = async (id) => {
+    try {
+      const estudianteRef = doc(db, "estudiantes", id);
+      await deleteDoc(estudianteRef);
+      fetchEstudiantes();
+    } catch (error) {
+      console.error("Error al eliminar permanentemente:", error);
+    }
+  };
 
-  const estudiantesFiltrados = estudiantes.filter((estudiante) =>
-    ["nombre", "direccion", "telefono"].some((campo) =>
-      estudiante[campo]?.toLowerCase().includes(filtro.toLowerCase())
-    )
-  );
+  const estudiantesFiltrados = estudiantes
+    .filter((est) => verPapelera ? est.eliminado : !est.eliminado)
+    .filter((estudiante) =>
+      ["nombre", "direccion", "telefono"].some((campo) =>
+        estudiante[campo]?.toLowerCase().includes(filtro.toLowerCase())
+      )
+    );
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentEstudiantes = estudiantesFiltrados.slice(
-    indexOfFirstItem,
-    indexOfLastItem
+  const currentEstudiantes = estudiantesFiltrados.slice(indexOfFirstItem, indexOfLastItem);
+
+  const navigate = useNavigate();
+
+  return (
+    <Container className="mt-5">
+      <h4>Gestión de Estudiantes</h4>
+
+      <Form.Control
+        type="text"
+        placeholder="Buscar"
+        value={filtro}
+        onChange={handleFilterChange}
+        className="mb-3"
+      />
+
+      <div className="d-flex align-items-center gap-2 mb-3">
+        <Button onClick={() => setShowModal(true)}>Agregar estudiante</Button>
+        <Button variant="secondary" onClick={() => navigate("/catalogocalificaciones")}>
+          Inscritos
+        </Button>
+        <Button
+          variant={verPapelera ? "primary" : "outline-secondary"}
+          onClick={() => setVerPapelera(!verPapelera)}
+        >
+          {verPapelera ? "Ver activos" : "Ver papelera"}
+        </Button>
+      </div>
+
+      <TablaEstudiantes
+        estudiantes={currentEstudiantes}
+        openEditModal={openEditModal}
+        openDeleteModal={openDeleteModal}
+        verPapelera={verPapelera}
+        restaurarEstudiante={restaurarEstudiante}
+        eliminarDefinitivamente={eliminarDefinitivamente}
+      />
+
+      <Paginacion
+        itemsPerPage={itemsPerPage}
+        totalItems={estudiantesFiltrados.length}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+      />
+
+      <ModalRegistroEstudiante
+        showModal={showModal}
+        setShowModal={setShowModal}
+        fetchEstudiantes={fetchEstudiantes}
+        nuevoEstudiante={nuevoEstudiante}
+        handleInputChange={handleInputChange}
+        handleImageChange={handleImageChange}
+        handleAddEstudiante={handleAddEstudiante}
+      />
+
+      <ModalEdicionEstudiante
+        showEditModal={showEditModal}
+        setShowEditModal={setShowEditModal}
+        estudianteEditado={estudianteEditado}
+        setEstudianteEditado={setEstudianteEditado}
+        fetchData={fetchEstudiantes}
+        handleEditInputChange={handleEditInputChange}
+        handleEditImageChange={handleEditImageChange}
+        handleEditEstudiante={handleEditEstudiante}
+      />
+
+      <ModalEliminacionEstudiante
+        showDeleteModal={showDeleteModal}
+        setShowDeleteModal={setShowDeleteModal}
+        handleDeleteEstudiante={handleDeleteEstudiante}
+      />
+    </Container>
   );
-
-const navigate = useNavigate();
-
-return (
-  <Container className="mt-5">
-    <h4>Gestión de Estudiantes</h4>
-
-    <Form.Control
-      type="text"
-      placeholder="Buscar"
-      value={filtro}
-      onChange={handleFilterChange}
-      className="mb-3"
-    />
-
-    <div className="d-flex align-items-center gap-2 mb-3">
-      <Button onClick={() => setShowModal(true)}>Agregar estudiante</Button>
-      <Button variant="secondary" onClick={() => navigate("/catalogocalificaciones")}>
-        Inscritos
-      </Button>
-    </div>
-
-    <TablaEstudiantes
-      estudiantes={currentEstudiantes}
-      openEditModal={openEditModal}
-      openDeleteModal={openDeleteModal}
-    />
-
-    <Paginacion
-      itemsPerPage={itemsPerPage}
-      totalItems={estudiantesFiltrados.length}
-      currentPage={currentPage}
-      setCurrentPage={setCurrentPage}
-    />
-
-    <ModalRegistroEstudiante
-      showModal={showModal}
-      setShowModal={setShowModal}
-      fetchEstudiantes={fetchEstudiantes}
-      nuevoEstudiante={nuevoEstudiante}
-      handleInputChange={handleInputChange}
-      handleImageChange={handleImageChange}
-      handleAddEstudiante={handleAddEstudiante}
-    />
-
-    <ModalEdicionEstudiante
-      showEditModal={showEditModal}
-      setShowEditModal={setShowEditModal}
-      estudianteEditado={estudianteEditado}
-      setEstudianteEditado={setEstudianteEditado}
-      fetchData={fetchEstudiantes}
-    />
-
-    <ModalEliminacionEstudiante
-      showDeleteModal={showDeleteModal}
-      setShowDeleteModal={setShowDeleteModal}
-      handleDeleteEstudiante={handleDeleteEstudiante}
-    />
-  </Container>
-);
-
 };
 
 export default Estudiantes;
