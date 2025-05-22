@@ -159,21 +159,55 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
         </div>
 
         <div style={styles.gradesGroup}>
-          <div style={styles.formGroup}>
-            <label>Parcial 1:</label>
-            <input type="number" value={parcial1} onChange={e => setParcial1(e.target.value)} />
-          </div>
+  <div style={styles.formGroup}>
+    <label>Parcial 1:</label>
+    <input
+      type="number"
+      min="0"
+      max="100"
+      value={parcial1}
+      onChange={e => {
+        const value = e.target.value;
+        if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
+          setParcial1(value);
+        }
+      }}
+    />
+  </div>
 
-          <div style={styles.formGroup}>
-            <label>Parcial 2:</label>
-            <input type="number" value={parcial2} onChange={e => setParcial2(e.target.value)} />
-          </div>
+  <div style={styles.formGroup}>
+    <label>Parcial 2:</label>
+    <input
+      type="number"
+      min="0"
+      max="100"
+      value={parcial2}
+      onChange={e => {
+        const value = e.target.value;
+        if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
+          setParcial2(value);
+        }
+      }}
+    />
+  </div>
 
-          <div style={styles.formGroup}>
-            <label>Parcial 3:</label>
-            <input type="number" value={parcial3} onChange={e => setParcial3(e.target.value)} />
-          </div>
-        </div>
+  <div style={styles.formGroup}>
+    <label>Parcial 3:</label>
+    <input
+      type="number"
+      min="0"
+      max="100"
+      value={parcial3}
+      onChange={e => {
+        const value = e.target.value;
+        if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
+          setParcial3(value);
+        }
+      }}
+    />
+  </div>
+</div>
+
 
         <div style={styles.formGroup}>
           <label>Nota Final (promedio):</label>
