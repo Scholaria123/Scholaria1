@@ -31,7 +31,8 @@ const Calificaciones = () => {
       setAsignaturas(asignaturasData);
     });
 
-    
+ 
+
 
     // Listener para estudiantes
     const unsubEstudiantes = onSnapshot(collection(db, 'estudiantes'), (snapshot) => {
@@ -68,6 +69,28 @@ const Calificaciones = () => {
   const handleRegistroExitoso = () => {
     setMostrarModal(false);
   };
+
+   const handleCopy = (calificacion) => {
+  const asignaturaNombre = asignaturas.find(a => a.id === calificacion.asignaturaId)?.nombre || 'Sin asignatura';
+  const estudianteNombre = estudiantes.find(e => e.id === calificacion.estudianteId)?.nombre || 'Sin estudiante';
+
+  const rowData = 
+    `Estudiante: ${estudianteNombre}\n` +
+    `Asignatura: ${asignaturaNombre}\n` +
+    `Parcial 1: ${calificacion.parcial1}\n` +
+    `Parcial 2: ${calificacion.parcial2}\n` +
+    `Parcial 3: ${calificacion.parcial3}\n` +
+    `Final: ${calificacion.final}\n` +
+    `Observaciones: ${calificacion.observaciones || 'Ninguna'}`;
+
+  navigator.clipboard.writeText(rowData)
+    .then(() => {
+      console.log("Copiado al portapapeles");
+    })
+    .catch((err) => {
+      console.error("Error al copiar al portapapeles", err);
+    });
+};
 
   const handleEdicionCalificacion = (calificacion) => {
     setCalificacionEditada(calificacion);
@@ -166,6 +189,7 @@ const Calificaciones = () => {
         estudiantes={estudiantes}
         onEditCalificacion={handleEdicionCalificacion}
          actualizar={refrescarCalificaciones}
+         onCopyCalificacion={handleCopy}
       />
 
       <Paginacion

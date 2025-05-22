@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ModalEdicionCalificaciones from './ModalEdicionCalificaciones';
 import ModalEliminarCalificaciones from './ModalEliminarCalificaciones';
 import { useAuth } from '../../database/authcontext';
@@ -6,8 +6,9 @@ import { db } from '../../database/firebaseconfig';
 import { deleteDoc, doc } from 'firebase/firestore';
 import './TablaCalificaciones.css';
 import { Pencil, Trash2 } from 'lucide-react';
+import { Button } from 'react-bootstrap'; // ✅ Importación añadida
 
-const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asignaturas, estudiantes }) => {
+const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asignaturas, estudiantes, onCopyCalificacion }) => {
   const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
   const [calificacionSeleccionada, setCalificacionSeleccionada] = useState(null);
   const [mostrarModalEliminar, setMostrarModalEliminar] = useState(false);
@@ -35,7 +36,6 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
       setCalificacionAEliminar(null);
       actualizar();
 
-      // Si la página actual queda vacía después de eliminar, retrocede una página
       if ((calificaciones.length - 1) % itemsPerPage === 0 && currentPage > 1) {
         setCurrentPage(currentPage - 1);
       }
@@ -90,6 +90,13 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
                   >
                     <Trash2 size={18} color="#fff" />
                   </button>
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => onCopyCalificacion(c)}
+                  >
+                    Copiar
+                  </Button>
                 </td>
               )}
             </tr>
@@ -97,7 +104,6 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
         </tbody>
       </table>
 
-      {/* Paginación */}
       <div className="d-flex justify-content-between align-items-center mt-3">
         <div>Página {currentPage} de {totalPages}</div>
         <div>
@@ -118,7 +124,6 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
         </div>
       </div>
 
-      {/* Modal Edición */}
       {mostrarModalEdicion && calificacionSeleccionada && (
         <ModalEdicionCalificaciones
           show={mostrarModalEdicion}
@@ -128,7 +133,6 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
         />
       )}
 
-      {/* Modal Eliminar */}
       {mostrarModalEliminar && calificacionAEliminar && (
         <ModalEliminarCalificaciones
           showDeleteModal={mostrarModalEliminar}
