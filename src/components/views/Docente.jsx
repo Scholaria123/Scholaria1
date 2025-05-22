@@ -152,25 +152,27 @@ const Docentes = () => {
   };
 
   const handleDeleteDocente = async () => {
-    if (docenteAEliminar) {
-      try {
-        const docenteRef = doc(db, "docentes", docenteAEliminar.id);
-        await deleteDoc(docenteRef);
+  if (docenteAEliminar) {
+    try {
+      const docenteRef = doc(db, "docentes", docenteAEliminar.id);
+      await deleteDoc(docenteRef);
 
-        ReactGA.event({
-          category: "Docentes",
-          action: "Eliminación de Docente",
-          label: docenteAEliminar.titulo,
-          value: 1,
-        });
+      ReactGA.event({
+        category: "Docentes",
+        action: "Eliminación de Docente",
+        label: docenteAEliminar.titulo,
+        value: 1,
+      });
 
-        setShowDeleteModal(false);
-        await fetchDocentes();
-      } catch (error) {
-        console.error("Error al eliminar el docente:", error);
-      }
+      setShowDeleteModal(false);
+      await fetchDocentes();
+      setCurrentPage(1); // ✅ Esta línea es clave
+    } catch (error) {
+      console.error("Error al eliminar el docente:", error);
     }
-  };
+  }
+};
+
 
   const docentesFiltrados = docentes.filter((docente) =>
     ["titulo", "direccion", "telefono", "docente", "asignaturaNombre", "carnet"].some((campo) =>
@@ -201,6 +203,7 @@ const Docentes = () => {
         docentes={currentDocentes}
         openEditModal={openEditModal}
         openDeleteModal={openDeleteModal}
+        setCurrentPage={setCurrentPage} 
       />
 
       {/* Paginación */}

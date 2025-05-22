@@ -74,6 +74,20 @@ const ModalEdicionCalificaciones = ({
       console.error("Error al actualizar la calificación:", error);
     }
   };
+
+  // Función de validación numérica para parciales
+const handleParcialChange = (e) => {
+  const { name, value } = e.target;
+  const number = Number(value);
+
+  if (value === '' || (number >= 0 && number <= 100)) {
+    setCalificacionEditada((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  }
+};
+
  
 
   return (
@@ -104,37 +118,43 @@ const ModalEdicionCalificaciones = ({
           </Form.Group>
 
           <Form.Group controlId="parcial1">
-            <Form.Label>Parcial 1</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ingrese calificación parcial 1"
-              name="parcial1"
-              value={calificacionEditada.parcial1}
-              onChange={handleChange}
-            />
-          </Form.Group>
+  <Form.Label>Parcial 1</Form.Label>
+  <Form.Control
+    type="number"
+    min="0"
+    max="100"
+    placeholder="Ingrese calificación parcial 1"
+    name="parcial1"
+    value={calificacionEditada.parcial1}
+    onChange={handleParcialChange}
+  />
+</Form.Group>
 
-          <Form.Group controlId="parcial2">
-            <Form.Label>Parcial 2</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ingrese calificación parcial 2"
-              name="parcial2"
-              value={calificacionEditada.parcial2}
-              onChange={handleChange}
-            />
-          </Form.Group>
+<Form.Group controlId="parcial2">
+  <Form.Label>Parcial 2</Form.Label>
+  <Form.Control
+    type="number"
+    min="0"
+    max="100"
+    placeholder="Ingrese calificación parcial 2"
+    name="parcial2"
+    value={calificacionEditada.parcial2}
+    onChange={handleParcialChange}
+  />
+</Form.Group>
 
-          <Form.Group controlId="parcial3">
-            <Form.Label>Parcial 3</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Ingrese calificación parcial 3"
-              name="parcial3"
-              value={calificacionEditada.parcial3}
-              onChange={handleChange}
-            />
-          </Form.Group>
+<Form.Group controlId="parcial3">
+  <Form.Label>Parcial 3</Form.Label>
+  <Form.Control
+    type="number"
+    min="0"
+    max="100"
+    placeholder="Ingrese calificación parcial 3"
+    name="parcial3"
+    value={calificacionEditada.parcial3}
+    onChange={handleParcialChange}
+  />
+</Form.Group>
 
           <Form.Group controlId="final">
   <Form.Label>Final (Promedio)</Form.Label>

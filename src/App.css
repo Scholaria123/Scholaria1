@@ -10,10 +10,16 @@
   color: #1e3d87 !important;
 }
 
-/* Ajuste global: espacio para que el navbar fijo no tape el contenido */
+/* Elimina el padding global fijo */
 body {
-  padding-top: 70px; /* Ajusta según la altura de tu navbar */
+  padding-top: 0;
 }
+
+/* Aplica solo si hay navbar visible */
+.with-navbar {
+  padding-top: 70px;
+}
+
 
 /* Estilo general del navbar */
 .navbar .nav-link {

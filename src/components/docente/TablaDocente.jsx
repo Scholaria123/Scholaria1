@@ -3,7 +3,7 @@ import { Image } from "react-bootstrap";
 import { Pencil, Trash2 } from "lucide-react";
 import "./TablaDocente.css";
 
-const TablaDocente = ({ docentes, openEditModal, openDeleteModal }) => {
+const TablaDocente = ({ docentes, openEditModal, openDeleteModal, setCurrentPage }) => {
   return (
     <div className="tabla-container">
       <h3 className="tabla-title">Lista de Docentes</h3>
@@ -16,7 +16,7 @@ const TablaDocente = ({ docentes, openEditModal, openDeleteModal }) => {
             <th>Título</th>
             <th>Dirección</th>
             <th>Teléfono</th>
-            <th>Carnet</th> {/* Nueva columna para el carnet */}
+            <th>Carnet</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -35,7 +35,7 @@ const TablaDocente = ({ docentes, openEditModal, openDeleteModal }) => {
               <td data-label="Título">{docente.titulo}</td>
               <td data-label="Dirección">{docente.direccion}</td>
               <td data-label="Teléfono">{docente.telefono}</td>
-              <td data-label="Carnet">{docente.carnet}</td> {/* Mostrar carnet */}
+              <td data-label="Carnet">{docente.carnet}</td>
               <td data-label="Acciones" className="acciones">
                 <button
                   className="editar"
@@ -45,7 +45,10 @@ const TablaDocente = ({ docentes, openEditModal, openDeleteModal }) => {
                 </button>
                 <button
                   className="eliminar"
-                  onClick={() => openDeleteModal(docente)}
+                  onClick={() => {
+                    setCurrentPage(1); // ✅ Resetear a la primera página
+                    openDeleteModal(docente);
+                  }}
                 >
                   <Trash2 size={18} color="#fff" />
                 </button>

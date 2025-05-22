@@ -8,6 +8,24 @@ import {
   addDoc,
 } from "firebase/firestore";
 import jsPDF from "jspdf";
+import {
+  Calendar,
+  School,
+  Users,
+  BookOpen,
+  Check,
+  X,
+  Circle,
+  Save,
+  FileText,
+  Table,
+  ChevronDown,
+  ChevronUp,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
+import "./Asistencia.css";
+
 
 const Asistencia = () => {
   const [grados, setGrados] = useState([]);
@@ -144,11 +162,6 @@ const Asistencia = () => {
     doc.save(`Asistencia_${fecha}.pdf`);
   };
 
-  const getButtonStyles = (id, estado) => ({
-    ...styles[`button${estado}`],
-    opacity: asistencia[id] === estado ? 1 : 0.5,
-  });
-
   const nombreAsignatura =
     asignaturas.find((a) => a.id === asignaturaSeleccionada)?.nombre || "";
 
@@ -166,18 +179,21 @@ const Asistencia = () => {
   };
 
   return (
-    <div style={styles.container}>
-      <h2 style={styles.title}>📋 Registro de Asistencia</h2>
+    <div className="asistencia-container">
+      <h2>Registro de Asistencia</h2>
 
-      <label style={styles.label}>📅 Fecha:</label>
+      <label>
+        <Calendar size={16} /> Fecha:
+      </label>
       <input
         type="date"
         value={fecha}
         onChange={(e) => setFecha(e.target.value)}
-        style={styles.input}
       />
 
-      <label style={styles.label}>🏫 Grado:</label>
+      <label>
+        <School size={16} /> Grado:
+      </label>
       <select
         value={gradoSeleccionado}
         onChange={(e) => {
@@ -185,7 +201,6 @@ const Asistencia = () => {
           setGrupoSeleccionado("");
           setAsignaturaSeleccionada("");
         }}
-        style={styles.select}
       >
         <option value="">-- Selecciona un grado --</option>
         {grados.map((g, i) => (
@@ -197,14 +212,15 @@ const Asistencia = () => {
 
       {gradoSeleccionado && (
         <>
-          <label style={styles.label}>👥 Grupo:</label>
+          <label>
+            <Users size={16} /> Grupo:
+          </label>
           <select
             value={grupoSeleccionado}
             onChange={(e) => {
               setGrupoSeleccionado(e.target.value);
               setAsignaturaSeleccionada("");
             }}
-            style={styles.select}
           >
             <option value="">-- Selecciona un grupo --</option>
             {grupos.map((g, i) => (
@@ -218,11 +234,12 @@ const Asistencia = () => {
 
       {gradoSeleccionado && grupoSeleccionado && (
         <>
-          <label style={styles.label}>📘 Asignatura:</label>
+          <label>
+            <BookOpen size={16} /> Asignatura:
+          </label>
           <select
             value={asignaturaSeleccionada}
             onChange={(e) => setAsignaturaSeleccionada(e.target.value)}
-            style={styles.select}
           >
             <option value="">-- Selecciona una asignatura --</option>
             {asignaturas
@@ -247,81 +264,91 @@ const Asistencia = () => {
             {grupoSeleccionado.toUpperCase()} | <b>Asignatura:</b>{" "}
             {nombreAsignatura}
           </p>
-          <div style={{ fontSize: "12px", color: "#666" }}>
+          <div>
             Usa los botones para marcar asistencia
           </div>
         </>
       )}
 
       {asignaturaSeleccionada && estudiantes.length === 0 && (
-        <p style={styles.message}>No hay estudiantes en este grado y grupo.</p>
+        <p>No hay estudiantes en este grado y grupo.</p>
       )}
 
-      <div style={styles.studentsContainer}>
+      <div>
         {estudiantes.map(({ id, nombre }) => (
-          <div key={id} style={styles.studentRow}>
-            <span style={styles.studentName}>{nombre}</span>
-            <button
-              style={getButtonStyles(id, "Presente")}
-              onClick={() => marcarAsistencia(id, "Presente")}
-            >
-              ✅
-            </button>
-            <button
-              style={getButtonStyles(id, "Ausente")}
-              onClick={() => marcarAsistencia(id, "Ausente")}
-            >
-              ❌
-            </button>
-            <button
-              style={getButtonStyles(id, "Justificado")}
-              onClick={() => marcarAsistencia(id, "Justificado")}
-            >
-              🟡
-            </button>
+          <div key={id}>
+            <span>{nombre}</span>
+                <button
+                  onClick={() => marcarAsistencia(id, "Presente")}
+                  className="presente"
+                >
+                  <Check size={16} />
+                </button>
+                <button
+                  onClick={() => marcarAsistencia(id, "Ausente")}
+                  className="ausente"
+                >
+                  <X size={16} />
+                </button>
+                <button
+                  onClick={() => marcarAsistencia(id, "Justificado")}
+                  className="justificado"
+                >
+                  <Circle size={16} />
+                </button>
           </div>
         ))}
       </div>
 
-      <button onClick={guardarAsistencia} style={styles.buttonSave}>
-        💾 Guardar Asistencia
+      <button onClick={guardarAsistencia}>
+        <Save size={16} /> Guardar Asistencia
       </button>
-      <button onClick={generarPDF} style={styles.buttonPDF}>
-        📄 Generar PDF
+      <button onClick={generarPDF}>
+        <FileText size={16} /> Generar PDF
       </button>
-      <button
-        onClick={() => setMostrarTablaResumen((prev) => !prev)}
-        style={styles.buttonResumen}
-      >
-        {mostrarTablaResumen ? "🔽 Ocultar resumen" : "🔼 Ver resumen"}
+      <button onClick={() => setMostrarTablaResumen((prev) => !prev)}>
+        {mostrarTablaResumen ? (
+          <>
+            <ChevronDown size={16} /> Ocultar resumen
+          </>
+        ) : (
+          <>
+            <ChevronUp size={16} /> Ver resumen
+          </>
+        )}
       </button>
 
       {mostrarTablaResumen && (
         <>
-          <table style={styles.table}>
+          <table>
             <thead>
               <tr>
-                <th style={styles.th}>Estudiante</th>
-                <th style={styles.th}>Estado</th>
+                <th>Estudiante</th>
+                <th>Grado</th>
+                <th>Grupo</th>
+                <th>Asignatura</th>
+                <th>Estado</th>
               </tr>
             </thead>
             <tbody>
               {estudiantesPagina.map(({ id, nombre }) => (
                 <tr key={id}>
-                  <td style={styles.td}>{nombre}</td>
-                  <td style={styles.td}>{asistencia[id] || "No marcado"}</td>
+                  <td>{nombre}</td>
+                  <td>{gradoSeleccionado}</td>
+                  <td>{grupoSeleccionado.toUpperCase()}</td>
+                  <td>{nombreAsignatura}</td>
+                  <td>{asistencia[id] || "No marcado"}</td>
                 </tr>
               ))}
             </tbody>
           </table>
 
-          <div style={styles.paginacion}>
+          <div>
             <button
               onClick={() => cambiarPagina(paginaActual - 1)}
               disabled={paginaActual === 1}
-              style={styles.pageButton}
             >
-              ⬅️ Anterior
+              <ChevronLeft size={16} /> Anterior
             </button>
             <span>
               Página {paginaActual} de {totalPaginas}
@@ -329,147 +356,14 @@ const Asistencia = () => {
             <button
               onClick={() => cambiarPagina(paginaActual + 1)}
               disabled={paginaActual === totalPaginas}
-              style={styles.pageButton}
             >
-              Siguiente ➡️
+              Siguiente <ChevronRight size={16} />
             </button>
           </div>
         </>
       )}
     </div>
   );
-};
-
-const styles = {
-  container: {
-    maxWidth: "750px",
-    margin: "auto",
-    marginTop: "30px",
-    padding: "25px",
-    borderRadius: "16px",
-    backgroundColor: "#ffffff",
-    boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-    textAlign: "center",
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-  },
-  title: { marginBottom: "20px", fontSize: "24px", color: "#333" },
-  label: {
-    fontWeight: "600",
-    display: "block",
-    marginTop: "15px",
-    textAlign: "left",
-  },
-  input: {
-    width: "100%",
-    padding: "10px",
-    marginBottom: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-  },
-  select: {
-    width: "100%",
-    padding: "10px",
-    borderRadius: "8px",
-    border: "1px solid #ccc",
-    marginBottom: "10px",
-  },
-  message: { color: "red", marginTop: "10px" },
-  studentsContainer: { marginTop: "20px" },
-  studentRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "#f1f1f1",
-    padding: "10px 15px",
-    borderRadius: "8px",
-    marginBottom: "10px",
-  },
-  studentName: { flex: 1, textAlign: "left", fontWeight: "500" },
-  buttonPresente: {
-    backgroundColor: "#28a745",
-    color: "#fff",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: "8px",
-    margin: "0 4px",
-    cursor: "pointer",
-  },
-  buttonAusente: {
-    backgroundColor: "#dc3545",
-    color: "#fff",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: "8px",
-    margin: "0 4px",
-    cursor: "pointer",
-  },
-  buttonJustificado: {
-    backgroundColor: "#ffc107",
-    color: "#333",
-    border: "none",
-    padding: "8px 12px",
-    borderRadius: "8px",
-    margin: "0 4px",
-    cursor: "pointer",
-  },
-  buttonSave: {
-    marginTop: "20px",
-    padding: "10px 20px",
-    backgroundColor: "#007bff",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    marginRight: "10px",
-  },
-  buttonPDF: {
-    marginTop: "20px",
-    padding: "10px 20px",
-    backgroundColor: "#6f42c1",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-    marginRight: "10px",
-  },
-  buttonResumen: {
-    marginTop: "20px",
-    padding: "10px 20px",
-    backgroundColor: "#17a2b8",
-    color: "#fff",
-    border: "none",
-    borderRadius: "8px",
-    cursor: "pointer",
-  },
-  table: {
-    width: "100%",
-    marginTop: "20px",
-    borderCollapse: "collapse",
-  },
-  th: {
-    backgroundColor: "#007bff",
-    color: "#fff",
-    padding: "10px",
-    borderRadius: "6px 6px 0 0",
-  },
-  td: {
-    padding: "10px",
-    borderBottom: "1px solid #ddd",
-  },
-  paginacion: {
-    marginTop: "15px",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
-  pageButton: {
-    padding: "8px 12px",
-    backgroundColor: "#6c757d",
-    color: "#fff",
-    border: "none",
-    borderRadius: "6px",
-    cursor: "pointer",
-  },
 };
 
 export default Asistencia;

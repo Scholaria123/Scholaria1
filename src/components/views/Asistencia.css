@@ -1,0 +1,193 @@
+.asistencia-container {
+  max-width: 800px;
+  margin: auto;
+  padding: 1.5rem;
+  background-color: #fdfdfd;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.asistencia-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+}
+
+label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #444;
+}
+
+select,
+input[type="date"] {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+select:focus,
+input[type="date"]:focus {
+  border-color: #4f46e5;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  padding: 0.4rem 0.8rem;
+  margin: 0.3rem;
+  font-size: 0.9rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+/* Botones principales */
+.asistencia-container > button {
+  background-color: #4f46e5;
+  color: white;
+}
+
+.asistencia-container > button:hover {
+  background-color: #4338ca;
+}
+
+.asistencia-container > button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* Lista de estudiantes */
+.asistencia-container > div > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid #eee;
+  border-radius: 8px;
+  background: #fafafa;
+  margin: 0.3rem 0;
+  flex-wrap: wrap;
+}
+
+.asistencia-container > div > div span {
+  flex: 1 1 auto;
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+/* Botones de asistencia por color */
+button svg {
+  pointer-events: none;
+}
+
+button.presente {
+  background-color: #4ade80; /* verde */
+  color: #064e3b;
+}
+
+button.presente:hover {
+  background-color: #22c55e;
+}
+
+button.ausente {
+  background-color: #f87171; /* rojo */
+  color: #7f1d1d;
+}
+
+button.ausente:hover {
+  background-color: #ef4444;
+}
+
+button.justificado {
+  background-color: #facc15; /* amarillo */
+  color: #78350f;
+}
+
+button.justificado:hover {
+  background-color: #eab308;
+}
+
+/* Tabla resumen */
+table {
+  width: 100%;
+  margin-top: 1rem;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+table thead {
+  background-color: #4f46e5;
+  color: white;
+}
+
+table th,
+table td {
+  padding: 0.6rem;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Navegación de páginas */
+.asistencia-container .paginacion {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .asistencia-container {
+    padding: 1rem;
+  }
+
+  table,
+  table thead,
+  table tbody,
+  table th,
+  table td,
+  table tr {
+    display: block;
+  }
+
+  table thead {
+    display: none;
+  }
+
+  table tr {
+    margin-bottom: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    padding: 0.8rem;
+  }
+
+  table td {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border: none;
+    border-bottom: 1px solid #eee;
+  }
+
+  table td:last-child {
+    border-bottom: none;
+  }
+}

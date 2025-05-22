@@ -91,19 +91,11 @@ const Encabezado = () => {
                   </Nav.Link>
 
                   <Nav.Link
-                    onClick={() => handleNavigate("/Calendario")}
+                    onClick={() => handleNavigate("/Notificaciones")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
                   >
-                    {isCollapsed && <i className="bi-calendar-event-fill me-2"></i>}
-                    <strong>Calendario</strong>
-                  </Nav.Link>
-
-                  <Nav.Link
-                    onClick={() => handleNavigate("/CatalogoCalificaciones")}
-                    className={isCollapsed ? "color-texto-marca" : "text-white"}
-                  >
-                    {isCollapsed && <i className="bi-search me-2"></i>}
-                    <strong>Busca tu estudiante</strong>
+                    {isCollapsed && <i className="bi-bell-fill me-2"></i>}
+                    <strong>Notificaciones</strong>
                   </Nav.Link>
                 </>
               ) : (
@@ -132,14 +124,6 @@ const Encabezado = () => {
                       >
                         {isCollapsed && <i className="bi-person-badge-fill me-2"></i>}
                         <strong>Docentes</strong>
-                      </Nav.Link>
-
-                      <Nav.Link
-                        onClick={() => handleNavigate("/CatalogoCalificaciones")}
-                        className={isCollapsed ? "color-texto-marca" : "text-white"}
-                      >
-                        {isCollapsed && <i className="bi-search me-2"></i>}
-                        <strong>Busca tu estudiante</strong>
                       </Nav.Link>
                     </>
                   )}
@@ -182,7 +166,6 @@ const Encabezado = () => {
                     </Nav.Link>
                   )}
 
-                  {/* Notificaciones */}
                   <Nav.Link
                     onClick={() => handleNavigate("/Notificaciones")}
                     className={isCollapsed ? "color-texto-marca" : "text-white"}
@@ -193,14 +176,13 @@ const Encabezado = () => {
                 </>
               )}
 
-              {/* Botón de Cerrar Sesión */}
+              {/* Solo ícono para cerrar sesión */}
               {isLoggedIn && (
                 <Nav.Link
                   onClick={handleLogout}
                   className={isCollapsed ? "text-black" : "text-white"}
                 >
-                  <i className="bi-box-arrow-right me-2"></i>
-                  <strong>Cerrar Sesión</strong>
+                  <i className="bi-box-arrow-right"></i>
                 </Nav.Link>
               )}
             </Nav>

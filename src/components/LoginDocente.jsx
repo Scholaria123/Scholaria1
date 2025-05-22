@@ -106,20 +106,45 @@ const LoginDocente = () => {
   };
 
   const guardarCalificacion = async () => {
-    const final = (parseFloat(parcial1 || 0) + parseFloat(parcial2 || 0) + parseFloat(parcial3 || 0)) / 3;
-    const calificacionExistente = obtenerCalificacionDeEstudiante(estudianteSeleccionado.id);
+  // Convertir los valores de los parciales a números
+  const p1 = parseFloat(parcial1);
+  const p2 = parseFloat(parcial2);
+  const p3 = parseFloat(parcial3);
 
-    const calificacionData = {
-      estudianteId: estudianteSeleccionado.id,
-      asignaturaId: infoAsignatura.id,
-      parcial1: parseFloat(parcial1),
-      parcial2: parseFloat(parcial2),
-      parcial3: parseFloat(parcial3),
-      final: parseFloat(final.toFixed(2)),
-      observaciones,
-    };
+  // Validar cada parcial entre 0 y 100
+  if (isNaN(p1) || p1 < 0 || p1 > 100) {
+    setError("Parcial 1 debe ser un número entre 0 y 100.");
+    return;
+  }
+  if (isNaN(p2) || p2 < 0 || p2 > 100) {
+    setError("Parcial 2 debe ser un número entre 0 y 100.");
+    return;
+  }
+  if (isNaN(p3) || p3 < 0 || p3 > 100) {
+    setError("Parcial 3 debe ser un número entre 0 y 100.");
+    return;
+  }
 
+  // Calcular la calificación final como promedio de los 3 parciales
+  const final = (p1 + p2 + p3) / 3;
+
+  // Comprobar si ya existe una calificación para el estudiante
+  const calificacionExistente = obtenerCalificacionDeEstudiante(estudianteSeleccionado.id);
+
+  // Datos de la calificación
+  const calificacionData = {
+    estudianteId: estudianteSeleccionado.id,
+    asignaturaId: infoAsignatura.id,
+    parcial1: p1,
+    parcial2: p2,
+    parcial3: p3,
+    final: parseFloat(final.toFixed(2)),
+    observaciones,
+  };
+
+  try {
     if (calificacionExistente) {
+      // Actualizar calificación existente
       const calificacionRef = doc(db, "calificaciones", calificacionExistente.id);
       await updateDoc(calificacionRef, calificacionData);
       const nuevasCalificaciones = calificaciones.map((c) =>
@@ -127,12 +152,20 @@ const LoginDocente = () => {
       );
       setCalificaciones(nuevasCalificaciones);
     } else {
+      // Crear nueva calificación
       const nuevaRef = await addDoc(collection(db, "calificaciones"), calificacionData);
       setCalificaciones([...calificaciones, { ...calificacionData, id: nuevaRef.id }]);
     }
 
+    // Cerrar modal y limpiar error
     setMostrarModal(false);
-  };
+    setError("");
+  } catch (err) {
+    console.error(err);
+    setError("Error al guardar la calificación.");
+  }
+};
+
 
   const estudiantesFiltradosPorGrupo = estudiantes.filter(
     (est) =>
@@ -270,26 +303,38 @@ const LoginDocente = () => {
             <Form.Group className="mb-3">
               <Form.Label>Parcial 1</Form.Label>
               <Form.Control
-                type="number"
-                value={parcial1}
-                onChange={(e) => setParcial1(e.target.value)}
-              />
+              type="number"
+              min={0}
+              max={100}
+              step={0.01}
+              value={parcial1}
+              onChange={(e) => setParcial1(e.target.value)}
+            />
+
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Parcial 2</Form.Label>
               <Form.Control
-                type="number"
-                value={parcial2}
-                onChange={(e) => setParcial2(e.target.value)}
-              />
+              type="number"
+              min={0}
+              max={100}
+              step={0.01}
+              value={parcial2}
+              onChange={(e) => setParcial2(e.target.value)}
+            />
+
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Parcial 3</Form.Label>
               <Form.Control
-                type="number"
-                value={parcial3}
-                onChange={(e) => setParcial3(e.target.value)}
-              />
+              type="number"
+              min={0}
+              max={100}
+              step={0.01}
+              value={parcial3}
+              onChange={(e) => setParcial3(e.target.value)}
+            />
+
             </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Observaciones</Form.Label>

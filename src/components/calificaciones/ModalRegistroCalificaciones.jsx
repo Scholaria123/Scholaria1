@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { db } from '../../database/firebaseconfig';
 import { collection, getDocs, addDoc } from 'firebase/firestore';
 
+import './ModalRegistroCalificaciones.css';
+
 const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
   const [asignaturas, setAsignaturas] = useState([]);
   const [estudiantes, setEstudiantes] = useState([]);
@@ -85,11 +87,11 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
   );
 
   return (
-    <div style={styles.modalOverlay}>
-      <div style={styles.modalContent}>
+    <div className="modal-overlay">
+      <div className="modal-content">
         <h3>Registrar Calificación</h3>
 
-        <div style={styles.formGroup}>
+        <div className="form-group">
           <label>Asignatura:</label>
           <select
             value={asignaturaSeleccionada}
@@ -104,7 +106,7 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
           </select>
         </div>
 
-        <div style={styles.formGroup}>
+        <div className="form-group">
           <label>Grado:</label>
           <select
             value={gradoSeleccionado}
@@ -123,7 +125,7 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
           </select>
         </div>
 
-        <div style={styles.formGroup}>
+        <div className="form-group">
           <label>Grupo:</label>
           <select
             value={grupoSeleccionado}
@@ -142,7 +144,7 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
           </select>
         </div>
 
-        <div style={styles.formGroup}>
+        <div className="form-group">
           <label>Estudiante:</label>
           <select
             value={estudianteSeleccionado}
@@ -209,88 +211,27 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
 </div>
 
 
-        <div style={styles.formGroup}>
+        <div className="form-group">
           <label>Nota Final (promedio):</label>
           <input type="text" value={final} disabled />
         </div>
 
-        <div style={styles.formGroup}>
+        <div className="form-group">
           <label>Observaciones:</label>
           <textarea value={observaciones} onChange={e => setObservaciones(e.target.value)} />
         </div>
 
-        <div style={styles.buttonRow}>
-          <button style={styles.button} onClick={registrarCalificacion}>Guardar</button>
-          <button style={styles.buttonCancelar} onClick={onClose}>Cancelar</button>
+        <div className="button-row">
+          <button className="btn-cancelar" onClick={onClose}>
+            Cerrar
+          </button>
+          <button className="btn-guardar" onClick={registrarCalificacion}>
+            Guardar
+          </button>
         </div>
       </div>
     </div>
   );
-};
-
-const styles = {
-  modalOverlay: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    height: '100vh',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '10px',
-    zIndex: 1000
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    padding: '20px',
-    borderRadius: '8px',
-    width: '100%',
-    maxWidth: '500px',
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    maxHeight: '90vh',
-    overflowY: 'auto'
-  },
-  formGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px'
-  },
-  gradesGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px'
-  },
-  buttonRow: {
-    display: 'flex',
-    flexDirection: 'row',
-    gap: '10px',
-    marginTop: '15px',
-    justifyContent: 'center'
-  },
-  button: {
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    padding: '10px 15px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    flex: 1,
-    maxWidth: '150px'
-  },
-  buttonCancelar: {
-    backgroundColor: '#aaa',
-    color: 'white',
-    border: 'none',
-    padding: '10px 15px',
-    borderRadius: '4px',
-    cursor: 'pointer',
-    flex: 1,
-    maxWidth: '150px'
-  }
 };
 
 export default ModalRegistroCalificaciones;
