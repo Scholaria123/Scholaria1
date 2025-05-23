@@ -27,6 +27,7 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
     grupo: "",
     asignaturaId: [],
     imagen: "",
+    tutor: "",
   });
 
   useEffect(() => {
@@ -181,6 +182,18 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
     </Form.Text>
   )}
 </Form.Group>
+
+        <Form.Group controlId="formTutor">
+        <Form.Label>Tutor</Form.Label>
+        <Form.Control
+          type="text"
+          name="tutor"
+          value={nuevoEstudiante.tutor}
+          onChange={handleInputChange}
+          required
+        />
+      </Form.Group>
+
 
 
           <Form.Group controlId="formGrado">

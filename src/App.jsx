@@ -13,15 +13,20 @@ import Calificaciones from "./components/views/Calificaciones";
 import LoginDocente from "./components/LoginDocente";
 import Docentes from "./components/views/Docente";
 import Notificaciones from "./components/Notificaciones/Notificaciones";
+import CalificacionesHijo from "./components/views/CalificacionesHijo";
+import SeleccionarHijo from "./components/views/SeleccionarHijo";
 
 import './App.css';
 
 function AppContent() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  if (loading) return <div>Cargando...</div>;
 
   return (
     <div className={`App ${user ? "with-navbar" : ""}`}>
-      <Encabezado />
+  {user && <Encabezado />}
+
       <main>
         <Routes>
           <Route path="/" element={<Login />} />
@@ -99,6 +104,16 @@ function AppContent() {
             }
           />
           <Route path="/logindocente/:carnet" element={<LoginDocente />} />
+          <Route path="/calificaciones/:estudianteId" element={<CalificacionesHijo />} />
+          <Route 
+            path="/seleccionarHijo" 
+            element={
+              <ProtectedRoute allowedRoles={["padre"]}>
+                <SeleccionarHijo />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="*" element={<h1>Página no encontrada</h1>} />
         </Routes>
       </main>

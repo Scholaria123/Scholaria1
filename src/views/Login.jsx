@@ -1,12 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDocs, collection, query, where, addDoc } from "firebase/firestore";
+import {
+  getDocs,
+  collection,
+  query,
+  where,
+  setDoc,
+  doc,
+} from "firebase/firestore";
 import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { auth, db } from "../database/firebaseconfig";
-import { setDoc, doc } from "firebase/firestore";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./Login.css";
 import ScholariaLogo from "../assets/imagenes/Scholaria_logo.png";
@@ -26,7 +32,7 @@ const Login = () => {
 
     try {
       if (!identificador.includes("@")) {
-        // Es un docente (login con carnet)
+        // Login de docente por carnet
         const q = query(collection(db, "docentes"), where("carnet", "==", identificador));
         const snapshot = await getDocs(q);
 
@@ -39,49 +45,58 @@ const Login = () => {
       }
 
       if (isRegistering) {
-        // Registro como padre
+        // Validaciones básicas para el registro de padre
+        if (!identificador.includes("@") || !identificador.includes(".")) {
+          setError("Debes ingresar un correo electrónico válido.");
+          return;
+        }
+
+        if (password.length < 6) {
+          setError("La contraseña debe tener al menos 6 caracteres.");
+          return;
+        }
+
         if (password !== confirmPassword) {
           setError("Las contraseñas no coinciden.");
           return;
         }
 
-
+        try {
           const userCredential = await createUserWithEmailAndPassword(auth, identificador, password);
-const user = userCredential.user;
+          const user = userCredential.user;
 
-// Crear el documento en Firestore con el UID como ID
-await setDoc(doc(db, "usuarios", user.uid), {
-  email: identificador,
-  rol: "padre",
-  nombre_completo: nombreCompleto,
-  creado: new Date()
-});
+          await setDoc(doc(db, "usuarios", user.uid), {
+            email: identificador,
+            rol: "padre",
+            nombre_completo: nombreCompleto,
+            creado: new Date(),
+          });
 
-      
-        navigate("/inicioPadre");
-      } else {
-        // Inicio de sesión normal
-        const userCredential = await signInWithEmailAndPassword(auth, identificador, password);
-        const uid = userCredential.user.uid;
-
-        // Buscar rol del usuario en Firestore
-        const q = query(collection(db, "usuarios"), where("email", "==", identificador));
-        const snapshot = await getDocs(q);
-
-        if (!snapshot.empty) {
-          const data = snapshot.docs[0].data();
-          if (data.rol === "padre") {
-            navigate("/inicio");
-          } else {
-            navigate("/inicio");
+          navigate("/seleccionarHijo");
+        } catch (error) {
+          switch (error.code) {
+            case "auth/email-already-in-use":
+              setError("Este correo ya está registrado.");
+              break;
+            case "auth/invalid-email":
+              setError("El correo no es válido.");
+              break;
+            case "auth/weak-password":
+              setError("La contraseña es muy débil. Usa al menos 6 caracteres.");
+              break;
+            default:
+              setError("Ocurrió un error al registrar. Intenta nuevamente.");
           }
-        } else {
-          navigate("/inicio"); // fallback
         }
+
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      setError("Error en la autenticación. Verifica los datos.");
+
+      // Login de padre (correo y contraseña)
+      await signInWithEmailAndPassword(auth, identificador, password);
+      navigate("/seleccionarHijo");
+    } catch (error) {
+      setError("Credenciales incorrectas o usuario no registrado.");
     }
   };
 
@@ -92,6 +107,7 @@ await setDoc(doc(db, "usuarios", user.uid), {
         <h3 className="login-title">
           {isRegistering ? "Registrarse como padre" : "Iniciar sesión"}
         </h3>
+
         {error && <Alert variant="danger">{error}</Alert>}
 
         <Form onSubmit={handleLoginOrRegister}>

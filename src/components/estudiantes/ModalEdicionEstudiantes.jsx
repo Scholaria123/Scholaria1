@@ -127,6 +127,17 @@ const ModalEdicionEstudiante = ({
   )}
 </Form.Group>
 
+                    <Form.Group className="mb-3" controlId="tutor">
+          <Form.Label className="fw-bold">Tutor</Form.Label>
+          <Form.Control
+            type="text"
+            name="tutor"
+            value={estudianteEditado.tutor || ""}
+            onChange={handleInputChange}
+            placeholder="Nombre del tutor"
+          />
+        </Form.Group>
+
 
           <Form.Group className="mb-3" controlId="direccion">
             <Form.Label className="fw-bold">Dirección</Form.Label>

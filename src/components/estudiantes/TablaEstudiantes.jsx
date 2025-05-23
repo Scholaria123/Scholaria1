@@ -51,6 +51,7 @@ const TablaEstudiantes = ({
             <th>Nombre</th>
             <th>Dirección</th>
             <th>Teléfono</th>
+            <th><strong>Tutor</strong></th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -67,6 +68,7 @@ const TablaEstudiantes = ({
               <td data-label="Nombre">{estudiante.nombre}</td>
               <td data-label="Dirección">{estudiante.direccion}</td>
               <td data-label="Teléfono">{estudiante.telefono}</td>
+              <td data-label="Tutor">{estudiante.tutor || "Sin tutor"}</td>
               <td data-label="Acciones" className="acciones">
                 {!verPapelera ? (
                   <>

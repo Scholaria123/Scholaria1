@@ -1,3 +1,4 @@
+// ProtectedRoute.jsx
 import React from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../database/authcontext";
@@ -5,7 +6,7 @@ import { useAuth } from "../database/authcontext";
 const ProtectedRoute = ({ children, allowedRoles }) => {
   const { user, loading } = useAuth();
 
-  if (loading) return <p>Cargando...</p>; // puedes reemplazar con un spinner si quieres
+  if (loading) return <p>Cargando...</p>;
 
   if (!user) {
     return <Navigate to="/" replace />;
@@ -18,4 +19,4 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   return children;
 };
 
-export default ProtectedRoute;
+export default ProtectedRoute; // <-- Asegúrate de tener esta línea
