@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getDocs,
@@ -16,6 +16,7 @@ import { auth, db } from "../database/firebaseconfig";
 import { Form, Button, Alert } from "react-bootstrap";
 import "./Login.css";
 import ScholariaLogo from "../assets/imagenes/Scholaria_logo.png";
+import { useAuth } from "../database/authcontext"; // ✅ NUEVO
 
 const Login = () => {
   const [identificador, setIdentificador] = useState("");
@@ -25,6 +26,13 @@ const Login = () => {
   const [error, setError] = useState("");
   const [isRegistering, setIsRegistering] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuth(); // ✅ NUEVO
+
+  useEffect(() => {
+    if (user) {
+      navigate("/inicio"); // ✅ NUEVO: puedes cambiar a "/seleccionarHijo" si prefieres
+    }
+  }, [user, navigate]); // ✅ NUEVO
 
   const handleLoginOrRegister = async (e) => {
     e.preventDefault();
@@ -45,7 +53,6 @@ const Login = () => {
       }
 
       if (isRegistering) {
-        // Validaciones básicas para el registro de padre
         if (!identificador.includes("@") || !identificador.includes(".")) {
           setError("Debes ingresar un correo electrónico válido.");
           return;
