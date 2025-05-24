@@ -61,6 +61,12 @@
   transition: background-color 0.3s;
   flex: 1;
   max-width: 150px;
+
+  /* Centrar contenido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .btn-guardar:hover {
@@ -78,6 +84,12 @@
   transition: background-color 0.3s;
   flex: 1;
   max-width: 150px;
+
+  /* Centrar contenido */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
 .btn-cancelar:hover {
@@ -128,4 +140,16 @@ label {
     width: 100%;
     max-width: none;
   }
+}
+
+.grades-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.grades-group > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }

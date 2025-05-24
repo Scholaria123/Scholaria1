@@ -6,7 +6,7 @@ import { db } from '../../database/firebaseconfig';
 import { deleteDoc, doc } from 'firebase/firestore';
 import './TablaCalificaciones.css';
 import { Pencil, Trash2 } from 'lucide-react';
-import { Button } from 'react-bootstrap'; // ✅ Importación añadida
+import { Button } from 'react-bootstrap'; 
 
 const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asignaturas, estudiantes, onCopyCalificacion }) => {
   const [mostrarModalEdicion, setMostrarModalEdicion] = useState(false);
@@ -104,25 +104,7 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
         </tbody>
       </table>
 
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <div>Página {currentPage} de {totalPages}</div>
-        <div>
-          <button
-            className="btn btn-secondary btn-sm"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            Anterior
-          </button>{' '}
-          <button
-            className="btn btn-secondary btn-sm"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            Siguiente
-          </button>
-        </div>
-      </div>
+      {/* Aquí eliminé el bloque de paginación */}
 
       {mostrarModalEdicion && calificacionSeleccionada && (
         <ModalEdicionCalificaciones

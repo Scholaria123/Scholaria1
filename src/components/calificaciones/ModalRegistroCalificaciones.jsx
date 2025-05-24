@@ -19,25 +19,20 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
   const [observaciones, setObservaciones] = useState('');
 
   useEffect(() => {
-    const cargarDatos = async () => {
+    (async () => {
       const asignaturasSnap = await getDocs(collection(db, 'asignaturas'));
       const estudiantesSnap = await getDocs(collection(db, 'estudiantes'));
-
       setAsignaturas(asignaturasSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
       setEstudiantes(estudiantesSnap.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-    };
-
-    cargarDatos();
+    })();
   }, []);
 
   useEffect(() => {
     const n1 = parseFloat(parcial1);
     const n2 = parseFloat(parcial2);
     const n3 = parseFloat(parcial3);
-
     if (!isNaN(n1) && !isNaN(n2) && !isNaN(n3)) {
-      const promedio = ((n1 + n2 + n3) / 3).toFixed(2);
-      setFinal(promedio);
+      setFinal(((n1 + n2 + n3) / 3).toFixed(2));
     } else {
       setFinal('');
     }
@@ -68,7 +63,6 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
         final,
         observaciones
       });
-
       alert('Calificación registrada');
       onSuccess();
     } catch (error) {
@@ -77,11 +71,9 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
   };
 
   const gradosDisponibles = [...new Set(estudiantes.map(e => e.grado))];
-
   const gruposDisponibles = gradoSeleccionado
     ? [...new Set(estudiantes.filter(e => e.grado === gradoSeleccionado).map(e => e.grupo))]
     : [];
-
   const estudiantesFiltrados = estudiantes.filter(
     e => e.grado === gradoSeleccionado && e.grupo === grupoSeleccionado
   );
@@ -160,56 +152,55 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
           </select>
         </div>
 
-        <div style={styles.gradesGroup}>
-  <div style={styles.formGroup}>
-    <label>Parcial 1:</label>
-    <input
-      type="number"
-      min="0"
-      max="100"
-      value={parcial1}
-      onChange={e => {
-        const value = e.target.value;
-        if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
-          setParcial1(value);
-        }
-      }}
-    />
-  </div>
+        <div className="form-group grades-group">
+          <div>
+            <label>Parcial 1:</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={parcial1}
+              onChange={e => {
+                const value = e.target.value;
+                if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
+                  setParcial1(value);
+                }
+              }}
+            />
+          </div>
 
-  <div style={styles.formGroup}>
-    <label>Parcial 2:</label>
-    <input
-      type="number"
-      min="0"
-      max="100"
-      value={parcial2}
-      onChange={e => {
-        const value = e.target.value;
-        if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
-          setParcial2(value);
-        }
-      }}
-    />
-  </div>
+          <div>
+            <label>Parcial 2:</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={parcial2}
+              onChange={e => {
+                const value = e.target.value;
+                if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
+                  setParcial2(value);
+                }
+              }}
+            />
+          </div>
 
-  <div style={styles.formGroup}>
-    <label>Parcial 3:</label>
-    <input
-      type="number"
-      min="0"
-      max="100"
-      value={parcial3}
-      onChange={e => {
-        const value = e.target.value;
-        if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
-          setParcial3(value);
-        }
-      }}
-    />
-  </div>
-</div>
-
+          <div>
+            <label>Parcial 3:</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={parcial3}
+              onChange={e => {
+                const value = e.target.value;
+                if (value === '' || (Number(value) >= 0 && Number(value) <= 100)) {
+                  setParcial3(value);
+                }
+              }}
+            />
+          </div>
+        </div>
 
         <div className="form-group">
           <label>Nota Final (promedio):</label>
@@ -220,7 +211,7 @@ const ModalRegistroCalificaciones = ({ onClose, onSuccess }) => {
           <label>Observaciones:</label>
           <textarea value={observaciones} onChange={e => setObservaciones(e.target.value)} />
         </div>
-
+              
         <div className="button-row">
           <button className="btn-cancelar" onClick={onClose}>
             Cerrar
