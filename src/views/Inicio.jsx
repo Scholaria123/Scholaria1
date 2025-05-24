@@ -79,6 +79,28 @@ const Inicio = () => {
           </div>
         )}
       </div>
+
+      {/* Botón de Estadísticas */}
+      {(rol === "admin" || rol === "docente") && (
+        <div className="estadisticas-boton" style={{ textAlign: "center", marginTop: "40px" }}>
+          <button
+            onClick={() => handleNavigate("/estadisticas")}
+            style={{
+              backgroundColor: "#4f46e5",
+              color: "white",
+              padding: "12px 24px",
+              borderRadius: "8px",
+              fontSize: "16px",
+              fontWeight: "bold",
+              border: "none",
+              cursor: "pointer",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.2)"
+            }}
+          >
+            Ver Estadísticas Generales
+          </button>
+        </div>
+      )}
     </div>
   );
 };

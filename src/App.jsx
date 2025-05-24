@@ -15,6 +15,7 @@ import Docentes from "./components/views/Docente";
 import Notificaciones from "./components/Notificaciones/Notificaciones";
 import CalificacionesHijo from "./components/views/CalificacionesHijo";
 import SeleccionarHijo from "./components/views/SeleccionarHijo";
+import Estadisticas from "./components/estadisticas/Estadisticas";
 
 import './App.css';
 
@@ -25,7 +26,7 @@ function AppContent() {
 
   return (
     <div className={`App ${user ? "with-navbar" : ""}`}>
-  {user && <Encabezado />}
+      {user && <Encabezado />}
 
       <main>
         <Routes>
@@ -112,6 +113,16 @@ function AppContent() {
                 <SeleccionarHijo />
               </ProtectedRoute>
             }
+          />
+
+          {/* ✅ Ruta nueva para Estadísticas */}
+          <Route 
+            path="/estadisticas" 
+            element={
+              <ProtectedRoute allowedRoles={["docente", "admin"]}>
+                <Estadisticas />
+              </ProtectedRoute>
+            } 
           />
 
           <Route path="*" element={<h1>Página no encontrada</h1>} />
