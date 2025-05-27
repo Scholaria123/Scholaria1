@@ -16,25 +16,25 @@ export default function DistribucionAsistencia() {
   const [data, setData] = useState([
     { name: "Presente", value: 0 },
     { name: "Ausente", value: 0 },
-    { name: "Tarde", value: 0 },
+    { name: "Justificado", value: 0 },
   ]);
 
   useEffect(() => {
     const fetchAsistencia = async () => {
       const snap = await getDocs(collection(db, "asistencia"));
-      const counts = { Presente: 0, Ausente: 0, Tarde: 0 };
+      const counts = { Presente: 0, Ausente: 0, Justificado: 0 };
 
       snap.docs.forEach((doc) => {
         const estado = doc.data().estado;
         if (estado === "Presente") counts.Presente++;
         else if (estado === "Ausente") counts.Ausente++;
-        else if (estado === "Tarde") counts.Tarde++;
+        else if (estado === "Justificado") counts.Justificado++;
       });
 
       setData([
         { name: "Presente", value: counts.Presente },
         { name: "Ausente", value: counts.Ausente },
-        { name: "Tarde", value: counts.Tarde },
+        { name: "Justificado", value: counts.Justificado },
       ]);
       console.log("Datos de asistencia:", counts);
     };

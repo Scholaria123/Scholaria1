@@ -20,9 +20,7 @@ import Estadisticas from "./components/estadisticas/Estadisticas";
 import './App.css';
 
 function AppContent() {
-  const { user, loading } = useAuth();
-
-  if (loading) return <div>Cargando...</div>;
+  const { user } = useAuth();
 
   return (
     <div className={`App ${user ? "with-navbar" : ""}`}>
