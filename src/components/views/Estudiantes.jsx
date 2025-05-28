@@ -16,6 +16,8 @@ import ModalRegistroEstudiante from "../estudiantes/ModalRegistroEstudiantes";
 import ModalEdicionEstudiante from "../estudiantes/ModalEdicionEstudiantes";
 import ModalEliminacionEstudiante from "../estudiantes/ModalEliminacionEstudiantes";
 import Paginacion from "../ordenamiento/Paginacion";
+import "./Estudiantes.css";
+import { FaUserPlus, FaClipboardList, FaTrash } from "react-icons/fa";
 
 const Estudiantes = () => {
   const [estudiantes, setEstudiantes] = useState([]);
@@ -228,16 +230,29 @@ const Estudiantes = () => {
         className="mb-3"
       />
 
-      <div className="d-flex align-items-center gap-2 mb-3">
-        <Button onClick={() => setShowModal(true)}>Agregar estudiante</Button>
-        <Button variant="secondary" onClick={() => navigate("/catalogocalificaciones")}>
-          Inscritos
+      <div className="botones-gestion mb-3">
+        <Button
+          className="btn-igual"
+          onClick={() => setShowModal(true)}
+          title="Agregar estudiante"
+        >
+          <FaUserPlus />
         </Button>
         <Button
+          className="btn-igual"
+          variant="secondary"
+          onClick={() => navigate("/catalogocalificaciones")}
+          title="Inscritos"
+        >
+          <FaClipboardList />
+        </Button>
+        <Button
+          className="btn-igual"
           variant={verPapelera ? "primary" : "outline-secondary"}
           onClick={() => setVerPapelera(!verPapelera)}
+          title={verPapelera ? "Ver activos" : "Ver papelera"}
         >
-          {verPapelera ? "Ver activos" : "Ver papelera"}
+          <FaTrash />
         </Button>
       </div>
 
