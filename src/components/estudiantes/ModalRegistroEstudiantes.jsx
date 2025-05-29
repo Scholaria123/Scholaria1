@@ -130,7 +130,11 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
   };
 
   return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
+    <Modal
+      show={showModal}
+      onHide={() => setShowModal(false)}
+      className="custom-modal"
+    >
       <Modal.Header closeButton>
         <Modal.Title>Registrar Estudiante</Modal.Title>
       </Modal.Header>
@@ -138,104 +142,132 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
         <Form>
           <Form.Group controlId="formNombre">
             <Form.Label>Nombre</Form.Label>
-            <Form.Control 
-              type="text" 
-              name="nombre" 
-              value={nuevoEstudiante.nombre} 
-              onChange={handleInputChange} 
-              required 
+            <Form.Control
+              type="text"
+              name="nombre"
+              value={nuevoEstudiante.nombre}
+              onChange={handleInputChange}
+              required
             />
           </Form.Group>
-
           <Form.Group controlId="formDireccion">
             <Form.Label>Dirección</Form.Label>
-            <Form.Control 
-              type="text" 
-              name="direccion" 
-              value={nuevoEstudiante.direccion} 
-              onChange={handleInputChange} 
-              required 
+            <Form.Control
+              type="text"
+              name="direccion"
+              value={nuevoEstudiante.direccion}
+              onChange={handleInputChange}
+              required
             />
           </Form.Group>
-
           <Form.Group controlId="formTelefono">
-  <Form.Label>Teléfono</Form.Label>
-  <Form.Control
-    type="text"
-    name="telefono"
-    value={nuevoEstudiante.telefono}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (/^\d{0,8}$/.test(value)) {
-        setNuevoEstudiante((prev) => ({
-          ...prev,
-          telefono: value,
-        }));
-      }
-    }}
-    placeholder="Número de teléfono (8 dígitos)"
-    required
-  />
-  {nuevoEstudiante.telefono && nuevoEstudiante.telefono.length !== 8 && (
-    <Form.Text className="text-danger">
-      El número debe tener exactamente 8 dígitos.
-    </Form.Text>
-  )}
-</Form.Group>
-
-        <Form.Group controlId="formTutor">
-        <Form.Label>Tutor</Form.Label>
-        <Form.Control
-          type="text"
-          name="tutor"
-          value={nuevoEstudiante.tutor}
-          onChange={handleInputChange}
-          required
-        />
-      </Form.Group>
-
-
-
+            <Form.Label>Teléfono</Form.Label>
+            <Form.Control
+              type="text"
+              name="telefono"
+              value={nuevoEstudiante.telefono}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d{0,8}$/.test(value)) {
+                  setNuevoEstudiante((prev) => ({
+                    ...prev,
+                    telefono: value,
+                  }));
+                }
+              }}
+              placeholder="Número de teléfono (8 dígitos)"
+              required
+            />
+            {nuevoEstudiante.telefono &&
+              nuevoEstudiante.telefono.length !== 8 && (
+                <Form.Text className="text-danger">
+                  El número debe tener exactamente 8 dígitos.
+                </Form.Text>
+              )}
+          </Form.Group>
+          <Form.Group controlId="formTutor">
+            <Form.Label>Tutor</Form.Label>
+            <Form.Control
+              type="text"
+              name="tutor"
+              value={nuevoEstudiante.tutor}
+              onChange={handleInputChange}
+              required
+            />
+          </Form.Group>
           <Form.Group controlId="formGrado">
             <Form.Label>Grado</Form.Label>
-            <Form.Select name="grado" value={nuevoEstudiante.grado} onChange={handleInputChange} required>
+            <Form.Select
+              name="grado"
+              value={nuevoEstudiante.grado}
+              onChange={handleInputChange}
+              required
+            >
               <option value="">Seleccione un grado</option>
               {grados.map((grado, index) => (
-                <option key={index} value={grado}>{grado}</option>
+                <option key={index} value={grado}>
+                  {grado}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
-
           <Form.Group controlId="formGrupo">
             <Form.Label>Grupo</Form.Label>
-            <Form.Select name="grupo" value={nuevoEstudiante.grupo} onChange={handleInputChange} required>
+            <Form.Select
+              name="grupo"
+              value={nuevoEstudiante.grupo}
+              onChange={handleInputChange}
+              required
+            >
               <option value="">Seleccione un grupo</option>
               {grupos.map((grupo, index) => (
-                <option key={index} value={grupo}>{grupo}</option>
+                <option key={index} value={grupo}>
+                  {grupo}
+                </option>
               ))}
             </Form.Select>
           </Form.Group>
-
           <Form.Group controlId="formAsignatura">
             <Form.Label>Asignaturas</Form.Label>
-            <Form.Select name="asignaturaId" multiple value={nuevoEstudiante.asignaturaId} onChange={handleInputChange} required>
+            <Form.Select
+              name="asignaturaId"
+              multiple
+              value={nuevoEstudiante.asignaturaId}
+              onChange={handleInputChange}
+              required
+            >
               {asignaturas.map((asignatura) => (
                 <option key={asignatura.id} value={asignatura.id}>
                   {asignatura.nombre}
                 </option>
               ))}
             </Form.Select>
-          </Form.Group>
-
+          </Form.Group>{" "}
+          {/* 👈 Aquí cierras correctamente */}
           <Form.Group controlId="formImagen">
             <Form.Label>Imagen</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {nuevoEstudiante.imagen && (
+              <img
+                src={nuevoEstudiante.imagen}
+                alt="Previsualización"
+                className="preview-img"
+              />
+            )}
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>
-        <Button variant="primary" onClick={handleAddEstudiante}>Guardar</Button>
+        <Button variant="secondary" onClick={() => setShowModal(false)}>
+          Cerrar
+        </Button>
+        <Button variant="primary" onClick={handleAddEstudiante}>
+          Guardar
+        </Button>
       </Modal.Footer>
     </Modal>
   );

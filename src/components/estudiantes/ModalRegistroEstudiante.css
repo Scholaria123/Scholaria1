@@ -82,3 +82,11 @@
     width: 100%;
   }
 }
+
+img.preview-img {
+  display: block;
+  margin: 0.5rem auto;
+  border-radius: 10px;
+  max-width: 100px;
+  border: 1px solid #ccc;
+}
