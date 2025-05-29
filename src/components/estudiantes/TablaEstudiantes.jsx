@@ -51,7 +51,9 @@ const TablaEstudiantes = ({
             <th>Nombre</th>
             <th>Dirección</th>
             <th>Teléfono</th>
-            <th><strong>Tutor</strong></th>
+            <th>
+              <strong>Tutor</strong>
+            </th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -111,27 +113,14 @@ const TablaEstudiantes = ({
 
       {/* Paginación */}
       <div className="paginacion">
-        <button
-          onClick={() => cambiarPagina(paginaActual - 1)}
-          disabled={paginaActual === 1}
-        >
-          Anterior
-        </button>
         {Array.from({ length: totalPaginas }, (_, i) => (
           <button
             key={i}
             onClick={() => cambiarPagina(i + 1)}
             className={paginaActual === i + 1 ? "activo" : ""}
           >
-            {i + 1}
           </button>
         ))}
-        <button
-          onClick={() => cambiarPagina(paginaActual + 1)}
-          disabled={paginaActual === totalPaginas}
-        >
-          Siguiente
-        </button>
       </div>
     </div>
   );
