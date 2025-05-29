@@ -3,6 +3,7 @@ import { Container, Row, Form, Col } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig";
 import { collection, getDocs } from "firebase/firestore";
 import TarjetaCalificaciones from "../tarjetas/TarjetaCalificaciones";
+import "./CatalogoCalificaciones.css";
 
 const CatalogoCalificaciones = () => {
   const [estudiantes, setEstudiantes] = useState([]);
@@ -56,49 +57,45 @@ const CatalogoCalificaciones = () => {
   });
 
   return (
-    <Container className="mt-5">
-      <h4>Catálogo de Estudiantes</h4>
-      <Row>
-        <Col lg={3} md={4} sm={12}>
-          <Form.Group className="mb-3">
-            <Form.Label>Filtrar por asignatura:</Form.Label>
-            <Form.Select
-              value={asignaturaSeleccionada}
-              onChange={(e) => setAsignaturaSeleccionada(e.target.value)}
-            >
-              <option value="Todas">Todas</option>
-              {asignaturas.map((asignatura) => (
-                <option key={asignatura.id} value={asignatura.id}>
-                  {asignatura.nombre} - {asignatura.docente}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-        </Col>
+<Container className="catalogo-container">
+  <h4>Catálogo de Estudiantes</h4>
+  <div className="filtros-wrapper">
+    <Form.Group className="form-group">
+      <Form.Label>Filtrar por asignatura:</Form.Label>
+      <Form.Select
+        value={asignaturaSeleccionada}
+        onChange={(e) => setAsignaturaSeleccionada(e.target.value)}
+      >
+        <option value="Todas">Todas</option>
+        {asignaturas.map((asignatura) => (
+          <option key={asignatura.id} value={asignatura.id}>
+            {asignatura.nombre} - {asignatura.docente}
+          </option>
+        ))}
+      </Form.Select>
+    </Form.Group>
 
-        <Col lg={4} md={8} sm={12}>
-          <Form.Group className="mb-3">
-            <Form.Label>Buscar estudiante:</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Nombre, apellido, grado o sección"
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-            />
-          </Form.Group>
-        </Col>
-      </Row>
+    <Form.Group className="form-group">
+      <Form.Label>Buscar estudiante:</Form.Label>
+      <Form.Control
+        type="text"
+        placeholder="Nombre, apellido, grado o sección"
+        value={busqueda}
+        onChange={(e) => setBusqueda(e.target.value)}
+      />
+    </Form.Group>
+  </div>
 
-      <Row>
-        {estudiantesFiltrados.length > 0 ? (
-          estudiantesFiltrados.map((estudiante) => (
-            <TarjetaCalificaciones key={estudiante.id} estudiante={estudiante} />
-          ))
-        ) : (
-          <p>No hay estudiantes que coincidan con la búsqueda.</p>
-        )}
-      </Row>
-    </Container>
+  <Row className="tarjetas-row">
+    {estudiantesFiltrados.length > 0 ? (
+      estudiantesFiltrados.map((estudiante) => (
+        <TarjetaCalificaciones key={estudiante.id} estudiante={estudiante} />
+      ))
+    ) : (
+      <p>No hay estudiantes que coincidan con la búsqueda.</p>
+    )}
+  </Row>
+</Container>
   );
 };
 

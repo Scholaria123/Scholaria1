@@ -1,4 +1,5 @@
 import { Card, Col } from "react-bootstrap";
+import "./TarjetaCalificaciones.css";
 
 const TarjetaCalificaciones = ({ estudiante }) => {
   return (

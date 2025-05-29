@@ -1,0 +1,45 @@
+/* Contenedor principal */
+.catalogo-container {
+  padding: 2rem 1rem;
+}
+
+/* Encabezado */
+.catalogo-container h4 {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+}
+
+/* Controles de filtro */
+.filtros-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: flex-end;
+  margin-bottom: 1.5rem;
+}
+
+.filtros-wrapper .form-group {
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 200px;
+}
+
+/* Mensaje de sin resultados */
+.catalogo-container p {
+  margin-top: 2rem;
+  font-style: italic;
+  color: #666;
+}
+
+/* Ajuste de las tarjetas */
+.row.tarjetas-row {
+  row-gap: 1rem;
+}
+
+/* Mantener tamaño original de imágenes (ajusta según tu clase en TarjetaCalificaciones) */
+.tarjeta-img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
