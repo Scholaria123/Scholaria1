@@ -264,9 +264,7 @@ const Asistencia = () => {
             {grupoSeleccionado.toUpperCase()} | <b>Asignatura:</b>{" "}
             {nombreAsignatura}
           </p>
-          <div>
-            Usa los botones para marcar asistencia
-          </div>
+          <div>Usa los botones para marcar asistencia</div>
         </>
       )}
 
@@ -278,45 +276,50 @@ const Asistencia = () => {
         {estudiantes.map(({ id, nombre }) => (
           <div key={id}>
             <span>{nombre}</span>
-                <button
-                  onClick={() => marcarAsistencia(id, "Presente")}
-                  className="presente"
-                >
-                  <Check size={16} />
-                </button>
-                <button
-                  onClick={() => marcarAsistencia(id, "Ausente")}
-                  className="ausente"
-                >
-                  <X size={16} />
-                </button>
-                <button
-                  onClick={() => marcarAsistencia(id, "Justificado")}
-                  className="justificado"
-                >
-                  <Circle size={16} />
-                </button>
+            <button
+              onClick={() => marcarAsistencia(id, "Presente")}
+              className="presente"
+            >
+              <Check size={16} />
+            </button>
+            <button
+              onClick={() => marcarAsistencia(id, "Ausente")}
+              className="ausente"
+            >
+              <X size={16} />
+            </button>
+            <button
+              onClick={() => marcarAsistencia(id, "Justificado")}
+              className="justificado"
+            >
+              <Circle size={16} />
+            </button>
           </div>
         ))}
       </div>
 
-      <button onClick={guardarAsistencia}>
-        <Save size={16} /> Guardar Asistencia
-      </button>
-      <button onClick={generarPDF}>
-        <FileText size={16} /> Generar PDF
-      </button>
-      <button onClick={() => setMostrarTablaResumen((prev) => !prev)}>
-        {mostrarTablaResumen ? (
-          <>
-            <ChevronDown size={16} /> Ocultar resumen
-          </>
-        ) : (
-          <>
-            <ChevronUp size={16} /> Ver resumen
-          </>
-        )}
-      </button>
+      <div className="botones-principales">
+        <button className="btn-guardar" onClick={guardarAsistencia}>
+          <Save size={16} /> Guardar
+        </button>
+        <button className="btn-pdf" onClick={generarPDF}>
+          <FileText size={16} /> Generar PDF
+        </button>
+        <button
+          className="btn-resumen"
+          onClick={() => setMostrarTablaResumen((prev) => !prev)}
+        >
+          {mostrarTablaResumen ? (
+            <>
+              <ChevronDown size={16} /> Ocultar resumen
+            </>
+          ) : (
+            <>
+              <ChevronUp size={16} /> Ver resumen
+            </>
+          )}
+        </button>
+      </div>
 
       {mostrarTablaResumen && (
         <>

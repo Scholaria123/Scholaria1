@@ -191,3 +191,40 @@ table tbody tr:nth-child(even) {
     border-bottom: none;
   }
 }
+
+.botones-principales {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-top: 1.5rem;
+}
+
+.btn-guardar {
+  background-color: #4f46e5; /* Indigo */
+  color: white;
+}
+
+.btn-guardar:hover {
+  background-color: #4338ca;
+}
+
+/* Botón Generar PDF */
+.btn-pdf {
+  background-color: #10b981; /* Emerald */
+  color: white;
+}
+
+.btn-pdf:hover {
+  background-color: #059669;
+}
+
+/* Botón Ver/Ocultar Resumen */
+.btn-resumen {
+  background-color: #3b82f6; /* Azul */
+  color: white;
+}
+
+.btn-resumen:hover {
+  background-color: #2563eb;
+}
