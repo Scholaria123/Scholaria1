@@ -5,7 +5,7 @@ import { useAuth } from '../../database/authcontext';
 import { db } from '../../database/firebaseconfig';
 import { deleteDoc, doc } from 'firebase/firestore';
 import './TablaCalificaciones.css';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Copy } from 'lucide-react';
 import { Button } from 'react-bootstrap'; 
 
 const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asignaturas, estudiantes, onCopyCalificacion }) => {
@@ -61,10 +61,14 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
           </tr>
         </thead>
         <tbody>
-          {currentCalificaciones.map(c => (
+          {currentCalificaciones.map((c) => (
             <tr key={c.id}>
-              <td data-label="Asignatura">{obtenerNombreAsignatura(c.asignaturaId)}</td>
-              <td data-label="Estudiante">{obtenerNombreEstudiante(c.estudianteId)}</td>
+              <td data-label="Asignatura">
+                {obtenerNombreAsignatura(c.asignaturaId)}
+              </td>
+              <td data-label="Estudiante">
+                {obtenerNombreEstudiante(c.estudianteId)}
+              </td>
               <td data-label="Parcial 1">{c.parcial1}</td>
               <td data-label="Parcial 2">{c.parcial2}</td>
               <td data-label="Parcial 3">{c.parcial3}</td>
@@ -90,13 +94,12 @@ const TablaCalificaciones = ({ actualizar, calificaciones, onExportReady, asigna
                   >
                     <Trash2 size={18} color="#fff" />
                   </button>
-                  <Button
-                    variant="outline-secondary"
-                    size="sm"
+                  <button
+                    className="copiar"
                     onClick={() => onCopyCalificacion(c)}
                   >
-                    Copiar
-                  </Button>
+                    <Copy size={18} color="#fff" />
+                  </button>
                 </td>
               )}
             </tr>

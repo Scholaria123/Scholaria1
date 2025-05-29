@@ -87,3 +87,12 @@
     text-align: left;
   }
 }
+
+.copiar {
+  background-color: #6c757d;
+  border: none;
+  border-radius: 4px;
+  padding: 6px;
+  margin-left: 5px;
+  cursor: pointer;
+}
