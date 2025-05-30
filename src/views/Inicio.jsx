@@ -15,34 +15,41 @@ const Inicio = () => {
   const { user, loading } = useAuth();
   const [showLoader, setShowLoader] = useState(true);
 
-useEffect(() => {
-  const timer = setTimeout(() => {
-    setShowLoader(false);
-  }, 1000); 
+  useEffect(() => {
+    const loaderShown = sessionStorage.getItem("loaderShown");
 
-  return () => clearTimeout(timer);
-}, []);
+    if (!loaderShown) {
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+        sessionStorage.setItem("loaderShown", "true");
+      }, 1000); 
 
-if (loading || showLoader || !user) {
-return (
-  <div
-    style={{
-      position: "fixed",
-      top: 0,
-      left: 0,
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "#0c0453", 
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 9999,
-    }}
-  >
-    <img src={LoaderGif} alt="Cargando..." style={{ width: "150px" }} />
-  </div>
-);
-}
+      return () => clearTimeout(timer);
+    } else {
+      setShowLoader(false);
+    }
+  }, []);
+
+  if (loading || showLoader || !user) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          backgroundColor: "#0c0453",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          zIndex: 9999,
+        }}
+      >
+        <img src={LoaderGif} alt="Cargando..." style={{ width: "150px" }} />
+      </div>
+    );
+  }
 
   const rol = user?.rol;
 
