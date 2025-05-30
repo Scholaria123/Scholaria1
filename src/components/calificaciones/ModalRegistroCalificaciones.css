@@ -1,106 +1,33 @@
-/* Overlay general del modal */
 .modal-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
   background-color: rgba(0,0,0,0.5);
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 11000;
   padding: 10px;
-  z-index: 1000;
 }
 
-/* Contenido del modal */
 .modal-content {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 8px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
   width: 100%;
   max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
   max-height: 90vh;
   overflow-y: auto;
-}
-
-/* Grupos de formulario */
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-/* Contenedor para parciales */
-.grades-group {
   display: flex;
   flex-direction: column;
   gap: 15px;
+  box-sizing: border-box;
 }
 
-/* Botones contenedor */
-.button-row {
-  display: flex;
-  flex-direction: row;
-  gap: 10px;
-  margin-top: 15px;
-  justify-content: center;
-}
-
-/* Botón Guardar: estilo primario */
-.btn-guardar {
-  background-color: #4f46e5; /* violeta intenso */
-  border: none;
-  color: white;
-  padding: 10px 15px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  flex: 1;
-  max-width: 150px;
-
-  /* Centrar contenido */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.btn-guardar:hover {
-  background-color: #4338ca; /* violeta más oscuro */
-}
-
-/* Botón Cancelar: estilo secundario gris claro */
-.btn-cancelar {
-  background-color: #e5e7eb; /* gris claro */
-  border: none;
-  color: #374151; /* gris oscuro para texto */
-  padding: 10px 15px;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  flex: 1;
-  max-width: 150px;
-
-  /* Centrar contenido */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-.btn-cancelar:hover {
-  background-color: #d1d5db; /* gris más oscuro */
-}
-
-/* Inputs y selects */
-select,
-input[type="number"],
-input[disabled],
-textarea {
+/* Para inputs y selects */
+.modal-content select,
+.modal-content input[type="number"],
+.modal-content textarea {
   border-radius: 10px;
   padding: 0.75rem 1rem;
   font-size: 1rem;
@@ -110,22 +37,78 @@ textarea {
   box-sizing: border-box;
 }
 
-select:focus,
-input[type="number"]:focus,
-textarea:focus {
+.modal-content select:focus,
+.modal-content input[type="number"]:focus,
+.modal-content textarea:focus {
   border-color: #86b7fe;
   box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
   outline: none;
 }
 
-/* Etiquetas */
-label {
-  font-weight: 500;
-  color: #444;
-  margin-bottom: 0.3rem;
+.form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
 }
 
-/* Responsive para móviles */
+.grades-group {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.grades-group > div {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.btn-guardar,
+.btn-cancelar {
+  flex: none;          /* que no crezcan ni se encojan */
+  width: 140px;        /* ancho fijo */
+  padding: 10px 20px;  /* buen padding */
+  display: inline-flex; /* inline-flex para que se ajuste solo al ancho */
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.btn-guardar {
+  background-color: #4f46e5;
+  border: none;
+  color: white;
+}
+
+.btn-guardar:hover {
+  background-color: #4338ca;
+}
+
+.btn-cancelar {
+  background-color: #e5e7eb;
+  border: none;
+  color: #374151;
+}
+
+.btn-cancelar:hover {
+  background-color: #d1d5db;
+}
+
+.button-row {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+
+/* Responsive */
 @media (max-width: 576px) {
   .modal-content {
     padding: 1rem 1rem 0.5rem;
@@ -140,16 +123,4 @@ label {
     width: 100%;
     max-width: none;
   }
-}
-
-.grades-group {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.grades-group > div {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
 }
