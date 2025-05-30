@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { db } from "../../database/firebaseconfig";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
+import "./EditarDocente.css";
 
 const ModalEdicionDocente = ({
   showEditModal,
@@ -125,126 +126,136 @@ const ModalEdicionDocente = ({
     }
   };
 
-  return (
-    <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
-      <Modal.Header closeButton>
-        <Modal.Title>Editar Docente</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Form.Group controlId="formDocente">
-            <Form.Label>Docente</Form.Label>
-            <Form.Select
-              name="docente"
-              value={docenteEditado.docente || ""}
-              onChange={handleDocenteChange}
-            >
-              <option value="">Seleccione un docente</option>
-              {docentesUnicos.map((docente, index) => (
-                <option key={index} value={docente}>
-                  {docente}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+return (
+  <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered className="custom-modal">
+    <Modal.Header closeButton>
+      <Modal.Title>Editar Docente</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <Form>
+        <Form.Group controlId="formDocente">
+          <Form.Label>Docente</Form.Label>
+          <Form.Select
+            name="docente"
+            value={docenteEditado.docente || ""}
+            onChange={handleDocenteChange}
+          >
+            <option value="">Seleccione un docente</option>
+            {docentesUnicos.map((docente, index) => (
+              <option key={index} value={docente}>
+                {docente}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
 
-          <Form.Group controlId="formAsignatura">
-            <Form.Label>Asignatura</Form.Label>
-            <Form.Select
-              name="asignaturaId"
-              value={docenteEditado.asignaturaId || ""}
-              onChange={handleAsignaturaChange}
-              disabled={asignaturasFiltradas.length === 0}
-            >
-              <option value="">Seleccione una asignatura</option>
-              {asignaturasFiltradas.map((asignatura) => (
-                <option key={asignatura.id} value={asignatura.id}>
-                  {asignatura.nombre}
-                </option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+        <Form.Group controlId="formAsignatura">
+          <Form.Label>Asignatura</Form.Label>
+          <Form.Select
+            name="asignaturaId"
+            value={docenteEditado.asignaturaId || ""}
+            onChange={handleAsignaturaChange}
+            disabled={asignaturasFiltradas.length === 0}
+          >
+            <option value="">Seleccione una asignatura</option>
+            {asignaturasFiltradas.map((asignatura) => (
+              <option key={asignatura.id} value={asignatura.id}>
+                {asignatura.nombre}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
 
-          <Form.Group controlId="titulo">
-            <Form.Label>Título</Form.Label>
-            <Form.Control
-              type="text"
-              name="titulo"
-              value={docenteEditado.titulo || ""}
-              onChange={handleInputChange}
+        <Form.Group controlId="titulo">
+          <Form.Label>Título</Form.Label>
+          <Form.Control
+            type="text"
+            name="titulo"
+            value={docenteEditado.titulo || ""}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="direccion">
+          <Form.Label>Dirección</Form.Label>
+          <Form.Control
+            type="text"
+            name="direccion"
+            value={docenteEditado.direccion || ""}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
+
+        <Form.Group controlId="telefono">
+          <Form.Label>Teléfono</Form.Label>
+          <Form.Control
+            type="text"
+            name="telefono"
+            value={docenteEditado.telefono || ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d{0,8}$/.test(value)) {
+                setDocenteEditado((prev) => ({ ...prev, telefono: value }));
+              }
+            }}
+            placeholder="Máx. 8 dígitos"
+          />
+          {docenteEditado.telefono && docenteEditado.telefono.length < 7 && (
+            <Form.Text className="text-warning">
+              El teléfono debería tener al menos 7 dígitos.
+            </Form.Text>
+          )}
+        </Form.Group>
+
+        <Form.Group controlId="formCarnet">
+          <Form.Label>Carnet</Form.Label>
+          <Form.Control
+            type="text"
+            name="carnet"
+            value={docenteEditado.carnet || ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d{0,6}$/.test(value)) {
+                setDocenteEditado((prev) => ({ ...prev, carnet: value }));
+              }
+            }}
+            placeholder="Carnet de 6 dígitos"
+          />
+          {docenteEditado.carnet && docenteEditado.carnet.length !== 6 && (
+            <Form.Text className="text-danger">
+              El carnet debe tener exactamente 6 dígitos numéricos.
+            </Form.Text>
+          )}
+        </Form.Group>
+
+        <Form.Group controlId="imagen">
+          <Form.Label>Imagen</Form.Label>
+          <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
+        </Form.Group>
+
+        {(imagenBase64 || docenteEditado.imagen) && (
+          <div className="preview-image-container">
+            <img
+              src={imagenBase64 || docenteEditado.imagen}
+              alt="Previsualización"
+              className="preview-image"
             />
-          </Form.Group>
-
-          <Form.Group controlId="direccion">
-            <Form.Label>Dirección</Form.Label>
-            <Form.Control
-              type="text"
-              name="direccion"
-              value={docenteEditado.direccion || ""}
-              onChange={handleInputChange}
-            />
-          </Form.Group>
-
-          <Form.Group controlId="telefono">
-  <Form.Label>Teléfono</Form.Label>
-  <Form.Control
-    type="text"
-    name="telefono"
-    value={docenteEditado.telefono || ""}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (/^\d{0,8}$/.test(value)) {
-        setDocenteEditado((prev) => ({ ...prev, telefono: value }));
-      }
-    }}
-    placeholder="Máx. 8 dígitos"
-  />
-  {docenteEditado.telefono && docenteEditado.telefono.length < 7 && (
-    <Form.Text className="text-warning">
-      El teléfono debería tener al menos 7 dígitos.
-    </Form.Text>
-  )}
-</Form.Group>
+          </div>
+        )}
+      </Form>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button className="btn-cancelar" onClick={() => setShowEditModal(false)}>
+        Cerrar
+      </Button>
+      <Button variant="primary" onClick={handleSaveChanges}>
+        Guardar Cambios
+      </Button>
+    </Modal.Footer>
+  </Modal>
+);
 
 
-         <Form.Group controlId="formCarnet">
-  <Form.Label>Carnet</Form.Label>
-  <Form.Control
-    type="text"
-    name="carnet"
-    value={docenteEditado.carnet || ""}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (/^\d{0,6}$/.test(value)) {
-        setDocenteEditado((prev) => ({ ...prev, carnet: value }));
-      }
-    }}
-    placeholder="Carnet de 6 dígitos"
-  />
-  {docenteEditado.carnet && docenteEditado.carnet.length !== 6 && (
-    <Form.Text className="text-danger">
-      El carnet debe tener exactamente 6 dígitos numéricos.
-    </Form.Text>
-  )}
-</Form.Group>
-
-
-          <Form.Group controlId="imagen">
-            <Form.Label>Imagen</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowEditModal(false)}>
-          Cerrar
-        </Button>
-        <Button variant="primary" onClick={handleSaveChanges}>
-          Guardar Cambios
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
 };
 
 export default ModalEdicionDocente;
