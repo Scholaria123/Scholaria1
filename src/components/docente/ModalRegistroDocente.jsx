@@ -11,7 +11,7 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
 
   const [nuevoDocente, setNuevoDocente] = useState({
     nombre: "",
-    carnet: "",            // 👈 Nuevo campo
+    carnet: "", // 👈 Nuevo campo
     direccion: "",
     telefono: "",
     titulo: "",
@@ -22,14 +22,16 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
   useEffect(() => {
     const fetchAsignaturas = async () => {
       try {
-        const asignaturasSnapshot = await getDocs(collection(db, "asignaturas"));
-        const asignaturasList = asignaturasSnapshot.docs.map(doc => ({
+        const asignaturasSnapshot = await getDocs(
+          collection(db, "asignaturas")
+        );
+        const asignaturasList = asignaturasSnapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
 
         setAsignaturas(asignaturasList);
-        const docentes = [...new Set(asignaturasList.map(a => a.docente))];
+        const docentes = [...new Set(asignaturasList.map((a) => a.docente))];
         setDocentesUnicos(docentes);
       } catch (error) {
         console.error("❌ Error al obtener asignaturas:", error);
@@ -44,11 +46,13 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
     setNuevoDocente((prev) => ({ ...prev, [name]: value }));
 
     if (name === "nombre") {
-      const asignaturasDelDocente = asignaturas.filter(a => a.docente === value);
+      const asignaturasDelDocente = asignaturas.filter(
+        (a) => a.docente === value
+      );
       setAsignaturasFiltradas(asignaturasDelDocente);
 
       if (asignaturasDelDocente.length > 0) {
-        setNuevoDocente(prev => ({
+        setNuevoDocente((prev) => ({
           ...prev,
           asignaturaId: asignaturasDelDocente[0].id,
         }));
@@ -61,7 +65,7 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setNuevoDocente(prev => ({
+        setNuevoDocente((prev) => ({
           ...prev,
           imagen: reader.result,
         }));
@@ -82,10 +86,9 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
     }
 
     if (!/^\d{6}$/.test(nuevoDocente.carnet)) {
-  alert("El carnet debe contener exactamente 6 dígitos numéricos.");
-  return false;
-}
-
+      alert("El carnet debe contener exactamente 6 dígitos numéricos.");
+      return false;
+    }
 
     if (!nuevoDocente.asignaturaId) {
       alert("Debe seleccionar una asignatura.");
@@ -98,10 +101,11 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
     }
 
     if (!/^\d{8}$/.test(nuevoDocente.telefono)) {
-  alert("El número de teléfono debe contener exactamente 8 dígitos numéricos.");
-  return false;
-}
-
+      alert(
+        "El número de teléfono debe contener exactamente 8 dígitos numéricos."
+      );
+      return false;
+    }
 
     if (!nuevoDocente.titulo.trim()) {
       alert("El título es obligatorio.");
@@ -123,108 +127,146 @@ const ModalRegistroDocente = ({ showModal, setShowModal, fetchDocentes }) => {
       }
     }
   };
-  
-  
-  
 
-  return (
-    <Modal show={showModal} onHide={() => setShowModal(false)} className="custom-modal">
-      <Modal.Header closeButton>
-        <Modal.Title>Registrar Docente</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Form>
-          <Form.Group controlId="formNombre">
-            <Form.Label>Nombre del Docente</Form.Label>
-            <Form.Select name="nombre" value={nuevoDocente.nombre} onChange={handleInputChange}>
-              <option value="">Seleccione un docente</option>
-              {docentesUnicos.map((docente, index) => (
-                <option key={index} value={docente}>{docente}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+return (
+  <Modal
+    show={showModal}
+    onHide={() => setShowModal(false)}
+    className="custom-modal"
+  >
+    <Modal.Header closeButton>
+      <Modal.Title>Registrar Docente</Modal.Title>
+    </Modal.Header>
+    <Modal.Body>
+      <Form>
+        <Form.Group controlId="formNombre">
+          <Form.Label>Nombre del Docente</Form.Label>
+          <Form.Select
+            name="nombre"
+            value={nuevoDocente.nombre}
+            onChange={handleInputChange}
+          >
+            <option value="">Seleccione un docente</option>
+            {docentesUnicos.map((docente, index) => (
+              <option key={index} value={docente}>
+                {docente}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
 
-          <Form.Group controlId="formCarnet">
-  <Form.Label>Carnet</Form.Label>
-  <Form.Control
-    type="text"
-    name="carnet"
-    value={nuevoDocente.carnet}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (/^\d{0,6}$/.test(value)) {
-        setNuevoDocente((prev) => ({ ...prev, carnet: value }));
-      }
-    }}
-    placeholder="Carnet de 6 dígitos"
-    required
-  />
-  {nuevoDocente.carnet && nuevoDocente.carnet.length !== 6 && (
-    <Form.Text className="text-danger">
-      El carnet debe tener exactamente 6 dígitos numéricos.
-    </Form.Text>
-  )}
-</Form.Group>
+        <Form.Group controlId="formCarnet">
+          <Form.Label>Carnet</Form.Label>
+          <Form.Control
+            type="text"
+            name="carnet"
+            value={nuevoDocente.carnet}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d{0,6}$/.test(value)) {
+                setNuevoDocente((prev) => ({ ...prev, carnet: value }));
+              }
+            }}
+            placeholder="Carnet de 6 dígitos"
+            required
+          />
+          {nuevoDocente.carnet && nuevoDocente.carnet.length !== 6 && (
+            <Form.Text className="text-danger">
+              El carnet debe tener exactamente 6 dígitos numéricos.
+            </Form.Text>
+          )}
+        </Form.Group>
 
+        <Form.Group controlId="formAsignaturaId">
+          <Form.Label>Asignatura</Form.Label>
+          <Form.Select
+            name="asignaturaId"
+            value={nuevoDocente.asignaturaId}
+            onChange={handleInputChange}
+          >
+            <option value="">Seleccione una asignatura</option>
+            {asignaturasFiltradas.map((asig) => (
+              <option key={asig.id} value={asig.id}>
+                {asig.nombre}
+              </option>
+            ))}
+          </Form.Select>
+        </Form.Group>
 
-          <Form.Group controlId="formAsignaturaId">
-            <Form.Label>Asignatura</Form.Label>
-            <Form.Select name="asignaturaId" value={nuevoDocente.asignaturaId} onChange={handleInputChange}>
-              <option value="">Seleccione una asignatura</option>
-              {asignaturasFiltradas.map((asig) => (
-                <option key={asig.id} value={asig.id}>{asig.nombre}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
+        <Form.Group controlId="formDireccion">
+          <Form.Label>Dirección</Form.Label>
+          <Form.Control
+            type="text"
+            name="direccion"
+            value={nuevoDocente.direccion}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
 
-          <Form.Group controlId="formDireccion">
-            <Form.Label>Dirección</Form.Label>
-            <Form.Control type="text" name="direccion" value={nuevoDocente.direccion} onChange={handleInputChange} />
-          </Form.Group>
+        <Form.Group controlId="formTelefono">
+          <Form.Label>Teléfono</Form.Label>
+          <Form.Control
+            type="text"
+            name="telefono"
+            value={nuevoDocente.telefono}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (/^\d{0,8}$/.test(value)) {
+                setNuevoDocente((prev) => ({
+                  ...prev,
+                  telefono: value,
+                }));
+              }
+            }}
+            placeholder="Número de teléfono (8 dígitos)"
+            required
+          />
+          {nuevoDocente.telefono && nuevoDocente.telefono.length !== 8 && (
+            <Form.Text className="text-danger">
+              El número debe tener exactamente 8 dígitos.
+            </Form.Text>
+          )}
+        </Form.Group>
 
-          <Form.Group controlId="formTelefono">
-  <Form.Label>Teléfono</Form.Label>
-  <Form.Control
-    type="text"
-    name="telefono"
-    value={nuevoDocente.telefono}
-    onChange={(e) => {
-      const value = e.target.value;
-      if (/^\d{0,8}$/.test(value)) {
-        setNuevoDocente((prev) => ({
-          ...prev,
-          telefono: value,
-        }));
-      }
-    }}
-    placeholder="Número de teléfono (8 dígitos)"
-    required
-  />
-  {nuevoDocente.telefono && nuevoDocente.telefono.length !== 8 && (
-    <Form.Text className="text-danger">
-      El número debe tener exactamente 8 dígitos.
-    </Form.Text>
-  )}
-</Form.Group>
+        <Form.Group controlId="formTitulo">
+          <Form.Label>Título</Form.Label>
+          <Form.Control
+            type="text"
+            name="titulo"
+            value={nuevoDocente.titulo}
+            onChange={handleInputChange}
+          />
+        </Form.Group>
 
-
-          <Form.Group controlId="formTitulo">
-            <Form.Label>Título</Form.Label>
-            <Form.Control type="text" name="titulo" value={nuevoDocente.titulo} onChange={handleInputChange} />
-          </Form.Group>
-
-          <Form.Group controlId="formImagen">
-            <Form.Label>Imagen</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
-          </Form.Group>
-        </Form>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={() => setShowModal(false)}>Cerrar</Button>
-        <Button variant="primary" onClick={handleAddDocenteWithValidation}>Guardar</Button>
-      </Modal.Footer>
-    </Modal>
-  );
+        <Form.Group controlId="formImagen">
+          <Form.Label>Imagen</Form.Label>
+          <Form.Control
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          {nuevoDocente.imagen && (
+            <div className="preview-image-container">
+              <img
+                src={nuevoDocente.imagen}
+                alt="Previsualización"
+                className="preview-image"
+              />
+            </div>
+          )}
+        </Form.Group>
+      </Form>
+    </Modal.Body>
+    <Modal.Footer>
+      <Button variant="secondary" onClick={() => setShowModal(false)}>
+        Cerrar
+      </Button>
+      <Button variant="primary" onClick={handleAddDocenteWithValidation}>
+        Guardar
+      </Button>
+    </Modal.Footer>
+  </Modal>
+);
 };
 
 export default ModalRegistroDocente;

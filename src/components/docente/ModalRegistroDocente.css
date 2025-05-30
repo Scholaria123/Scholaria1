@@ -81,3 +81,19 @@
     width: 100%;
   }
 }
+
+.custom-modal .preview-image-container {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center; /* centra horizontalmente */
+  align-items: center;     /* centra verticalmente si hay altura */
+}
+
+.custom-modal .preview-image {
+  max-width: 150px;
+  max-height: 150px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 1px solid #ced4da;
+  display: block;
+}
