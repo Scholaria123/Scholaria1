@@ -16,6 +16,7 @@ import ModalRegistroDocente from "../docente/ModalRegistroDocente";
 import ModalEdicionDocente from "../docente/ModalEdicionDocente";
 import ModalEliminacionDocente from "../docente/ModalEliminacionDocente";
 import Paginacion from "../ordenamiento/Paginacion";
+import { FaPlus } from "react-icons/fa";
 
 const Docentes = () => {
   const [docentes, setDocentes] = useState([]);
@@ -185,73 +186,73 @@ const Docentes = () => {
   const currentDocentes = docentesFiltrados.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(docentesFiltrados.length / itemsPerPage);
 
-  return (
-    <Container className="mt-5">
-      <h4>Gestión de Docentes</h4>
-      <Form.Control
-        type="text"
-        placeholder="Buscar"
-        value={filtro}
-        onChange={handleFilterChange}
-        className="mb-3"
-      />
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Agregar docente
-      </Button>
+return (
+  <Container className="mt-5">
+    <h4>Gestión de Docentes</h4>
+    <Form.Control
+      type="text"
+      placeholder="Buscar"
+      value={filtro}
+      onChange={handleFilterChange}
+      className="mb-3"
+    />
+    <Button className="mb-3" onClick={() => setShowModal(true)}>
+      <FaPlus />
+    </Button>
 
-      <TablaDocente
-        docentes={currentDocentes}
-        openEditModal={openEditModal}
-        openDeleteModal={openDeleteModal}
-        setCurrentPage={setCurrentPage} 
-      />
+    <TablaDocente
+      docentes={currentDocentes}
+      openEditModal={openEditModal}
+      openDeleteModal={openDeleteModal}
+      setCurrentPage={setCurrentPage} 
+    />
 
-      {/* Paginación */}
-      <div className="d-flex justify-content-between align-items-center mt-3">
-        <div>
-          Página {currentPage} de {totalPages}
-        </div>
-        <div>
-          <Button
-            variant="secondary"
-            size="sm"
-            disabled={currentPage === 1}
-            onClick={() => setCurrentPage(currentPage - 1)}
-          >
-            Anterior
-          </Button>{" "}
-          <Button
-            variant="secondary"
-            size="sm"
-            disabled={currentPage === totalPages}
-            onClick={() => setCurrentPage(currentPage + 1)}
-          >
-            Siguiente
-          </Button>
-        </div>
+    {/* Paginación */}
+    <div className="d-flex justify-content-between align-items-center mt-3">
+      <div>
+        Página {currentPage} de {totalPages}
       </div>
+      <div>
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={currentPage === 1}
+          onClick={() => setCurrentPage(currentPage - 1)}
+        >
+          Anterior
+        </Button>{" "}
+        <Button
+          variant="secondary"
+          size="sm"
+          disabled={currentPage === totalPages}
+          onClick={() => setCurrentPage(currentPage + 1)}
+        >
+          Siguiente
+        </Button>
+      </div>
+    </div>
 
-      <ModalRegistroDocente
-        showModal={showModal}
-        setShowModal={setShowModal}
-        fetchDocentes={fetchDocentes}
-        handleAddDocente={handleAddDocente}
-      />
-      <ModalEdicionDocente
-        showEditModal={showEditModal}
-        setShowEditModal={setShowEditModal}
-        docenteEditado={docenteEditado}
-        setDocenteEditado={setDocenteEditado}
-        fetchData={fetchDocentes}
-      />
-      <ModalEliminacionDocente
-        showDeleteModal={showDeleteModal}
-        setShowDeleteModal={setShowDeleteModal}
-        handleDeleteDocente={handleDeleteDocente}
-        docenteAEliminar={docenteAEliminar}
-      />
-    </Container>
-  );
+    <ModalRegistroDocente
+      showModal={showModal}
+      setShowModal={setShowModal}
+      fetchDocentes={fetchDocentes}
+      handleAddDocente={handleAddDocente}
+    />
+    <ModalEdicionDocente
+      showEditModal={showEditModal}
+      setShowEditModal={setShowEditModal}
+      docenteEditado={docenteEditado}
+      setDocenteEditado={setDocenteEditado}
+      fetchData={fetchDocentes}
+    />
+    <ModalEliminacionDocente
+      showDeleteModal={showDeleteModal}
+      setShowDeleteModal={setShowDeleteModal}
+      handleDeleteDocente={handleDeleteDocente}
+      docenteAEliminar={docenteAEliminar}
+    />
+  </Container>
+);
 };
 
 export default Docentes;

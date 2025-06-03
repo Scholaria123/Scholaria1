@@ -10,6 +10,8 @@ import {
   doc,
 } from "firebase/firestore";
 import ReactGA from "react-ga4";
+import { FaPlus } from "react-icons/fa";
+
 
 // Componentes personalizados
 import TablaAsignaturas from "../asignatura/TablaAsignatura";
@@ -142,64 +144,65 @@ const Asignatura = () => {
     }
   };
 
-  return (
-    <Container className="mt-5">
-      <h4>Gestión de Asignaturas</h4>
+return (
+  <Container className="mt-5">
+    <h4>Gestión de Asignaturas</h4>
 
-      <Form.Control
-        type="text"
-        placeholder="Buscar"
-        value={filtro}
-        onChange={handleFiltroChange}
-        className="mb-3"
-      />
+    <Form.Control
+      type="text"
+      placeholder="Buscar"
+      value={filtro}
+      onChange={handleFiltroChange}
+      className="mb-3"
+    />
 
-      <Button className="mb-3" onClick={() => setShowModal(true)}>
-        Agregar Asignatura
-      </Button>
+    <Button className="mb-3" onClick={() => setShowModal(true)}>
+      <FaPlus />
+    </Button>
 
-      <TablaAsignaturas
-        asignaturas={currentAsignaturas}
-        openEditModal={(asignatura) => {
-          setAsignaturaEditada(asignatura);
-          setShowEditModal(true);
-        }}
-        openDeleteModal={(asignatura) => {
-          setAsignaturaAEliminar(asignatura);
-          setShowDeleteModal(true);
-        }}
-      />
+    <TablaAsignaturas
+      asignaturas={currentAsignaturas}
+      openEditModal={(asignatura) => {
+        setAsignaturaEditada(asignatura);
+        setShowEditModal(true);
+      }}
+      openDeleteModal={(asignatura) => {
+        setAsignaturaAEliminar(asignatura);
+        setShowDeleteModal(true);
+      }}
+    />
 
-      <Paginacion
-        itemsPerPage={itemsPerPage}
-        totalItems={asignaturasFiltradas.length}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
+    <Paginacion
+      itemsPerPage={itemsPerPage}
+      totalItems={asignaturasFiltradas.length}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+    />
 
-      <ModalRegistroAsignatura
-        showModal={showModal}
-        setShowModal={setShowModal}
-        nuevaAsignatura={nuevaAsignatura}
-        handleInputChange={handleInputChange}
-        handleAddAsignatura={handleAddAsignatura}
-      />
+    <ModalRegistroAsignatura
+      showModal={showModal}
+      setShowModal={setShowModal}
+      nuevaAsignatura={nuevaAsignatura}
+      handleInputChange={handleInputChange}
+      handleAddAsignatura={handleAddAsignatura}
+    />
 
-      <ModalEdicionAsignatura
-        showEditModal={showEditModal}
-        setShowEditModal={setShowEditModal}
-        asignaturaEditada={asignaturaEditada}
-        setAsignaturaEditada={setAsignaturaEditada}
-        handleEditAsignatura={handleEditAsignatura}
-      />
+    <ModalEdicionAsignatura
+      showEditModal={showEditModal}
+      setShowEditModal={setShowEditModal}
+      asignaturaEditada={asignaturaEditada}
+      setAsignaturaEditada={setAsignaturaEditada}
+      handleEditAsignatura={handleEditAsignatura}
+    />
 
-      <ModalEliminacionAsignatura
-        showDeleteModal={showDeleteModal}
-        setShowDeleteModal={setShowDeleteModal}
-        handleDeleteAsignatura={handleDeleteAsignatura}
-      />
-    </Container>
-  );
+    <ModalEliminacionAsignatura
+      showDeleteModal={showDeleteModal}
+      setShowDeleteModal={setShowDeleteModal}
+      handleDeleteAsignatura={handleDeleteAsignatura}
+    />
+  </Container>
+);
+
 };
 
 export default Asignatura;

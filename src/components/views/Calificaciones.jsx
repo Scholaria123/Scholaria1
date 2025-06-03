@@ -9,6 +9,8 @@ import { db } from '../../database/firebaseconfig';
 import { collection, onSnapshot } from 'firebase/firestore';
 import Paginacion from '../ordenamiento/Paginacion';
 import { Form, Button, Container } from 'react-bootstrap';
+import { FaPlus, FaFilePdf } from "react-icons/fa";
+
 
 const Calificaciones = () => {
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -146,60 +148,62 @@ const Calificaciones = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentCalificaciones = calificacionesFiltradas.slice(indexOfFirstItem, indexOfLastItem);
 
-  return (
-    <Container className="mt-5">
-      <h2>Gestión de Calificaciones</h2>
+return (
+  <Container className="mt-5">
+    <h2>Gestión de Calificaciones</h2>
 
-      {esAdminODocente && (
-        <div style={{ marginBottom: '20px' }}>
-          <Button onClick={() => setMostrarModal(true)}>Registrar Calificación</Button>
-          <Button onClick={exportarCalificacionesPDF} style={{ marginLeft: '10px' }}>
-            Exportar PDF
-          </Button>
-        </div>
-      )}
+    {esAdminODocente && (
+      <div style={{ marginBottom: '20px' }}>
+        <Button onClick={() => setMostrarModal(true)}>
+          <FaPlus />
+        </Button>
+        <Button onClick={exportarCalificacionesPDF} style={{ marginLeft: '10px' }}>
+          <FaFilePdf />
+        </Button>
+      </div>
+    )}
 
-      <Form.Control
-        type="text"
-        placeholder="Buscar"
-        value={filtro}
-        onChange={handleFilterChange}
-        className="mb-3"
+    <Form.Control
+      type="text"
+      placeholder="Buscar"
+      value={filtro}
+      onChange={handleFilterChange}
+      className="mb-3"
+    />
+
+    {mostrarModal && (
+      <ModalRegistroCalificaciones
+        onClose={() => setMostrarModal(false)}
+        onSuccess={handleRegistroExitoso}
       />
+    )}
 
-      {mostrarModal && (
-        <ModalRegistroCalificaciones
-          onClose={() => setMostrarModal(false)}
-          onSuccess={handleRegistroExitoso}
-        />
-      )}
+    <ModalEdicionCalificaciones
+      show={mostrarModalEdicion}
+      setShow={setMostrarModalEdicion}
+      calificacionEditada={calificacionEditada}
+      setCalificacionEditada={setCalificacionEditada}
+      onCalificacionActualizada={handleActualizacionExitosa}
+    />
 
-      <ModalEdicionCalificaciones
-        show={mostrarModalEdicion}
-        setShow={setMostrarModalEdicion}
-        calificacionEditada={calificacionEditada}
-        setCalificacionEditada={setCalificacionEditada}
-        onCalificacionActualizada={handleActualizacionExitosa}
-      />
+    <TablaCalificaciones
+      calificaciones={currentCalificaciones}
+      onExportReady={setCalificacionesExport}
+      asignaturas={asignaturas}
+      estudiantes={estudiantes}
+      onEditCalificacion={handleEdicionCalificacion}
+      actualizar={refrescarCalificaciones}
+      onCopyCalificacion={handleCopy}
+    />
 
-      <TablaCalificaciones
-        calificaciones={currentCalificaciones}
-        onExportReady={setCalificacionesExport}
-        asignaturas={asignaturas}
-        estudiantes={estudiantes}
-        onEditCalificacion={handleEdicionCalificacion}
-         actualizar={refrescarCalificaciones}
-         onCopyCalificacion={handleCopy}
-      />
-
-      <Paginacion
-        itemsPerPage={itemsPerPage}
-        totalItems={calificacionesFiltradas.length}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-      />
-    </Container>
-  );
+    <Paginacion
+      itemsPerPage={itemsPerPage}
+      totalItems={calificacionesFiltradas.length}
+      currentPage={currentPage}
+      setCurrentPage={setCurrentPage}
+    />
+  </Container>
+);
 };
 
 export default Calificaciones;

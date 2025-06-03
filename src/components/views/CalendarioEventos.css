@@ -1,148 +1,158 @@
 .calendario-container {
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 20px;
-    background: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
-  }
-  
-  .calendar-wrapper {
-    overflow-x: auto;
-    border-radius: 10px;
-  }
-  
-  .react-calendar {
-    width: 100%;
-    max-width: 100%;
-    background: #f9f9f9;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Poppins', sans-serif;
-  }
-  
-  .react-calendar__tile {
-    padding: 10px;
-    font-size: 14px;
-  }
-  
-  .react-calendar__tile--active {
-    background: #6c5ce7;
-    color: white;
-    border-radius: 10px;
-  }
-  
-  .react-calendar__tile--now {
-    background: #ffeaa7;
-    border-radius: 10px;
-  }
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
 
-  .react-calendar__month-view__days__day {
-    color: #000000; 
-  }
+.calendar-wrapper {
+  overflow-x: auto;
+  border-radius: 10px;
+}
+
+.react-calendar {
+  width: 100%;
+  max-width: 100%;
+  background: #f9f9f9;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.react-calendar__tile {
+  padding: 10px;
+  font-size: 14px;
+}
+
+.react-calendar__tile--active {
+  background: #6c5ce7;
+  color: white;
+  border-radius: 10px;
+}
+
+.react-calendar__tile--now {
+  background: #ffeaa7;
+  border-radius: 10px;
+}
+
+.react-calendar__month-view__days__day {
+  color: #000000;
+}
 
 .react-calendar__month-view__days__day--weekend {
-    color: #d63031; 
-  }
-  
-  input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin: 15px 0;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-  }
-  
+  color: #d63031;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin: 15px 0;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+
+/* CONTENEDOR DE BOTONES TIPO EVENTO */
+.tipo-evento-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+/* BOTONES DE TIPO EVENTO */
+.tipo-evento-container button {
+  flex: 1;
+  padding: 12px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  cursor: pointer;
+  color: white;
+  text-align: center;
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.btn-examen {
+  background-color: #ffcc00;
+}
+
+.btn-reunion {
+  background-color: #6c60b5;
+}
+
+.btn-festividad {
+  background-color: #28a745;
+}
+
+/* BOTÓN AGREGAR */
+.btn-agregar {
+  background: #0984e3;
+  color: white;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+/* LISTA DE EVENTOS */
+.lista-eventos {
+  list-style: none;
+  padding: 0;
+}
+
+.lista-eventos li {
+  background: #f1f2f6;
+  margin: 8px 0;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* BOTÓN ELIMINAR */
+.btn-eliminar {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #d63031;
+}
+
+/* BORDES LATERALES SEGÚN TIPO */
+.evento-examen {
+  border-left: 5px solid #ffcc00;
+}
+
+.evento-reunion {
+  border-left: 5px solid #6c60b5;
+}
+
+.evento-festividad {
+  border-left: 5px solid #28a745;
+}
+
+/* RESPONSIVE */
+@media (max-width: 600px) {
   .tipo-evento-container {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 15px;
+    flex-direction: column;
   }
-  
+
   .tipo-evento-container button {
-    flex: 1;
-    margin: 0 5px;
-    padding: 10px;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    cursor: pointer;
-    color: white;
-  }
-  
-  .btn-examen {
-    background-color: #ffcc00;
-  }
-  
-  .btn-reunion {
-    background-color: #6c60b5;
-  }
-  
-  .btn-festividad {
-    background-color: #28a745;
-  }
-  
-  .btn-agregar {
-    background: #0984e3;
-    color: white;
     width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 10px;
-    font-size: 16px;
-    border: none;
-    cursor: pointer;
   }
-  
-  .lista-eventos {
-    list-style: none;
-    padding: 0;
+
+  .calendar-wrapper {
+    margin-bottom: 20px;
   }
-  
-  .lista-eventos li {
-    background: #f1f2f6;
-    margin: 8px 0;
-    padding: 10px;
-    border-radius: 10px;
-    font-size: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  
-  .btn-eliminar {
-    background: transparent;
-    border: none;
-    font-size: 20px;
-    cursor: pointer;
-    color: #d63031;
-  }
-  
-  .evento-examen {
-    border-left: 5px solid #ffcc00;
-  }
-  
-  .evento-reunion {
-    border-left: 5px solid #6c60b5;
-  }
-  
-  .evento-festividad {
-    border-left: 5px solid #28a745;
-  }
-  
-  @media (max-width: 600px) {
-    .tipo-evento-container {
-      flex-direction: column;
-    }
-  
-    .tipo-evento-container button {
-      margin-bottom: 10px;
-    }
-  
-    .calendar-wrapper {
-      margin-bottom: 20px;
-    }
-  }
-  
+}
