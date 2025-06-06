@@ -25,6 +25,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import "./Asistencia.css";
+import { useNavigate } from "react-router-dom";
+
 
 
 const Asistencia = () => {
@@ -99,6 +101,9 @@ const Asistencia = () => {
       [estudianteId]: estado,
     }));
   };
+
+  const navigate = useNavigate();
+
 
   const guardarAsistencia = async () => {
     if (!asignaturaSeleccionada || !fecha) {
@@ -181,6 +186,14 @@ const Asistencia = () => {
   return (
     <div className="asistencia-container">
       <h2>Registro de Asistencia</h2>
+
+      <button
+  className="btn-ver-guardadas"
+  onClick={() => navigate("/HistorialAsistencias")}
+>
+  <Table size={16} /> Asistencias guardadas
+</button>
+
 
       <label>
         <Calendar size={16} /> Fecha:
