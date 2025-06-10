@@ -21,7 +21,7 @@ export default function DistribucionAsistencia() {
 
   useEffect(() => {
     const fetchAsistencia = async () => {
-      const snap = await getDocs(collection(db, "asistencia"));
+      const snap = await getDocs(collection(db, "asistencias"));
       const counts = { Presente: 0, Ausente: 0, Justificado: 0 };
 
       snap.docs.forEach((doc) => {

@@ -16,6 +16,8 @@ import Notificaciones from "./components/Notificaciones/Notificaciones";
 import CalificacionesHijo from "./components/views/CalificacionesHijo";
 import SeleccionarHijo from "./components/views/SeleccionarHijo";
 import Estadisticas from "./components/estadisticas/Estadisticas";
+import HistorialAsistencias from "./components/views/HistorialAsistencias";
+
 
 import './App.css';
 
@@ -70,6 +72,16 @@ function AppContent() {
               </ProtectedRoute>
             } 
           />
+
+          <Route 
+  path="/HistorialAsistencias"
+  element={
+    <ProtectedRoute allowedRoles={["docente", "admin"]}>
+      <HistorialAsistencias />
+    </ProtectedRoute>
+  }
+/>
+
           <Route 
             path="/CatalogoCalificaciones" 
             element={

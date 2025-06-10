@@ -228,3 +228,84 @@ table tbody tr:nth-child(even) {
 .btn-resumen:hover {
   background-color: #2563eb;
 }
+
+/* Modal de edición */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.modal-content label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.modal-content input[type="date"],
+.modal-content select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.3rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s ease;
+}
+
+.modal-content input:focus,
+.modal-content select:focus {
+  border-color: #4f46e5;
+}
+
+.modal-content button {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: none;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.modal-content button:first-of-type {
+  background-color: #4f46e5;
+  color: white;
+  margin-right: 1rem;
+}
+
+.modal-content button:first-of-type:hover {
+  background-color: #4338ca;
+}
+
+.modal-content button:last-of-type {
+  background-color: #e5e7eb;
+  color: #333;
+}
+
+.modal-content button:last-of-type:hover {
+  background-color: #d1d5db;
+}

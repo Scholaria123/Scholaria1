@@ -24,8 +24,9 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import "./Asistencia.css";
-
+import HistorialAsistencias from "./HistorialAsistencias";
 
 const Asistencia = () => {
   const [grados, setGrados] = useState([]);
@@ -40,6 +41,7 @@ const Asistencia = () => {
   const [mostrarTablaResumen, setMostrarTablaResumen] = useState(false);
   const [paginaActual, setPaginaActual] = useState(1);
   const estudiantesPorPagina = 5;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const obtenerDatos = async () => {
@@ -117,7 +119,7 @@ const Asistencia = () => {
 
       for (const [estudianteId, estado] of registros) {
         const q = query(
-          collection(db, "asistencia"),
+          collection(db, "asistencias"),
           where("fecha", "==", fecha),
           where("asignaturaId", "==", asignaturaSeleccionada),
           where("estudianteId", "==", estudianteId)
@@ -125,7 +127,7 @@ const Asistencia = () => {
         const snapshot = await getDocs(q);
 
         if (snapshot.empty) {
-          await addDoc(collection(db, "asistencia"), {
+          await addDoc(collection(db, "asistencias"), {
             fecha,
             asignaturaId: asignaturaSeleccionada,
             estudianteId,
@@ -177,6 +179,11 @@ const Asistencia = () => {
       setPaginaActual(nuevaPagina);
     }
   };
+
+const HistorialAsistencias = () => {
+  // Ya no se valida si está seleccionado grado, grupo y asignatura
+  navigate("/HistorialAsistencias");
+};
 
   return (
     <div className="asistencia-container">
@@ -315,55 +322,52 @@ const Asistencia = () => {
             </>
           ) : (
             <>
-              <ChevronUp size={16} /> Ver resumen
+              <ChevronUp size={16} /> Mostrar resumen
             </>
           )}
+        </button>
+        <button className="btn-historial" onClick={HistorialAsistencias}>
+          Ver Historial
         </button>
       </div>
 
       {mostrarTablaResumen && (
-        <>
-          <table>
-            <thead>
-              <tr>
-                <th>Estudiante</th>
-                <th>Grado</th>
-                <th>Grupo</th>
-                <th>Asignatura</th>
-                <th>Estado</th>
+        <table>
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Asistencia</th>
+            </tr>
+          </thead>
+          <tbody>
+            {estudiantesPagina.map(({ id, nombre }) => (
+              <tr key={id}>
+                <td>{nombre}</td>
+                <td>{asistencia[id] || "No marcado"}</td>
               </tr>
-            </thead>
-            <tbody>
-              {estudiantesPagina.map(({ id, nombre }) => (
-                <tr key={id}>
-                  <td>{nombre}</td>
-                  <td>{gradoSeleccionado}</td>
-                  <td>{grupoSeleccionado.toUpperCase()}</td>
-                  <td>{nombreAsignatura}</td>
-                  <td>{asistencia[id] || "No marcado"}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
+      )}
 
-          <div>
-            <button
-              onClick={() => cambiarPagina(paginaActual - 1)}
-              disabled={paginaActual === 1}
-            >
-              <ChevronLeft size={16} /> Anterior
-            </button>
-            <span>
-              Página {paginaActual} de {totalPaginas}
-            </span>
-            <button
-              onClick={() => cambiarPagina(paginaActual + 1)}
-              disabled={paginaActual === totalPaginas}
-            >
-              Siguiente <ChevronRight size={16} />
-            </button>
-          </div>
-        </>
+      {mostrarTablaResumen && totalPaginas > 1 && (
+        <div className="paginacion">
+          <button
+            disabled={paginaActual === 1}
+            onClick={() => cambiarPagina(paginaActual - 1)}
+          >
+            <ChevronLeft />
+          </button>
+          <span>
+            Página {paginaActual} de {totalPaginas}
+          </span>
+          <button
+            disabled={paginaActual === totalPaginas}
+            onClick={() => cambiarPagina(paginaActual + 1)}
+          >
+            <ChevronRight />
+          </button>
+        </div>
       )}
     </div>
   );
