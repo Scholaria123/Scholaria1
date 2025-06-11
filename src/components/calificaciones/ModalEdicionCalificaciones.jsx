@@ -1,12 +1,14 @@
 import React from "react";
 import { Modal, Button, Form } from "react-bootstrap";
+import { db } from "../../database/firebaseconfig";
+import { doc, updateDoc } from "firebase/firestore";
 
 const ModalEdicionCalificaciones = ({
   show,
   setShow,
   calificacionEditada,
   setCalificacionEditada,
-  handleGuardarCambios,
+  fetchCalificaciones, // se asume que hay una función para refrescar los datos
 }) => {
   if (!calificacionEditada) return null;
 
@@ -15,35 +17,46 @@ const ModalEdicionCalificaciones = ({
 
     if (["parcial1", "parcial2", "parcial3"].includes(name)) {
       if (value === "" || (/^\d{1,2}$/.test(value) && Number(value) <= 100)) {
-        const updated = {
-          ...calificacionEditada,
+        const updated = { ...calificacionEditada, [name]: value };
+
+        const { parcial1, parcial2, parcial3 } = {
+          ...updated,
           [name]: value,
         };
 
-        const p1 = parseFloat(updated.parcial1);
-        const p2 = parseFloat(updated.parcial2);
-        const p3 = parseFloat(updated.parcial3);
-
-        if (!isNaN(p1) && !isNaN(p2) && !isNaN(p3)) {
-          const promedio = ((p1 + p2 + p3) / 3).toFixed(2);
-          updated.final = promedio;
-        } else {
-          updated.final = "";
+        if (parcial1 && parcial2 && parcial3) {
+          const promedio =
+            (parseFloat(parcial1) +
+              parseFloat(parcial2) +
+              parseFloat(parcial3)) /
+            3;
+          updated.final = promedio.toFixed(2);
         }
 
         setCalificacionEditada(updated);
       }
     } else {
-      setCalificacionEditada((prev) => ({
-        ...prev,
-        [name]: value,
-      }));
+      setCalificacionEditada((prev) => ({ ...prev, [name]: value }));
     }
   };
 
-  const guardarCambiosYCerrar = () => {
-    handleGuardarCambios(calificacionEditada); // Pasamos los datos actualizados
-    setShow(false); // Cerramos el modal
+  const handleGuardarCambios = async () => {
+    try {
+      const calificacionRef = doc(db, "calificaciones", calificacionEditada.id);
+      await updateDoc(calificacionRef, {
+        parcial1: Number(calificacionEditada.parcial1),
+        parcial2: Number(calificacionEditada.parcial2),
+        parcial3: Number(calificacionEditada.parcial3),
+        final: Number(calificacionEditada.final),
+        observaciones: calificacionEditada.observaciones || "",
+      });
+
+      setShow(false);
+      fetchCalificaciones?.(); // refresca los datos si se proporciona
+    } catch (error) {
+      console.error("❌ Error al actualizar calificación:", error);
+      alert("Ocurrió un error al guardar los cambios.");
+    }
   };
 
   return (
@@ -105,6 +118,9 @@ const ModalEdicionCalificaciones = ({
               type="number"
               name="final"
               value={calificacionEditada.final?.toString() || ""}
+              onChange={handleInputChange}
+              min="0"
+              max="100"
               readOnly
             />
             <Form.Text className="text-muted">
@@ -128,7 +144,7 @@ const ModalEdicionCalificaciones = ({
         <Button variant="secondary" onClick={() => setShow(false)}>
           Cancelar
         </Button>
-        <Button variant="primary" onClick={guardarCambiosYCerrar}>
+        <Button variant="primary" onClick={handleGuardarCambios}>
           Guardar Cambios
         </Button>
       </Modal.Footer>
