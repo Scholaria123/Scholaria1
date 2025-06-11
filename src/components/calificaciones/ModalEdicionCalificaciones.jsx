@@ -1,197 +1,136 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Modal, Button, Form } from "react-bootstrap";
-import { doc, updateDoc } from "firebase/firestore";
-import { db } from "../../database/firebaseconfig";
 
 const ModalEdicionCalificaciones = ({
-    show,
-    setShow,
-    calificacionEditada,
-    setCalificacionEditada,
-    onCalificacionActualizada,
-  }) => {
-  
+  show,
+  setShow,
+  calificacionEditada,
+  setCalificacionEditada,
+  handleGuardarCambios,
+}) => {
   if (!calificacionEditada) return null;
 
-  const handleChange = (e) => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCalificacionEditada((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
 
-  useEffect(() => {
-    if (calificacionEditada) {
-      setCalificacionEditada((prevState) => ({
-        ...prevState,
-        parcial1: prevState.parcial1 || "",
-        parcial2: prevState.parcial2 || "",
-        parcial3: prevState.parcial3 || "",
-        final: prevState.final || "",
-        observaciones: prevState.observaciones || "",
+    if (["parcial1", "parcial2", "parcial3"].includes(name)) {
+      if (value === "" || (/^\d{1,2}$/.test(value) && Number(value) <= 100)) {
+        const updated = {
+          ...calificacionEditada,
+          [name]: value,
+        };
+
+        const p1 = parseFloat(updated.parcial1);
+        const p2 = parseFloat(updated.parcial2);
+        const p3 = parseFloat(updated.parcial3);
+
+        if (!isNaN(p1) && !isNaN(p2) && !isNaN(p3)) {
+          const promedio = ((p1 + p2 + p3) / 3).toFixed(2);
+          updated.final = promedio;
+        } else {
+          updated.final = "";
+        }
+
+        setCalificacionEditada(updated);
+      }
+    } else {
+      setCalificacionEditada((prev) => ({
+        ...prev,
+        [name]: value,
       }));
     }
-  }, [calificacionEditada]);
-
-  const calcularPromedio = (p1, p2, p3) => {
-    const nums = [p1, p2, p3].map(n => parseFloat(n));
-    const validos = nums.filter(n => !isNaN(n));
-    if (validos.length === 0) return "";
-    const suma = validos.reduce((acc, n) => acc + n, 0);
-    return (suma / validos.length).toFixed(2);
-  };
-  
-  const handleUpdateCalificacion = async () => {
-    if (!calificacionEditada.id) {
-      console.error("ID no disponible para la calificación");
-      return;
-    }
-  
-    try {
-      const promedio = calcularPromedio(
-        calificacionEditada.parcial1,
-        calificacionEditada.parcial2,
-        calificacionEditada.parcial3
-      );
-  
-      const calificacionRef = doc(db, "calificaciones", calificacionEditada.id);
-      await updateDoc(calificacionRef, {
-        asignaturaId: calificacionEditada.asignaturaId,
-        estudianteId: calificacionEditada.estudianteId,
-        parcial1: calificacionEditada.parcial1 || "",
-        parcial2: calificacionEditada.parcial2 || "",
-        parcial3: calificacionEditada.parcial3 || "",
-        final: promedio,
-        observaciones: calificacionEditada.observaciones || "",
-      });
-  
-      setShow(false);
-      if (onCalificacionActualizada) {
-        onCalificacionActualizada();
-      }
-    } catch (error) {
-      console.error("Error al actualizar la calificación:", error);
-    }
   };
 
-  // Función de validación numérica para parciales
-const handleParcialChange = (e) => {
-  const { name, value } = e.target;
-  const number = Number(value);
-
-  if (value === '' || (number >= 0 && number <= 100)) {
-    setCalificacionEditada((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
-};
-
- 
+  const guardarCambiosYCerrar = () => {
+    handleGuardarCambios(calificacionEditada); // Pasamos los datos actualizados
+    setShow(false); // Cerramos el modal
+  };
 
   return (
-    <Modal show={show} onHide={() => setShow(false)}>
+    <Modal
+      show={show}
+      onHide={() => setShow(false)}
+      backdrop="static"
+      keyboard={false}
+      className="custom-modal"
+      style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+    >
       <Modal.Header closeButton>
-        <Modal.Title>Editar Calificación</Modal.Title>
+        <Modal.Title>Editar Calificaciones</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group controlId="asignaturaId">
-            <Form.Label>Asignatura ID</Form.Label>
+          <Form.Group controlId="formParcial1">
+            <Form.Label>Parcial 1</Form.Label>
             <Form.Control
-              type="text"
-              name="asignaturaId"
-              value={calificacionEditada.asignaturaId || ""}
-              disabled
+              type="number"
+              name="parcial1"
+              value={calificacionEditada.parcial1?.toString() || ""}
+              onChange={handleInputChange}
+              min="0"
+              max="100"
+              required
             />
           </Form.Group>
 
-          <Form.Group controlId="estudianteId">
-            <Form.Label>Estudiante ID</Form.Label>
+          <Form.Group controlId="formParcial2">
+            <Form.Label>Parcial 2</Form.Label>
             <Form.Control
-              type="text"
-              name="estudianteId"
-              value={calificacionEditada.estudianteId || ""}
-              disabled
+              type="number"
+              name="parcial2"
+              value={calificacionEditada.parcial2?.toString() || ""}
+              onChange={handleInputChange}
+              min="0"
+              max="100"
+              required
             />
           </Form.Group>
 
-          <Form.Group controlId="parcial1">
-  <Form.Label>Parcial 1</Form.Label>
-  <Form.Control
-    type="number"
-    min="0"
-    max="100"
-    placeholder="Ingrese calificación parcial 1"
-    name="parcial1"
-    value={calificacionEditada.parcial1}
-    onChange={handleParcialChange}
-  />
-</Form.Group>
+          <Form.Group controlId="formParcial3">
+            <Form.Label>Parcial 3</Form.Label>
+            <Form.Control
+              type="number"
+              name="parcial3"
+              value={calificacionEditada.parcial3?.toString() || ""}
+              onChange={handleInputChange}
+              min="0"
+              max="100"
+              required
+            />
+          </Form.Group>
 
-<Form.Group controlId="parcial2">
-  <Form.Label>Parcial 2</Form.Label>
-  <Form.Control
-    type="number"
-    min="0"
-    max="100"
-    placeholder="Ingrese calificación parcial 2"
-    name="parcial2"
-    value={calificacionEditada.parcial2}
-    onChange={handleParcialChange}
-  />
-</Form.Group>
+          <Form.Group controlId="formFinal">
+            <Form.Label>Nota Final (Promedio)</Form.Label>
+            <Form.Control
+              type="number"
+              name="final"
+              value={calificacionEditada.final?.toString() || ""}
+              readOnly
+            />
+            <Form.Text className="text-muted">
+              Se calcula automáticamente como el promedio de los tres parciales.
+            </Form.Text>
+          </Form.Group>
 
-<Form.Group controlId="parcial3">
-  <Form.Label>Parcial 3</Form.Label>
-  <Form.Control
-    type="number"
-    min="0"
-    max="100"
-    placeholder="Ingrese calificación parcial 3"
-    name="parcial3"
-    value={calificacionEditada.parcial3}
-    onChange={handleParcialChange}
-  />
-</Form.Group>
-
-          <Form.Group controlId="final">
-  <Form.Label>Final (Promedio)</Form.Label>
-  <Form.Control
-    type="text"
-    name="final"
-    value={calcularPromedio(
-      calificacionEditada.parcial1,
-      calificacionEditada.parcial2,
-      calificacionEditada.parcial3
-    )}
-    disabled
-  />
-</Form.Group>
-
-
-
-          <Form.Group controlId="observaciones">
+          <Form.Group controlId="formObservaciones">
             <Form.Label>Observaciones</Form.Label>
             <Form.Control
-              type="text"
-              placeholder="Ingrese observaciones"
+              as="textarea"
+              rows={3}
               name="observaciones"
-              value={calificacionEditada.observaciones}
-              onChange={handleChange}
+              value={calificacionEditada.observaciones || ""}
+              onChange={handleInputChange}
             />
           </Form.Group>
         </Form>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={() => setShow(false)}>
-          Cerrar
+          Cancelar
         </Button>
-        <Button variant="primary" onClick={handleUpdateCalificacion}>
-  Guardar Cambios
-</Button>
-
+        <Button variant="primary" onClick={guardarCambiosYCerrar}>
+          Guardar Cambios
+        </Button>
       </Modal.Footer>
     </Modal>
   );
