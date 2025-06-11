@@ -4,13 +4,17 @@ const ModalEliminacionAsignatura = ({
   showDeleteModal,
   setShowDeleteModal,
   handleDeleteAsignatura,
-  asignaturaAEliminar, // Asignatura que se eliminará
+  asignaturaAEliminar,
 }) => {
-
-
-  
   return (
-    <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+    <Modal
+      show={showDeleteModal}
+      onHide={() => setShowDeleteModal(false)}
+      backdrop="static"
+      keyboard={false}
+      className="custom-modal"
+      style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Eliminar Asignatura</Modal.Title>
       </Modal.Header>

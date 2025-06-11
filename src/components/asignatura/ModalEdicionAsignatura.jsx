@@ -55,7 +55,14 @@ const ModalEdicionAsignatura = ({
   };
 
   return (
-    <Modal show={showEditModal} onHide={() => setShowEditModal(false)}>
+    <Modal
+      show={showEditModal}
+      onHide={() => setShowEditModal(false)}
+      backdrop="static"
+      keyboard={false}
+      className="custom-modal"
+      style={{ display: "block", backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Editar Asignatura</Modal.Title>
       </Modal.Header>
@@ -68,7 +75,9 @@ const ModalEdicionAsignatura = ({
               placeholder="Nombre de la asignatura"
               name="nombre"
               value={asignaturaEditada.nombre || ""}
-              onChange={(e) => setAsignaturaEditada({ ...asignaturaEditada, nombre: e.target.value })}
+              onChange={(e) =>
+                setAsignaturaEditada({ ...asignaturaEditada, nombre: e.target.value })
+              }
             />
           </Form.Group>
 
@@ -79,7 +88,9 @@ const ModalEdicionAsignatura = ({
               placeholder="Nombre del docente"
               name="docente"
               value={asignaturaEditada.docente || ""}
-              onChange={(e) => setAsignaturaEditada({ ...asignaturaEditada, docente: e.target.value })}
+              onChange={(e) =>
+                setAsignaturaEditada({ ...asignaturaEditada, docente: e.target.value })
+              }
             />
           </Form.Group>
 
@@ -118,7 +129,7 @@ const ModalEdicionAsignatura = ({
         <Button variant="secondary" onClick={() => setShowEditModal(false)}>
           Cerrar
         </Button>
-        <Button variant="primary" onClick={() => handleEditAsignatura()}>
+        <Button variant="primary" onClick={handleEditAsignatura}>
           Guardar Cambios
         </Button>
       </Modal.Footer>

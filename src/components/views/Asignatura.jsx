@@ -195,11 +195,13 @@ return (
       handleEditAsignatura={handleEditAsignatura}
     />
 
-    <ModalEliminacionAsignatura
-      showDeleteModal={showDeleteModal}
-      setShowDeleteModal={setShowDeleteModal}
-      handleDeleteAsignatura={handleDeleteAsignatura}
-    />
+      <ModalEliminacionAsignatura
+  showDeleteModal={showDeleteModal}
+  setShowDeleteModal={setShowDeleteModal}
+  handleDeleteAsignatura={handleDeleteAsignatura}
+  asignaturaAEliminar={asignaturaAEliminar}
+/>
+
   </Container>
 );
 

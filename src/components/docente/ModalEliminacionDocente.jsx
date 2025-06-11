@@ -7,7 +7,15 @@ const ModalEliminacionDocente = ({
   handleDeleteDocente,
 }) => {
   return (
-    <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)} centered>
+    <Modal
+      show={showDeleteModal}
+      onHide={() => setShowDeleteModal(false)}
+      backdrop="static"
+      keyboard={false}
+      centered
+      className="custom-modal"
+      style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Eliminar Docente</Modal.Title>
       </Modal.Header>
