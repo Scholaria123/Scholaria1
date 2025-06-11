@@ -4,14 +4,12 @@ import { db } from "../../database/firebaseconfig";
 import { collection, getDocs, doc, updateDoc } from "firebase/firestore";
 import "./ModalEdicionEstudiante.css";
 
-
 const ModalEdicionEstudiante = ({
   showEditModal,
   setShowEditModal,
   estudianteEditado,
   setEstudianteEditado,
   fetchData,
-   handleEditEstudiante
 }) => {
   const [asignaturas, setAsignaturas] = useState([]);
   const [grados, setGrados] = useState([]);
@@ -29,15 +27,8 @@ const ModalEdicionEstudiante = ({
         }));
 
         setAsignaturas(asignaturasList);
-
-        const allGrados = asignaturasList.flatMap((a) => a.grado || []);
-        const allGrupos = asignaturasList.flatMap((a) => a.grupo || []);
-
-        const uniqueGrados = [...new Set(allGrados)];
-        const uniqueGrupos = [...new Set(allGrupos)];
-
-        setGrados(uniqueGrados);
-        setGrupos(uniqueGrupos);
+        setGrados([...new Set(asignaturasList.flatMap((a) => a.grado || []))]);
+        setGrupos([...new Set(asignaturasList.flatMap((a) => a.grupo || []))]);
       } catch (error) {
         console.error("❌ Error al obtener asignaturas:", error);
       }
@@ -70,14 +61,21 @@ const ModalEdicionEstudiante = ({
   };
 
   const handleSaveChanges = async () => {
-    if (!estudianteEditado.id) return;
+    if (!estudianteEditado.nombre.trim()) return alert("El nombre es obligatorio.");
+    if (!estudianteEditado.direccion?.trim()) return alert("La dirección es obligatoria.");
+    if (!estudianteEditado.telefono?.trim()) return alert("El teléfono es obligatorio.");
+    if (!/^\d{8}$/.test(estudianteEditado.telefono)) return alert("El teléfono debe tener 8 dígitos.");
+    if (!estudianteEditado.grado) return alert("Debe seleccionar un grado.");
+    if (!estudianteEditado.grupo) return alert("Debe seleccionar un grupo.");
+    if (!estudianteEditado.asignaturaId?.length) return alert("Debe seleccionar al menos una asignatura.");
 
     try {
       const estudianteRef = doc(db, "estudiantes", estudianteEditado.id);
       const updateData = {
         ...estudianteEditado,
-        imagen: imagenBase64 || estudianteEditado.imagen,
+        imagen: imagenBase64 || estudianteEditado.imagen || "",
       };
+
       await updateDoc(estudianteRef, updateData);
       fetchData();
       setShowEditModal(false);
@@ -87,76 +85,85 @@ const ModalEdicionEstudiante = ({
   };
 
   return (
-    <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+    <Modal
+      show={showEditModal}
+      onHide={() => setShowEditModal(false)}
+      backdrop="static"
+      keyboard={false}
+      className="custom-modal"
+      style={{ display: "block", backgroundColor: "rgba(0,0,0,0.5)" }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Editar Estudiante</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Form>
-          <Form.Group className="mb-3" controlId="nombre">
-            <Form.Label className="fw-bold">Nombre</Form.Label>
+          <Form.Group controlId="formNombre">
+            <Form.Label>Nombre</Form.Label>
             <Form.Control
               type="text"
               name="nombre"
               value={estudianteEditado.nombre || ""}
               onChange={handleInputChange}
-              placeholder="Nombre del estudiante"
+              required
             />
           </Form.Group>
 
-
-          <Form.Group className="mb-3" controlId="telefono">
-  <Form.Label className="fw-bold">Teléfono</Form.Label>
-  <Form.Control
-    type="text"
-    name="telefono"
-    value={estudianteEditado.telefono || ""}
-    onChange={(e) => {
-      const value = e.target.value;
-      // Solo permite hasta 8 dígitos numéricos
-      if (/^\d{0,8}$/.test(value)) {
-        setEstudianteEditado((prev) => ({ ...prev, telefono: value }));
-      }
-    }}
-    placeholder="Número de teléfono (8 dígitos)"
-  />
-  {estudianteEditado.telefono && estudianteEditado.telefono.length !== 8 && (
-    <Form.Text className="text-danger">
-      El número debe tener exactamente 8 dígitos.
-    </Form.Text>
-  )}
-</Form.Group>
-
-                    <Form.Group className="mb-3" controlId="tutor">
-          <Form.Label className="fw-bold">Tutor</Form.Label>
-          <Form.Control
-            type="text"
-            name="tutor"
-            value={estudianteEditado.tutor || ""}
-            onChange={handleInputChange}
-            placeholder="Nombre del tutor"
-          />
-        </Form.Group>
-
-
-          <Form.Group className="mb-3" controlId="direccion">
-            <Form.Label className="fw-bold">Dirección</Form.Label>
+          <Form.Group controlId="formDireccion">
+            <Form.Label>Dirección</Form.Label>
             <Form.Control
-              as="textarea"
-              rows={2}
+              type="text"
               name="direccion"
               value={estudianteEditado.direccion || ""}
               onChange={handleInputChange}
-              placeholder="Dirección del estudiante"
+              required
             />
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="grado">
-            <Form.Label className="fw-bold">Grado</Form.Label>
+          <Form.Group controlId="formTelefono">
+            <Form.Label>Teléfono</Form.Label>
+            <Form.Control
+              type="text"
+              name="telefono"
+              value={estudianteEditado.telefono || ""}
+              onChange={(e) => {
+                const value = e.target.value;
+                if (/^\d{0,8}$/.test(value)) {
+                  setEstudianteEditado((prev) => ({
+                    ...prev,
+                    telefono: value,
+                  }));
+                }
+              }}
+              placeholder="Número de teléfono (8 dígitos)"
+              required
+            />
+            {estudianteEditado.telefono &&
+              estudianteEditado.telefono.length !== 8 && (
+                <Form.Text className="text-danger">
+                  El número debe tener exactamente 8 dígitos.
+                </Form.Text>
+              )}
+          </Form.Group>
+
+          <Form.Group controlId="formTutor">
+            <Form.Label>Tutor</Form.Label>
+            <Form.Control
+              type="text"
+              name="tutor"
+              value={estudianteEditado.tutor || ""}
+              onChange={handleInputChange}
+              required
+            />
+          </Form.Group>
+
+          <Form.Group controlId="formGrado">
+            <Form.Label>Grado</Form.Label>
             <Form.Select
               name="grado"
               value={estudianteEditado.grado || ""}
               onChange={handleInputChange}
+              required
             >
               <option value="">Seleccione un grado</option>
               {grados.map((grado, index) => (
@@ -167,12 +174,13 @@ const ModalEdicionEstudiante = ({
             </Form.Select>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="grupo">
-            <Form.Label className="fw-bold">Grupo</Form.Label>
+          <Form.Group controlId="formGrupo">
+            <Form.Label>Grupo</Form.Label>
             <Form.Select
               name="grupo"
               value={estudianteEditado.grupo || ""}
               onChange={handleInputChange}
+              required
             >
               <option value="">Seleccione un grupo</option>
               {grupos.map((grupo, index) => (
@@ -183,13 +191,14 @@ const ModalEdicionEstudiante = ({
             </Form.Select>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="asignaturaId">
-            <Form.Label className="fw-bold">Asignaturas</Form.Label>
+          <Form.Group controlId="formAsignatura">
+            <Form.Label>Asignaturas</Form.Label>
             <Form.Select
-              multiple
               name="asignaturaId"
+              multiple
               value={estudianteEditado.asignaturaId || []}
               onChange={handleAsignaturaChange}
+              required
             >
               {asignaturas.map((asignatura) => (
                 <option key={asignatura.id} value={asignatura.id}>
@@ -197,18 +206,19 @@ const ModalEdicionEstudiante = ({
                 </option>
               ))}
             </Form.Select>
-            <Form.Text className="text-muted">
-              Usa Ctrl (Windows) o Cmd (Mac) para seleccionar múltiples.
-            </Form.Text>
           </Form.Group>
 
-          <Form.Group className="mb-3" controlId="imagen">
-            <Form.Label className="fw-bold">Imagen</Form.Label>
-            <Form.Control type="file" accept="image/*" onChange={handleImageChange} />
-            {estudianteEditado.imagen && (
+          <Form.Group controlId="formImagen">
+            <Form.Label>Imagen</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={handleImageChange}
+            />
+            {(imagenBase64 || estudianteEditado.imagen) && (
               <img
                 src={imagenBase64 || estudianteEditado.imagen}
-                alt="Foto del estudiante"
+                alt="Previsualización"
                 className="preview-img"
               />
             )}

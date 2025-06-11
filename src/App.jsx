@@ -17,6 +17,8 @@ import CalificacionesHijo from "./components/views/CalificacionesHijo";
 import SeleccionarHijo from "./components/views/SeleccionarHijo";
 import Estadisticas from "./components/estadisticas/Estadisticas";
 import HistorialAsistencias from "./components/views/HistorialAsistencias";
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 
 
 import './App.css';

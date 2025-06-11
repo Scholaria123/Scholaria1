@@ -130,11 +130,15 @@ const ModalRegistroEstudiante = ({ showModal, setShowModal, fetchEstudiantes }) 
   };
 
   return (
-    <Modal
-      show={showModal}
-      onHide={() => setShowModal(false)}
-      className="custom-modal"
-    >
+   <Modal
+  show={showModal}
+  onHide={() => setShowModal(false)}
+  backdrop="static"
+  keyboard={false}
+  className="custom-modal"
+  style={{ display: 'block', backgroundColor: 'rgba(0,0,0,0.5)' }}
+>
+
       <Modal.Header closeButton>
         <Modal.Title>Registrar Estudiante</Modal.Title>
       </Modal.Header>

@@ -83,3 +83,44 @@ img.preview-img {
 .modal-footer .btn-primary:hover {
   background-color: #2563eb;
 }
+
+/* Estilos para el backdrop */
+.modal-backdrop.show {
+  opacity: 0.5 !important;
+  background-color: #000 !important;
+}
+
+/* Estilos para el modal */
+.modal-edit-estudiante .modal-content {
+  border-radius: 15px;
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-edit-estudiante .modal-header {
+  border-bottom: 1px solid #eee;
+  background-color: #f8f9fa;
+  border-radius: 15px 15px 0 0;
+}
+
+.modal-edit-estudiante .modal-footer {
+  border-top: 1px solid #eee;
+  background-color: #f8f9fa;
+  border-radius: 0 0 15px 15px;
+}
+
+/* Estilos para los controles del formulario */
+.modal-edit-estudiante .form-control, 
+.modal-edit-estudiante .form-select {
+  border-radius: 8px;
+  padding: 10px 15px;
+  border: 1px solid #ced4da;
+}
+
+.modal-edit-estudiante .preview-img {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 8px;
+  margin-top: 10px;
+  border: 1px solid #ddd;
+}
